@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پنل مدیریت حرفه ای QA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; }
+        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; width: 18px; height: 18px; animation: spin 1s ease-in-out infinite; display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen overflow-hidden flex">
+
+    <aside class="w-72 bg-white border-l border-slate-200 shadow-sm flex flex-col z-10">
+        <div class="p-6 border-b border-slate-200">
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">پنل اتوماسیون QA</h1>
+            <p class="text-sm text-slate-500 mt-1">مدیریت ممیزی سایت ها</p>
+        </div>
+        <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
+            <button id="nav-dashboard" onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center px-4 py-3 text-right rounded-lg border-r-4 text-slate-600 border-transparent hover:bg-slate-50 transition">
+                داشبورد اصلی (بررسی دستی)
+            </button>
+            <hr class="border-slate-200 my-2">
+            <button id="nav-title" onclick="switchTab('title')" class="nav-btn w-full flex items-center px-4 py-3 text-right rounded-lg border-r-4 bg-blue-50 text-blue-700 border-blue-600 font-medium transition">
+                ۱. بررسی Title صفحات
+            </button>
+            <button id="nav-description" onclick="switchTab('description')" class="nav-btn w-full flex items-center px-4 py-3 text-right rounded-lg border-r-4 text-slate-600 border-transparent hover:bg-slate-50 transition">
+                ۲. بررسی Meta Description
+            </button>
+            <button id="nav-og_image" onclick="switchTab('og_image')" class="nav-btn w-full flex items-center px-4 py-3 text-right rounded-lg border-r-4 text-slate-600 border-transparent hover:bg-slate-50 transition">
+                ۳. استخراج OG Image
+            </button>
+            <button id="nav-source_encoding" onclick="switchTab('source_encoding')" class="nav-btn w-full flex items-center px-4 py-3 text-right rounded-lg border-r-4 text-slate-600 border-transparent hover:bg-slate-50 transition">
+                ۴. اسکن سورس (کاراکتر خراب)
+            </button>
+        </nav>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+        <div id="views-container" class="flex-1 p-8 overflow-y-auto">
+            
+            <div id="view-dashboard" class="view-panel flex flex-col h-full hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">بررسی روزانه لینک ها</h2>
+                    <button onclick="copyAllBaseUrls()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg transition font-medium shadow-sm">
+                        کپی تمام لینک های پایه
+                    </button>
+                </div>
+                
+                <div class="flex gap-6 h-full overflow-hidden">
+                    <div class="w-1/2 bg-white border border-slate-200 rounded-xl overflow-hidden flex flex-col shadow-sm">
+                        <div class="bg-slate-100 p-4 border-b border-slate-200">
+                            <h3 class="font-bold text-slate-700">سایت های امروز (<span id="todo-count">0</span>)</h3>
+                        </div>
+                        <div id="todo-list" class="overflow-y-auto p-4 space-y-3 flex-1 bg-slate-50/50">
+                        </div>
+                    </div>
+                    
+                    <div class="w-1/2 bg-white border border-emerald-200 rounded-xl overflow-hidden flex flex-col shadow-sm">
+                        <div class="bg-emerald-50 p-4 border-b border-emerald-200 flex justify-between items-center">
+                            <h3 class="font-bold text-emerald-800">انجام شده های امروز (<span id="done-count">0</span>)</h3>
+                            <button onclick="resetDoneList()" class="text-emerald-700 hover:text-emerald-900 text-sm font-medium">ریست کردن لیست</button>
+                        </div>
+                        <div id="done-list" class="overflow-y-auto p-4 space-y-3 flex-1 bg-emerald-50/30">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- پنل‌های دیگر دقیقاً مثل قبل مخفی هستند و با تب‌ها کار می‌کنند -->
+            <div id="view-title" class="view-panel flex flex-col h-full hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">بررسی Title صفحات</h2>
+                    <div class="flex space-x-reverse space-x-3">
+                        <button onclick="runTool('title')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg flex items-center transition shadow-sm">
+                            <span class="btn-text">شروع اسکن</span>
+                            <div class="spinner mr-2"></div>
+                        </button>
+                        <button onclick="deleteResult('title')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-5 py-2 rounded-lg transition font-medium">حذف گزارش</button>
+                        <button onclick="loadResult('title')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-lg transition font-medium">تازه سازی نتایج</button>
+                    </div>
+                </div>
+                <div class="results-container flex-1 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col"></div>
+            </div>
+
+            <div id="view-description" class="view-panel flex flex-col h-full hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">بررسی Meta Description</h2>
+                    <div class="flex space-x-reverse space-x-3">
+                        <button onclick="runTool('description')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg flex items-center transition shadow-sm">
+                            <span class="btn-text">شروع اسکن</span>
+                            <div class="spinner mr-2"></div>
+                        </button>
+                        <button onclick="deleteResult('description')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-5 py-2 rounded-lg transition font-medium">حذف گزارش</button>
+                        <button onclick="loadResult('description')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-lg transition font-medium">تازه سازی نتایج</button>
+                    </div>
+                </div>
+                <div class="results-container flex-1 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col"></div>
+            </div>
+
+            <div id="view-og_image" class="view-panel flex flex-col h-full hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">استخراج OG Image</h2>
+                    <div class="flex space-x-reverse space-x-3">
+                        <button onclick="runTool('og_image')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg flex items-center transition shadow-sm">
+                            <span class="btn-text">شروع استخراج</span>
+                            <div class="spinner mr-2"></div>
+                        </button>
+                        <button onclick="deleteResult('og_image')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-5 py-2 rounded-lg transition font-medium">حذف گزارش</button>
+                        <button onclick="loadResult('og_image')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-lg transition font-medium">تازه سازی نتایج</button>
+                    </div>
+                </div>
+                <div class="results-container flex-1 overflow-hidden flex flex-col"></div>
+            </div>
+
+            <div id="view-source_encoding" class="view-panel flex flex-col h-full hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold">اسکن سورس (کاراکتر خراب)</h2>
+                    <div class="flex space-x-reverse space-x-3">
+                        <button onclick="runTool('source_encoding')" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg flex items-center transition shadow-sm">
+                            <span class="btn-text">شروع اسکن</span>
+                            <div class="spinner mr-2"></div>
+                        </button>
+                        <button onclick="deleteResult('source_encoding')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 px-5 py-2 rounded-lg transition font-medium">حذف گزارش</button>
+                        <button onclick="loadResult('source_encoding')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-lg transition font-medium">تازه سازی نتایج</button>
+                    </div>
+                </div>
+                <div class="results-container flex-1 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden flex flex-col"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        window.currentOgSuccesses = [];
+        window.allBaseUrls = [];
+        
+        function checkAndResetDailyCache() {
+            const today = new Date().toDateString();
+            const lastDate = localStorage.getItem('qa_dashboard_date');
+            if (lastDate !== today) {
+                localStorage.setItem('qa_dashboard_done', JSON.stringify([]));
+                localStorage.setItem('qa_dashboard_date', today);
+            }
+        }
+
+        async function loadDashboard() {
+            checkAndResetDailyCache();
+            
+            try {
+                const res = await fetch('/urls');
+                const data = await res.json();
+                
+                // استخراج لینک‌ها برای دکمه کپی
+                window.allBaseUrls = data.map(item => {
+                    let u = item.formatted_url;
+                    if(u.endsWith('/')) u = u.slice(0, -1);
+                    return u;
+                });
+                
+                const doneUrls = JSON.parse(localStorage.getItem('qa_dashboard_done')) || [];
+                
+                const todoListEl = document.getElementById('todo-list');
+                const doneListEl = document.getElementById('done-list');
+                
+                todoListEl.innerHTML = '';
+                doneListEl.innerHTML = '';
+                
+                let todoCount = 0;
+                let doneCount = 0;
+
+                data.forEach(item => {
+                    let formattedUrl = item.formatted_url;
+                    if(formattedUrl.endsWith('/')) formattedUrl = formattedUrl.slice(0, -1);
+                    
+                    const isDone = doneUrls.includes(formattedUrl);
+                    
+                    // ساختن بج‌های رنگی (Badges) برای گزارش خطاها
+                    let badgesHtml = '';
+                    if (item.errors && item.errors.length > 0) {
+                        item.errors.forEach(err => {
+                            badgesHtml += `<span class="bg-rose-100 text-rose-700 text-[10px] font-bold px-1.5 py-0.5 rounded border border-rose-200">${err} ❌</span>`;
+                        });
+                    } else {
+                        // اگر سایت هیچ خطایی در هیچ فایلی نداشت
+                        badgesHtml = `<span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-1.5 py-0.5 rounded border border-emerald-200">بدون خطا در تست‌ها ✔️</span>`;
+                    }
+                    
+                    if (isDone) {
+                        doneCount++;
+                        doneListEl.innerHTML += `
+                            <div class="bg-white border border-emerald-100 p-3 rounded-lg flex justify-between items-center opacity-80 gap-4">
+                                <div class="flex flex-col gap-1 overflow-hidden">
+                                    <span class="text-sm text-slate-600 font-medium truncate" dir="ltr">${formattedUrl}</span>
+                                    <div class="flex gap-1 flex-wrap">${badgesHtml}</div>
+                                </div>
+                                <span class="text-emerald-600 text-xs font-bold bg-emerald-50 px-2 py-1 rounded shrink-0">انجام شده</span>
+                            </div>
+                        `;
+                    } else {
+                        todoCount++;
+                        todoListEl.innerHTML += `
+                            <div class="bg-white border border-slate-200 p-3 rounded-lg flex justify-between items-center hover:border-blue-300 transition shadow-sm group gap-4">
+                                <div class="flex flex-col gap-1 overflow-hidden">
+                                    <span class="text-sm text-slate-700 font-medium truncate" dir="ltr">${formattedUrl}</span>
+                                    <div class="flex gap-1 flex-wrap">${badgesHtml}</div>
+                                </div>
+                                <div class="flex gap-2 shrink-0">
+                                    <button onclick="copyDomainName('${formattedUrl}')" class="bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 text-sm font-medium px-3 py-1.5 rounded transition" title="کپی دامنه خالص">
+                                        کپی نام
+                                    </button>
+                                    <button onclick="openCheckTabs('${formattedUrl}')" class="bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 text-sm font-medium px-4 py-1.5 rounded transition">
+                                        باز کردن ۳ تب
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                document.getElementById('todo-count').innerText = todoCount;
+                document.getElementById('done-count').innerText = doneCount;
+                
+            } catch (err) {
+                console.error("خطا در بارگذاری لیست آدرس ها", err);
+            }
+        }
+
+        function copyDomainName(baseUrl) {
+            try {
+                const urlObj = new URL(baseUrl);
+                const domain = urlObj.hostname.replace('www.', '');
+                navigator.clipboard.writeText(domain);
+            } catch (e) {
+                alert("فرمت URL نامعتبر است.");
+            }
+        }
+
+        function openCheckTabs(baseUrl) {
+            try {
+                const urlObj = new URL(baseUrl);
+                const domain = urlObj.hostname.replace('www.', '');
+                
+                const url1 = baseUrl;
+                const url2 = `${baseUrl}/robots.txt`;
+                const url3 = `https://www.google.com/search?q=site:${domain}&authuser=3`;
+                
+                window.open(url1, '_blank');
+                window.open(url2, '_blank');
+                window.open(url3, '_blank');
+                
+                const doneUrls = JSON.parse(localStorage.getItem('qa_dashboard_done')) || [];
+                if (!doneUrls.includes(baseUrl)) {
+                    doneUrls.push(baseUrl);
+                    localStorage.setItem('qa_dashboard_done', JSON.stringify(doneUrls));
+                }
+                
+                loadDashboard();
+            } catch (e) {
+                alert("فرمت URL نامعتبر است: " + baseUrl);
+            }
+        }
+
+        function resetDoneList() {
+            if(confirm('مطمئن هستید که می خواهید لیست انجام شده ها پاک شود؟')) {
+                localStorage.setItem('qa_dashboard_done', JSON.stringify([]));
+                loadDashboard();
+            }
+        }
+
+        function copyAllBaseUrls() {
+            if(window.allBaseUrls.length === 0) return;
+            const links = window.allBaseUrls.join('\n');
+            navigator.clipboard.writeText(links).then(() => {
+                alert('تمام لینک های پایه کپی شدند!');
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.view-panel').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('bg-blue-50', 'text-blue-700', 'border-blue-600');
+                el.classList.add('text-slate-600', 'border-transparent');
+            });
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            activeBtn.classList.remove('text-slate-600', 'border-transparent');
+            activeBtn.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-600');
+            
+            if (tabId === 'dashboard') {
+                loadDashboard();
+            } else {
+                loadResult(tabId);
+            }
+        }
+
+        async function runTool(toolId) {
+            const card = document.getElementById(`view-${toolId}`);
+            const btn = card.querySelector('button');
+            const text = btn.querySelector('.btn-text');
+            const spinner = btn.querySelector('.spinner');
+            
+            text.innerText = 'در حال اجرا...';
+            spinner.style.display = 'block';
+            btn.disabled = true;
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            try {
+                const res = await fetch(`/run/${toolId}`, { method: 'POST' });
+                const data = await res.json();
+                loadResult(toolId);
+                // اگر کاربر ابزاری را ران کرد، اطلاعات داشبورد هم در پس‌زمینه آپدیت شود
+                loadDashboard();
+            } catch (err) {
+                alert('خطا در برقراری ارتباط با سرور.');
+            } finally {
+                text.innerText = 'شروع اسکن';
+                spinner.style.display = 'none';
+                btn.disabled = false;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        }
+
+        async function deleteResult(toolId) {
+            if(confirm('آیا مطمئن هستید که می خواهید گزارش قبلی پاک شود؟')) {
+                const res = await fetch(`/delete/${toolId}`, { method: 'POST' });
+                const data = await res.json();
+                loadResult(toolId);
+                loadDashboard(); // ریست کردن بج‌ها در داشبورد
+            }
+        }
+
+        function copyText(txt) {
+            navigator.clipboard.writeText(txt);
+        }
+
+        function copyAllOg() {
+            if(window.currentOgSuccesses.length === 0) return;
+            const links = window.currentOgSuccesses.map(i => i['Image URL']).join('\n');
+            navigator.clipboard.writeText(links).then(() => {
+                alert('تمامی لینک های عکس کپی شدند!');
+            });
+        }
+
+        async function loadResult(toolId) {
+            const res = await fetch(`/results/${toolId}`);
+            const data = await res.json();
+            const container = document.querySelector(`#view-${toolId} .results-container`);
+            
+            container.innerHTML = '';
+
+            if (data.status === 'empty' || data.data.length === 0) {
+                container.innerHTML = '<div class="flex-1 flex items-center justify-center text-slate-400 font-medium">هیچ گزارشی یافت نشد. دکمه شروع را بزنید.</div>';
+                return;
+            }
+
+            if (toolId === 'og_image') {
+                const successes = data.data.filter(i => i.Status === 'سالم');
+                const errors = data.data.filter(i => i.Status === 'خطا');
+                window.currentOgSuccesses = successes;
+
+                let html = '<div class="flex gap-6 h-full">';
+                
+                html += `
+                <div class="w-2/3 bg-white border border-green-200 rounded-xl overflow-hidden flex flex-col shadow-sm">
+                    <div class="bg-green-50 p-4 border-b border-green-200 flex justify-between items-center">
+                        <h3 class="font-bold text-green-800">عکس های پیدا شده (${successes.length})</h3>
+                        <button onclick="copyAllOg()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded text-sm transition">کپی همه لینک ها</button>
+                    </div>
+                    <div class="overflow-y-auto p-4 space-y-2 flex-1 bg-green-50/30">
+                `;
+                successes.forEach(item => {
+                    html += `
+                        <div class="bg-white border border-green-100 p-3 rounded flex justify-between items-center hover:border-green-300 transition">
+                            <span class="text-sm text-slate-700 truncate" dir="ltr" title="${item['Image URL']}">${item['Image URL']}</span>
+                            <button onclick="copyText('${item['Image URL']}')" class="text-green-600 hover:text-green-800 text-sm font-medium mr-4 bg-green-50 px-3 py-1 rounded">کپی</button>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+
+                html += `
+                <div class="w-1/3 bg-white border border-rose-200 rounded-xl overflow-hidden flex flex-col shadow-sm">
+                    <div class="bg-rose-50 p-4 border-b border-rose-200">
+                        <h3 class="font-bold text-rose-800">مشکل دار / پیدا نشده (${errors.length})</h3>
+                    </div>
+                    <div class="overflow-y-auto p-4 space-y-2 flex-1 bg-rose-50/30">
+                `;
+                errors.forEach(item => {
+                    html += `
+                        <div class="bg-white border border-rose-100 p-3 rounded text-sm text-rose-700 flex flex-col gap-1">
+                            <span class="font-bold border-b border-rose-200 pb-1" dir="ltr">${item.URL}</span>
+                            <span>${item['Image URL']}</span>
+                        </div>
+                    `;
+                });
+                html += `</div></div></div>`;
+
+                container.innerHTML = html;
+                return;
+            }
+
+            let html = '<div class="overflow-y-auto flex-1"><table class="w-full text-right text-sm"><thead class="bg-slate-100 sticky top-0 border-b border-slate-200 shadow-sm text-slate-700"><tr>';
+            const keys = Object.keys(data.data[0]);
+            keys.forEach(key => html += `<th class="p-4 font-bold">${key}</th>`);
+            html += '</tr></thead><tbody class="divide-y divide-slate-100">';
+            
+            data.data.forEach(row => {
+                const statusVal = row['Status'] || '';
+                let rowClass = 'hover:bg-slate-50 transition';
+                
+                if (statusVal.includes('سالم') || statusVal.includes('بدون کاراکتر')) {
+                    rowClass = 'bg-emerald-50/60 hover:bg-emerald-100 transition';
+                } else if (statusVal.includes('خطا') || statusVal.includes('نیاز به بررسی')) {
+                    rowClass = 'bg-rose-50 hover:bg-rose-100 transition';
+                }
+
+                html += `<tr class="${rowClass}">`;
+                keys.forEach(key => {
+                    html += `<td class="p-4 align-top">`;
+                    if(key === 'URL') {
+                        html += `<div class="max-w-xs truncate text-slate-500 font-medium" dir="ltr" title="${row[key]}">${row[key]}</div>`;
+                    } else if (key === 'Status') {
+                        let statusColor = (statusVal.includes('سالم') || statusVal.includes('بدون کاراکتر')) ? 'text-emerald-700' : ((statusVal.includes('خطا') || statusVal.includes('نیاز به بررسی')) ? 'text-rose-700' : 'text-slate-700');
+                        html += `<span class="font-bold ${statusColor}">${row[key]}</span>`;
+                    } else {
+                        html += `<div class="max-w-xl text-slate-800 break-words">${row[key]}</div>`;
+                    }
+                    html += `</td>`;
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table></div>';
+            
+            container.innerHTML = html;
+        }
+
+        window.onload = () => switchTab('dashboard');
+    </script>
+</body>
+</html>
