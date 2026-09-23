@@ -10,8 +10,7 @@ import arabic_reshaper
 from bidi.algorithm import get_display
 
 def print_fa(text):
-    reshaped = arabic_reshaper.reshape(text)
-    bidi_text = get_display(reshaped)
+    bidi_text = get_display(arabic_reshaper.reshape(text))
     print(bidi_text)
 
 BAD_WORDS = ['just a moment', 'attention required', 'access denied', 'یک لحظه']
@@ -19,19 +18,18 @@ BAD_WORDS = ['just a moment', 'attention required', 'access denied', 'یک لح�
 def is_blocked_page(status_code, title_text):
     if status_code >= 400: return True
     if title_text:
-        title_lower = title_text.lower()
         for word in BAD_WORDS:
-            if word in title_lower: return True
+            if word in title_text.lower(): return True
     return False
+
+def safe_csv(text):
+    if text and str(text).startswith(('=', '+', '-', '@')): return "'" + str(text)
+    return text
 
 def block_heavy_resources(route):
     excluded_types = ["image", "media", "font", "stylesheet"]
     if route.request.resource_type in excluded_types: route.abort()
     else: route.continue_()
-
-def safe_csv(text):
-    if text and str(text).startswith(('=', '+', '-', '@')): return "'" + str(text)
-    return text
 
 def extract_og_images():
     try:
@@ -44,19 +42,13 @@ def extract_og_images():
     report_file = 'og_image_report.csv'
     with open(report_file, 'w', newline='', encoding='utf-8-sig') as f:
         csv.DictWriter(f, fieldnames=["URL", "Image URL", "Status"]).writeheader()
-    
-    js_code = '''
-    () => {
-        let meta = document.querySelector('meta[property="og:image" i]') || document.querySelector('meta[name="og:image" i]');
-        return meta ? meta.content : "";
-    }
-    '''
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         context = browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-            extra_http_headers={"Accept-Language": "fa-IR,fa;q=0.9,en-US;q=0.8,en;q=0.7"}
+            ignore_https_errors=True,
+            viewport={"width": 1280, "height": 720}
         )
 
         for url in urls:
@@ -69,29 +61,46 @@ def extract_og_images():
             result = {"URL": url, "Image URL": "-", "Status": ""}
             
             try:
-                response = page.goto(url, wait_until='domcontentloaded', timeout=45000)
+                response = page.goto(url, wait_until='domcontentloaded', timeout=60000)
                 status_code = response.status if response else 200
                 page_title = page.title()
                 
                 if is_blocked_page(status_code, page_title):
-                    result["Status"] = "خطا"
-                    result["Image URL"] = "مسدود یا ارور سرور"
+                    result["Status"] = "خطا: مسدود (کلودفلر/سرور)"
                 else:
-                    og_image = page.evaluate(js_code)
+                    og_image = page.evaluate('''() => {
+                        let meta = document.querySelector('meta[property="og:image" i]') || document.querySelector('meta[name="og:image" i]');
+                        return meta ? meta.content : null;
+                    }''')
+                    
                     if og_image and str(og_image).strip():
                         full_image_url = urljoin(page.url, str(og_image).strip())
                         result["Image URL"] = safe_csv(full_image_url)
-                        result["Status"] = "سالم"
+                        
+                        # --- راهکار فوق‌حرفه‌ای QA: رندر در خود مرورگر ---
+                        page.unroute("**/*")
+                        
+                        img_status = page.evaluate('''async (imgUrl) => {
+                            return new Promise((resolve) => {
+                                let img = new Image();
+                                img.onload = () => resolve("سالم");
+                                img.onerror = () => resolve("خطا: پیدا نشد (404/مخدوش)");
+                                img.src = imgUrl;
+                            });
+                        }''', full_image_url)
+                        
+                        result["Status"] = img_status
                     else:
-                        result["Status"] = "خطا"
-                        result["Image URL"] = "تگ خالی یا ناموجود"
+                        result["Status"] = "خطا: تگ ناموجود"
                         
             except TimeoutError:
-                result["Status"] = "خطا"
-                result["Image URL"] = "تایم‌اوت (نیاز به بررسی دستی)"
+                result["Status"] = "خطا: تایم‌اوت سایت"
             except Exception as e:
-                result["Status"] = "خطا"
-                result["Image URL"] = f"عدم دسترسی ({str(e).split()[0][:30]})"
+                err_str = str(e).lower()
+                if "net::" in err_str:
+                    result["Status"] = "خطا: قطعی شبکه/VPN"
+                else:
+                    result["Status"] = "خطا: باز نشد"
             finally:
                 page.close()
 
