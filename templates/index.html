@@ -1,65 +1,57 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="rtl" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>داشبورد اتوماسیون QA</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
     <style>
-        body { font-family: 'Vazirmatn', sans-serif; background-color: #f8fafc; }
-        .spinner { border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; width: 16px; height: 16px; animation: spin 0.8s linear infinite; display: none; }
+        body { font-family: 'Vazirmatn', sans-serif; transition: background-color 0.3s ease; }
+        .spinner { border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: currentColor; width: 16px; height: 16px; animation: spin 0.8s linear infinite; display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
         .drawer-open { transform: translateX(0); }
         .drawer-closed { transform: translateX(-100%); }
-        .glass-header { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(8px); }
     </style>
 </head>
-<body class="text-slate-800 h-screen overflow-hidden flex relative selection:bg-indigo-100 selection:text-indigo-900">
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-200 h-screen overflow-hidden flex relative selection:bg-indigo-100 selection:text-indigo-900">
 
-    <aside class="w-[280px] bg-white border-l border-slate-200 shadow-[2px_0_15px_rgba(0,0,0,0.03)] flex flex-col z-20 transition-all">
-        <div class="p-6 border-b border-slate-100 flex items-center gap-3">
-            <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-lg shadow-indigo-200">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+    <aside class="w-[280px] bg-white dark:bg-slate-800 border-l border-slate-200 dark:border-slate-700 shadow-sm flex flex-col z-20 transition-all">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 text-white p-2 rounded-xl shadow-md">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-tight text-slate-800 dark:text-white">QA Master</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">اتوماسیون ممیزی</p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-xl font-black text-slate-800 tracking-tight">QA Master</h1>
-                <p class="text-xs text-slate-500 font-medium">اتوماسیون ممیزی</p>
-            </div>
+            <button onclick="toggleDarkMode()" class="text-slate-400 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors p-2 bg-slate-50 dark:bg-slate-700 rounded-lg">
+                <svg id="theme-icon-moon" class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                <svg id="theme-icon-sun" class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+            </button>
         </div>
         
         <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
-            <button id="nav-dashboard" onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all font-medium">
+            <button id="nav-dashboard" onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-medium">
                 <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
                 داشبورد اصلی
             </button>
-            
             <div class="pt-4 pb-2 px-4 text-xs font-bold text-slate-400 tracking-wider">ابزارهای اسکن</div>
             
-            <button id="nav-title" onclick="switchTab('title')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 hover:bg-slate-50 transition-all font-medium">
-                <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
-                بررسی Title
-            </button>
-            <button id="nav-description" onclick="switchTab('description')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 hover:bg-slate-50 transition-all font-medium">
-                <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg>
-                بررسی Description
-            </button>
-            <button id="nav-og_image" onclick="switchTab('og_image')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 hover:bg-slate-50 transition-all font-medium">
-                <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                تصویر OG
-            </button>
-            <button id="nav-source_encoding" onclick="switchTab('source_encoding')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 hover:bg-slate-50 transition-all font-medium">
-                <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                اسکن سورس کد
-            </button>
-            <button id="nav-favicon" onclick="switchTab('favicon')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 hover:bg-slate-50 transition-all font-medium">
-                <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
-                بررسی Favicon
-            </button>
+            <button id="nav-title" onclick="switchTab('title')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-medium"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg> بررسی Title</button>
+            <button id="nav-description" onclick="switchTab('description')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-medium"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg> بررسی Description</button>
+            <button id="nav-og_image" onclick="switchTab('og_image')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-medium"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> تصویر OG</button>
+            <button id="nav-source_encoding" onclick="switchTab('source_encoding')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-medium"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg> اسکن سورس کد</button>
+            <button id="nav-favicon" onclick="switchTab('favicon')" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-right rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all font-medium"><svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg> بررسی Favicon</button>
         </nav>
     </aside>
 
@@ -67,40 +59,39 @@
         <div id="views-container" class="flex-1 p-8 overflow-y-auto">
             
             <div id="view-dashboard" class="view-panel flex flex-col h-full hidden fade-in">
-                <div class="flex justify-between items-center mb-8 glass-header p-5 rounded-2xl shadow-sm border border-slate-100">
+                <div class="flex justify-between items-center mb-8 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
                     <div>
-                        <h2 class="text-2xl font-black text-slate-800">بررسی روزانه لینک‌ها</h2>
-                        <p class="text-sm text-slate-500 mt-1">مدیریت ممیزی دستی و تلفیق با ربات‌ها</p>
+                        <h2 class="text-2xl font-black text-slate-800 dark:text-white">بررسی روزانه لینک‌ها</h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">مدیریت ممیزی دستی و تلفیق با ربات‌ها</p>
                     </div>
-                    <button onclick="copyAllBaseUrls()" class="bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 hover:-translate-y-0.5 text-white px-5 py-2.5 rounded-xl transition-all font-medium flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                        کپی تمام لینک‌ها
-                    </button>
+                    <div class="flex space-x-reverse space-x-3">
+                        <button onclick="openAllBaseUrls()" class="bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 px-5 py-2.5 rounded-xl transition-all font-bold flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            باز کردن همه لینک‌ها
+                        </button>
+                        <button onclick="archiveData()" class="bg-amber-100 hover:bg-amber-200 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400 px-5 py-2.5 rounded-xl transition-all font-bold flex items-center gap-2">بستن شیفت (آرشیو)</button>
+                        <button id="btn-run-all" onclick="runAllToolsConcurrently()" class="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-200 dark:shadow-none px-6 py-2.5 rounded-xl transition-all font-bold flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            اجرای همه ابزارها
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="flex gap-6 h-full overflow-hidden">
                     <div class="w-1/2 flex flex-col">
                         <div class="flex justify-between items-end mb-3 px-1">
-                            <h3 class="font-bold text-slate-700 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm"></span>
-                                در صف بررسی
-                            </h3>
-                            <span class="bg-blue-100 text-blue-700 font-black text-xs px-2.5 py-1 rounded-full" id="todo-count">0</span>
+                            <h3 class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm"></span> در صف بررسی</h3>
+                            <span class="bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400 font-black text-xs px-2.5 py-1 rounded-full" id="todo-count">0</span>
                         </div>
                         <div id="todo-list" class="overflow-y-auto p-2 space-y-3 flex-1 text-right" dir="rtl"></div>
                     </div>
                     
                     <div class="w-1/2 flex flex-col">
                         <div class="flex justify-between items-end mb-3 px-1">
-                            <h3 class="font-bold text-slate-700 flex items-center gap-2">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></span>
-                                انجام شده‌ها
-                            </h3>
+                            <h3 class="font-bold text-slate-700 dark:text-slate-300 flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></span> انجام شده‌ها</h3>
                             <div class="flex items-center gap-3">
-                                <span class="bg-emerald-100 text-emerald-700 font-black text-xs px-2.5 py-1 rounded-full" id="done-count">0</span>
-                                <button onclick="resetDoneList()" class="text-slate-400 hover:text-rose-500 bg-white border border-slate-200 hover:border-rose-200 p-1.5 rounded-lg transition-all shadow-sm" title="ریست کردن لیست">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
+                                <span class="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400 font-black text-xs px-2.5 py-1 rounded-full" id="done-count">0</span>
+                                <button onclick="resetDoneList()" class="text-slate-400 hover:text-rose-500 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-1.5 rounded-lg transition-all" title="ریست کردن لیست"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                             </div>
                         </div>
                         <div id="done-list" class="overflow-y-auto p-2 space-y-3 flex-1 text-right" dir="rtl"></div>
@@ -111,25 +102,21 @@
             <script>
                 function generateToolHeader(title, desc, toolId) {
                     return `
-                        <div class="flex justify-between items-center mb-8 glass-header p-5 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex justify-between items-center mb-8 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
                             <div>
-                                <h2 class="text-2xl font-black text-slate-800">${title}</h2>
-                                <p class="text-sm text-slate-500 mt-1">${desc}</p>
+                                <h2 class="text-2xl font-black text-slate-800 dark:text-white">${title}</h2>
+                                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">${desc}</p>
                             </div>
                             <div class="flex space-x-reverse space-x-3">
-                                <button onclick="runTool('${toolId}')" class="bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 hover:-translate-y-0.5 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all font-medium">
+                                <button onclick="runToolProcess('${toolId}')" class="btn-run bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all font-medium">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     <span class="btn-text">شروع اسکن</span><div class="spinner"></div>
                                 </button>
-                                <button onclick="loadResult('${toolId}')" class="bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl transition-all font-medium" title="تازه سازی">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                </button>
-                                <button onclick="deleteResult('${toolId}')" class="bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 px-4 py-2.5 rounded-xl transition-all font-medium" title="حذف گزارش">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
+                                <button onclick="loadResult('${toolId}')" class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-xl transition-all font-medium"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></button>
+                                <button onclick="deleteResult('${toolId}')" class="bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-500/20 px-4 py-2.5 rounded-xl transition-all font-medium"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                             </div>
                         </div>
-                        <div class="results-container flex-1 bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col text-right"></div>
+                        <div class="results-container flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm overflow-hidden flex flex-col text-right"></div>
                     `;
                 }
             </script>
@@ -143,71 +130,105 @@
         </div>
     </main>
 
-    <div id="drawer-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 hidden transition-opacity opacity-0" onclick="closeDrawer()"></div>
+    <div id="drawer-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 hidden transition-opacity opacity-0" onclick="closeDrawer()"></div>
 
-    <div id="site-drawer" class="fixed top-0 left-0 h-full w-[450px] bg-slate-50 shadow-2xl z-50 drawer-closed transition-transform duration-300 ease-out border-r border-slate-200 flex flex-col text-right">
-        <div class="p-6 bg-white border-b border-slate-100 flex justify-between items-center shadow-sm relative z-10">
-            <h2 class="text-lg font-black text-slate-800 truncate w-full text-right" id="drawer-title">عنوان سایت</h2>
-            <button onclick="closeDrawer()" class="text-slate-400 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-full p-1.5 transition-colors mr-3 shrink-0">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+    <div id="site-drawer" class="fixed top-0 left-0 h-full w-[450px] bg-slate-50 dark:bg-slate-900 shadow-2xl z-50 drawer-closed transition-transform duration-300 ease-out border-r border-slate-200 dark:border-slate-700 flex flex-col text-right">
+        <div class="p-6 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center shadow-sm relative z-10">
+            <h2 class="text-lg font-black text-slate-800 dark:text-white truncate flex-1 text-right" id="drawer-title">عنوان سایت</h2>
+            <div class="flex items-center gap-2 shrink-0">
+                <button id="btn-drawer-retry" class="text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 px-3 py-1.5 rounded-lg transition-colors font-bold text-xs flex items-center gap-1.5" title="تست مجدد هوشمند این سایت">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>تست مجدد
+                </button>
+                <button onclick="closeDrawer()" class="text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-full p-1.5 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
         </div>
-        
         <div class="flex-1 overflow-y-auto p-6 space-y-5" id="drawer-content"></div>
-
-        <div class="p-6 bg-white border-t border-slate-100">
-            <button id="drawer-btn-tabs" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md hover:shadow-indigo-200 flex items-center justify-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                باز کردن ۳ تب بررسی
+        <div class="p-6 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700">
+            <button id="drawer-btn-tabs" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl transition-all shadow-md flex items-center justify-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> باز کردن ۳ تب بررسی
             </button>
         </div>
     </div>
 
     <script>
-        document.getElementById('view-title').innerHTML = generateToolHeader('بررسی Title صفحات', 'آنالیز تگ‌های عنوان برای کلمات ممنوعه و ساختار', 'title');
+        document.getElementById('view-title').innerHTML = generateToolHeader('بررسی Title صفحات', 'آنالیز تگ‌های عنوان برای کلمات ممنوعه', 'title');
         document.getElementById('view-description').innerHTML = generateToolHeader('بررسی Description', 'بررسی طول و سلامت متای توضیحات', 'description');
-        document.getElementById('view-source_encoding').innerHTML = generateToolHeader('اسکن سورس کد', 'جستجوی کاراکترهای خراب و بهم ریختگی', 'source_encoding');
-        
-        document.getElementById('view-og_image').innerHTML = `
-            <div class="flex justify-between items-center mb-8 glass-header p-5 rounded-2xl shadow-sm border border-slate-100 text-right">
-                <div>
-                    <h2 class="text-2xl font-black text-slate-800">استخراج تصویر OG</h2>
-                    <p class="text-sm text-slate-500 mt-1">تست سلامت تصاویر اشتراک گذاری</p>
-                </div>
-                <div class="flex space-x-reverse space-x-3">
-                    <button onclick="runTool('og_image')" class="bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 hover:-translate-y-0.5 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all font-medium"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="btn-text">شروع اسخراج</span><div class="spinner"></div></button>
-                    <button onclick="loadResult('og_image')" class="bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl transition-all font-medium" title="تازه سازی"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></button>
-                    <button onclick="deleteResult('og_image')" class="bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 px-4 py-2.5 rounded-xl transition-all font-medium" title="حذف گزارش"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-                </div>
-            </div>
-            <div class="results-container flex-1 overflow-hidden flex flex-col text-right"></div>
-        `;
-
-        document.getElementById('view-favicon').innerHTML = `
-            <div class="flex justify-between items-center mb-8 glass-header p-5 rounded-2xl shadow-sm border border-slate-100 text-right">
-                <div>
-                    <h2 class="text-2xl font-black text-slate-800">بررسی Favicon</h2>
-                    <p class="text-sm text-slate-500 mt-1">تست استخراج لینک فوآیکون</p>
-                </div>
-                <div class="flex space-x-reverse space-x-3">
-                    <button onclick="runTool('favicon')" class="bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 hover:-translate-y-0.5 text-white px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all font-medium"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg><span class="btn-text">شروع اسخراج</span><div class="spinner"></div></button>
-                    <button onclick="loadResult('favicon')" class="bg-white border border-slate-200 hover:bg-slate-50 hover:border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl transition-all font-medium" title="تازه سازی"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg></button>
-                    <button onclick="deleteResult('favicon')" class="bg-rose-50 text-rose-600 hover:bg-rose-100 hover:text-rose-700 px-4 py-2.5 rounded-xl transition-all font-medium" title="حذف گزارش"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
-                </div>
-            </div>
-            <div class="results-container flex-1 overflow-hidden flex flex-col text-right"></div>
-        `;
+        document.getElementById('view-source_encoding').innerHTML = generateToolHeader('اسکن سورس کد', 'جستجوی کاراکترهای خراب', 'source_encoding');
+        document.getElementById('view-og_image').innerHTML = generateToolHeader('استخراج تصویر OG', 'تست سلامت تصاویر اشتراک گذاری', 'og_image');
+        document.getElementById('view-favicon').innerHTML = generateToolHeader('بررسی Favicon', 'تست استخراج لینک فوآیکون', 'favicon');
 
         window.currentOgSuccesses = [];
         window.allBaseUrls = [];
         window.fullDashboardData = []; 
         
+        function toggleDarkMode() {
+            const htmlClasses = document.documentElement.classList;
+            if(htmlClasses.contains('dark')) { htmlClasses.remove('dark'); localStorage.setItem('theme', 'light'); } 
+            else { htmlClasses.add('dark'); localStorage.setItem('theme', 'dark'); }
+        }
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+
         function checkAndResetDailyCache() {
             const today = new Date().toDateString();
             const lastDate = localStorage.getItem('qa_dashboard_date');
-            if (lastDate !== today) {
-                localStorage.setItem('qa_dashboard_done', JSON.stringify([]));
-                localStorage.setItem('qa_dashboard_date', today);
+            if (lastDate !== today) { localStorage.setItem('qa_dashboard_done', JSON.stringify([])); localStorage.setItem('qa_dashboard_date', today); }
+        }
+
+        async function archiveData() {
+            if(!confirm('شیفت بسته و پنل صفر شود؟')) return;
+            try {
+                const res = await fetch('/archive', { method: 'POST' });
+                const data = await res.json();
+                alert(data.message);
+                loadDashboard();
+            } catch(e) { alert('خطا در سیستم'); }
+        }
+
+        async function runAllToolsConcurrently() {
+            const tools = ['title', 'description', 'og_image', 'source_encoding', 'favicon'];
+            const masterBtn = document.getElementById('btn-run-all');
+            const originalText = masterBtn.innerHTML;
+            masterBtn.innerHTML = '<div class="spinner !border-white !border-t-transparent !block mx-auto"></div>';
+            masterBtn.disabled = true;
+
+            // روشن کردن ظاهر تمام تب‌ها همزمان
+            tools.forEach(tool => {
+                const card = document.getElementById(`view-${tool}`);
+                if(card) {
+                    const btn = card.querySelector('.btn-run');
+                    btn.querySelector('.btn-text').innerText = 'در حال اجرا...';
+                    btn.querySelector('.spinner').style.display = 'block';
+                    btn.disabled = true;
+                    btn.classList.add('opacity-75', 'cursor-not-allowed');
+                }
+            });
+
+            try {
+                // ارسال درخواست‌ها به صورت کاملاً موازی به سرور پایتون
+                const promises = tools.map(tool => fetch(`/run/${tool}`, { method: 'POST' }));
+                await Promise.all(promises);
+                await loadDashboard();
+                alert('اجرای همزمان تمام تست‌ها با موفقیت به پایان رسید!');
+            } catch(e) {
+                alert('خطا در اجرای همزمان');
+            } finally {
+                masterBtn.innerHTML = originalText;
+                masterBtn.disabled = false;
+                
+                // خاموش کردن ظاهر تمام تب‌ها و ریلود دیتای نهایی
+                tools.forEach(tool => {
+                    const card = document.getElementById(`view-${tool}`);
+                    if(card) {
+                        const btn = card.querySelector('.btn-run');
+                        btn.querySelector('.btn-text').innerText = 'شروع اسکن';
+                        btn.querySelector('.spinner').style.display = 'none';
+                        btn.disabled = false;
+                        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                        loadResult(tool); 
+                    }
+                });
             }
         }
 
@@ -216,21 +237,13 @@
             try {
                 const res = await fetch('/urls');
                 window.fullDashboardData = await res.json();
-                
-                window.allBaseUrls = window.fullDashboardData.map(item => {
-                    let u = item.formatted_url;
-                    return u.endsWith('/') ? u.slice(0, -1) : u;
-                });
+                window.allBaseUrls = window.fullDashboardData.map(item => { let u = item.formatted_url; return u.endsWith('/') ? u.slice(0, -1) : u; });
                 
                 const doneUrls = JSON.parse(localStorage.getItem('qa_dashboard_done')) || [];
                 const todoListEl = document.getElementById('todo-list');
                 const doneListEl = document.getElementById('done-list');
-                
-                todoListEl.innerHTML = '';
-                doneListEl.innerHTML = '';
-                
-                let todoCount = 0;
-                let doneCount = 0;
+                todoListEl.innerHTML = ''; doneListEl.innerHTML = '';
+                let todoCount = 0; let doneCount = 0;
 
                 window.fullDashboardData.forEach((item, index) => {
                     let formattedUrl = item.formatted_url;
@@ -239,68 +252,43 @@
                     
                     let badgesHtml = '';
                     if (item.errors && item.errors.length > 0) {
-                        item.errors.forEach(err => {
-                            badgesHtml += `<span class="bg-rose-50 text-rose-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-200 shadow-sm">${err}</span>`;
-                        });
+                        item.errors.forEach(err => badgesHtml += `<span class="bg-rose-50 dark:bg-rose-500/20 text-rose-600 dark:text-rose-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-200 dark:border-rose-500/30">${err}</span>`);
                     } else {
-                        badgesHtml = `<span class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 shadow-sm">بدون خطا</span>`;
+                        badgesHtml = `<span class="bg-emerald-50 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-500/30">بدون خطا</span>`;
                     }
                     
-                    const cardClass = `bg-white border border-slate-200 p-4 rounded-xl flex justify-between items-center transition-all duration-200 hover:shadow-md cursor-pointer text-right w-full ${isDone ? 'opacity-70 border-emerald-100 hover:border-emerald-300' : 'hover:border-indigo-300'}`;
+                    const cardClass = `bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-4 rounded-xl flex justify-between items-center transition-all duration-200 hover:shadow-md cursor-pointer text-right w-full ${isDone ? 'opacity-60 border-emerald-100 dark:border-emerald-900 hover:border-emerald-300' : 'hover:border-indigo-300 dark:hover:border-indigo-500'}`;
                     
-                    let actionsHtml = '';
-                    if (isDone) {
-                        actionsHtml = `<span class="text-emerald-500 bg-emerald-50 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-emerald-100 flex items-center gap-1 shrink-0"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>انجام شده</span>`;
-                    } else {
-                        actionsHtml = `
-                            <div class="flex gap-2 shrink-0">
-                                <button onclick="event.stopPropagation(); copyDomainName('${formattedUrl}')" class="bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:text-indigo-600 text-slate-500 p-2.5 rounded-lg transition-colors" title="کپی نام دامنه">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                                </button>
-                                <button onclick="event.stopPropagation(); openCheckTabs('${formattedUrl}')" class="bg-indigo-50 border border-indigo-100 hover:bg-indigo-600 hover:border-indigo-600 hover:text-white text-indigo-700 text-sm font-bold px-4 py-2.5 rounded-lg transition-colors shadow-sm flex items-center gap-1.5">
-                                    ۳ تب <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                </button>
-                            </div>
-                        `;
-                    }
+                    let actionsHtml = isDone 
+                        ? `<span class="text-emerald-500 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1.5 rounded-lg text-xs font-bold border border-emerald-100 dark:border-emerald-500/20 flex items-center gap-1 shrink-0"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>انجام شده</span>`
+                        : `<div class="flex gap-2 shrink-0"><button onclick="event.stopPropagation(); copyDomainName('${formattedUrl}')" class="bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 p-2.5 rounded-lg transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button><button onclick="event.stopPropagation(); openCheckTabs('${formattedUrl}')" class="bg-indigo-50 dark:bg-indigo-500/10 border border-indigo-100 dark:border-indigo-500/20 hover:bg-indigo-600 hover:text-white text-indigo-700 dark:text-indigo-400 text-sm font-bold px-4 py-2.5 rounded-lg transition-colors shadow-sm flex items-center gap-1.5">۳ تب <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></button></div>`;
 
-                    const cardHtml = `
-                        <div class="${cardClass}" onclick="openDrawer(${index})">
-                            <div class="flex flex-col gap-2.5 overflow-hidden flex-1 items-start text-right w-full">
-                                <div class="text-[15px] text-slate-700 font-black truncate w-full text-right tracking-wide"><bdi dir="ltr">${formattedUrl}</bdi></div>
-                                <div class="flex gap-1.5 flex-wrap justify-start">${badgesHtml}</div>
-                            </div>
-                            ${actionsHtml}
-                        </div>
-                    `;
-
-                    if (isDone) { doneCount++; doneListEl.innerHTML += cardHtml; } 
-                    else { todoCount++; todoListEl.innerHTML += cardHtml; }
+                    const cardHtml = `<div class="${cardClass}" onclick="openDrawer(${index})"><div class="flex flex-col gap-2.5 overflow-hidden flex-1 items-start text-right w-full"><div class="text-[15px] text-slate-700 dark:text-white font-black truncate w-full text-right tracking-wide"><bdi dir="ltr">${formattedUrl}</bdi></div><div class="flex gap-1.5 flex-wrap justify-start">${badgesHtml}</div></div>${actionsHtml}</div>`;
+                    if (isDone) { doneCount++; doneListEl.innerHTML += cardHtml; } else { todoCount++; todoListEl.innerHTML += cardHtml; }
                 });
                 
                 document.getElementById('todo-count').innerText = todoCount;
                 document.getElementById('done-count').innerText = doneCount;
-                
             } catch (err) { console.error("Error loading urls:", err); }
         }
 
         function getStatusColor(statusStr) {
-            if (statusStr.includes('سالم') || statusStr.includes('بدون کاراکتر')) return 'text-emerald-700 bg-emerald-50 border-emerald-200';
-            if (statusStr.includes('خطا') || statusStr.includes('نیاز به بررسی')) return 'text-rose-700 bg-rose-50 border-rose-200';
-            return 'text-slate-500 bg-slate-50 border-slate-200';
+            if (statusStr.includes('سالم') || statusStr.includes('بدون کاراکتر')) return 'text-emerald-700 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-500/10 dark:border-emerald-500/30';
+            if (statusStr.includes('خطا') || statusStr.includes('نیاز به بررسی')) return 'text-rose-700 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-500/10 dark:border-rose-500/30';
+            return 'text-slate-500 bg-slate-50 border-slate-200 dark:text-slate-400 dark:bg-slate-700 dark:border-slate-600';
         }
 
         function createCardHtml(title, status, text, iconPath) {
             return `
-                <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow text-right">
-                    <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow text-right">
+                    <div class="px-4 py-3 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/50">
                         <div class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconPath}"></path></svg>
-                            <span class="font-bold text-slate-700 text-sm">${title}</span>
+                            <span class="font-bold text-slate-700 dark:text-slate-200 text-sm">${title}</span>
                         </div>
-                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border ${getStatusColor(status)} shadow-sm">${status}</span>
+                        <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border ${getStatusColor(status)}">${status}</span>
                     </div>
-                    ${text ? `<div class="p-4 text-sm text-slate-600 leading-relaxed font-medium break-words w-full text-right" dir="rtl">${text}</div>` : ''}
+                    ${text ? `<div class="p-4 text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium break-words w-full text-right" dir="rtl">${text}</div>` : ''}
                 </div>
             `;
         }
@@ -308,286 +296,188 @@
         function openDrawer(index) {
             const data = window.fullDashboardData[index];
             const url = data.formatted_url;
-            
             document.getElementById('drawer-title').innerHTML = `<bdi dir="ltr">${url}</bdi>`;
             
-            const faviconUrl = data.details.favicon.text;
-            const faviconImgHtml = (faviconUrl && faviconUrl !== '-' && faviconUrl !== 'مسدود یا ارور سرور') 
-                ? `<img src="${faviconUrl}" class="w-9 h-9 rounded-full border border-slate-200 object-cover shadow-sm bg-white shrink-0 ml-3" onerror="this.style.display='none'">` 
-                : '';
+            document.getElementById('btn-drawer-retry').onclick = async function() {
+                const originalHtml = this.innerHTML;
+                this.innerHTML = '<div class="spinner !border-indigo-600 dark:!border-indigo-400 !border-t-transparent !block mx-auto"></div>';
+                this.disabled = true;
+                try {
+                    await fetch('/retry_single', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url: url}) });
+                    await loadDashboard();
+                    const newIndex = window.fullDashboardData.findIndex(i => i.formatted_url === url);
+                    if(newIndex !== -1) openDrawer(newIndex);
+                } catch(e) { alert('خطا در تست مجدد'); }
+                finally { this.innerHTML = originalHtml; this.disabled = false; }
+            };
             
-            const content = document.getElementById('drawer-content');
-            content.innerHTML = 
+            const faviconUrl = data.details.favicon.text;
+            const faviconImgHtml = (faviconUrl && faviconUrl !== '-' && !faviconUrl.includes('مسدود') && !faviconUrl.includes('ارور')) ? `<img src="${faviconUrl}" class="w-9 h-9 rounded-full border border-slate-200 dark:border-slate-600 object-cover shadow-sm bg-white dark:bg-slate-900 shrink-0 ml-3" onerror="this.style.display='none'">` : '';
+
+            const ogImgUrl = data.details.og_image.text;
+            const hasOgImage = (ogImgUrl && ogImgUrl !== '-' && !ogImgUrl.includes('مسدود') && !ogImgUrl.includes('ارور'));
+            const ogCardContent = `<div class="flex flex-col gap-3 w-full">${hasOgImage ? `<div class="w-full bg-slate-100 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden flex items-center justify-center shadow-inner"><img src="${ogImgUrl}" class="w-full max-h-48 object-cover hover:scale-105 transition-transform duration-300" onerror="this.parentElement.style.display='none'"></div>` : ''}<div class="w-full text-right truncate text-xs text-slate-500 dark:text-slate-400 font-medium"><bdi dir="ltr" title="${ogImgUrl}">${ogImgUrl}</bdi></div></div>`;
+            
+            document.getElementById('drawer-content').innerHTML = 
                 createCardHtml('تگ عنوان (Title)', data.details.title.status, data.details.title.text, "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z") +
                 createCardHtml('متای توضیحات', data.details.description.status, data.details.description.text, "M4 6h16M4 12h16M4 18h7") +
-                createCardHtml('تصویر اشتراک (OG)', data.details.og_image.status, `<div class="w-full text-right truncate"><bdi dir="ltr" title="${data.details.og_image.text}">${data.details.og_image.text}</bdi></div>`, "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z") +
-                createCardHtml('فوآیکون (Favicon)', data.details.favicon.status, `
-                    <div class="flex items-center w-full">
-                        ${faviconImgHtml}
-                        <div class="truncate flex-1 text-right" dir="rtl"><bdi dir="ltr" title="${faviconUrl}">${faviconUrl}</bdi></div>
-                    </div>
-                `, "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z") +
+                createCardHtml('تصویر اشتراک (OG)', data.details.og_image.status, ogCardContent, "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z") +
+                createCardHtml('فوآیکون (Favicon)', data.details.favicon.status, `<div class="flex items-center w-full">${faviconImgHtml}<div class="truncate flex-1 text-right" dir="rtl"><bdi dir="ltr" title="${faviconUrl}">${faviconUrl}</bdi></div></div>`, "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z") +
                 createCardHtml('کاراکتر خراب در سورس', data.details.source_encoding.status, null, "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4");
 
             document.getElementById('drawer-btn-tabs').onclick = () => openCheckTabs(url);
-
-            const overlay = document.getElementById('drawer-overlay');
-            const drawer = document.getElementById('site-drawer');
-            
-            overlay.classList.remove('hidden');
+            document.getElementById('drawer-overlay').classList.remove('hidden');
             setTimeout(() => {
-                overlay.classList.remove('opacity-0');
-                overlay.classList.add('opacity-100');
-                drawer.classList.remove('drawer-closed');
-                drawer.classList.add('drawer-open');
+                document.getElementById('drawer-overlay').classList.remove('opacity-0');
+                document.getElementById('drawer-overlay').classList.add('opacity-100');
+                document.getElementById('site-drawer').classList.remove('drawer-closed');
+                document.getElementById('site-drawer').classList.add('drawer-open');
             }, 10);
         }
 
         function closeDrawer() {
-            const overlay = document.getElementById('drawer-overlay');
-            const drawer = document.getElementById('site-drawer');
-            
-            drawer.classList.remove('drawer-open');
-            drawer.classList.add('drawer-closed');
-            overlay.classList.remove('opacity-100');
-            overlay.classList.add('opacity-0');
-            
-            setTimeout(() => overlay.classList.add('hidden'), 300);
+            document.getElementById('site-drawer').classList.remove('drawer-open');
+            document.getElementById('site-drawer').classList.add('drawer-closed');
+            document.getElementById('drawer-overlay').classList.remove('opacity-100');
+            document.getElementById('drawer-overlay').classList.add('opacity-0');
+            setTimeout(() => document.getElementById('drawer-overlay').classList.add('hidden'), 300);
         }
 
         function copyDomainName(baseUrl) {
-            try {
-                const urlObj = new URL(baseUrl);
-                navigator.clipboard.writeText(urlObj.hostname.replace('www.', ''));
-            } catch (e) { alert("فرمت URL نامعتبر است."); }
+            try { navigator.clipboard.writeText(new URL(baseUrl).hostname.replace('www.', '')); } catch (e) { alert("فرمت URL نامعتبر است."); }
         }
 
         function openCheckTabs(baseUrl) {
             try {
-                const urlObj = new URL(baseUrl);
-                const domain = urlObj.hostname.replace('www.', '');
-                window.open(baseUrl, '_blank');
-                window.open(`${baseUrl}/robots.txt`, '_blank');
-                window.open(`https://www.google.com/search?q=site:${domain}&authuser=3`, '_blank');
-                
+                const domain = new URL(baseUrl).hostname.replace('www.', '');
+                window.open(baseUrl, '_blank'); window.open(`${baseUrl}/robots.txt`, '_blank'); window.open(`https://www.google.com/search?q=site:${domain}&authuser=3`, '_blank');
                 const doneUrls = JSON.parse(localStorage.getItem('qa_dashboard_done')) || [];
-                if (!doneUrls.includes(baseUrl)) {
-                    doneUrls.push(baseUrl);
-                    localStorage.setItem('qa_dashboard_done', JSON.stringify(doneUrls));
-                }
+                if (!doneUrls.includes(baseUrl)) { doneUrls.push(baseUrl); localStorage.setItem('qa_dashboard_done', JSON.stringify(doneUrls)); }
                 loadDashboard();
-            } catch (e) { alert("فرمت URL نامعتبر است: " + baseUrl); }
+            } catch (e) { alert("فرمت URL نامعتبر است"); }
         }
 
-        function resetDoneList() {
-            if(confirm('لیست انجام شده ها پاک شود؟')) {
-                localStorage.setItem('qa_dashboard_done', JSON.stringify([]));
-                loadDashboard();
-            }
-        }
-
-        function copyAllBaseUrls() {
+        function resetDoneList() { if(confirm('لیست انجام شده ها پاک شود؟')) { localStorage.setItem('qa_dashboard_done', JSON.stringify([])); loadDashboard(); } }
+        
+        function openAllBaseUrls() {
             if(window.allBaseUrls.length === 0) return;
-            navigator.clipboard.writeText(window.allBaseUrls.join('\n')).then(() => alert('لینک ها کپی شدند!'));
+            if(confirm(`آیا مطمئن هستید می‌خواهید ${window.allBaseUrls.length} تب جدید باز کنید؟\n(توجه: حتماً پاپ‌آپ بلاکر مرورگر را برای ۱۲۷.۰.۰.۱ غیرفعال کنید تا مرورگر جلوی باز شدن همزمان را نگیرد)`)) {
+                window.allBaseUrls.forEach(url => window.open(url, '_blank'));
+            }
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.view-panel').forEach(el => el.classList.add('hidden'));
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
-
             document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('bg-indigo-50', 'text-indigo-700');
-                el.classList.add('text-slate-600');
+                el.classList.remove('bg-indigo-50', 'text-indigo-700', 'dark:bg-indigo-500/10', 'dark:text-indigo-400');
+                el.classList.add('text-slate-600', 'dark:text-slate-300');
                 el.querySelector('svg').classList.remove('text-indigo-600', 'opacity-100');
                 el.querySelector('svg').classList.add('opacity-70');
             });
-            
             const activeBtn = document.getElementById(`nav-${tabId}`);
-            activeBtn.classList.remove('text-slate-600');
-            activeBtn.classList.add('bg-indigo-50', 'text-indigo-700');
+            activeBtn.classList.remove('text-slate-600', 'dark:text-slate-300');
+            activeBtn.classList.add('bg-indigo-50', 'text-indigo-700', 'dark:bg-indigo-500/10', 'dark:text-indigo-400');
             activeBtn.querySelector('svg').classList.remove('opacity-70');
             activeBtn.querySelector('svg').classList.add('text-indigo-600', 'opacity-100');
-            
-            if (tabId === 'dashboard') loadDashboard();
-            else loadResult(tabId);
+            if (tabId === 'dashboard') loadDashboard(); else loadResult(tabId);
         }
 
-        async function runTool(toolId) {
+        async function runToolProcess(toolId, reloadDash = true) {
             const card = document.getElementById(`view-${toolId}`);
-            const btn = card.querySelector('button');
-            const text = btn.querySelector('.btn-text');
-            const spinner = btn.querySelector('.spinner');
+            if(card) {
+                const btn = card.querySelector('.btn-run');
+                const text = btn.querySelector('.btn-text');
+                const spinner = btn.querySelector('.spinner');
+                text.innerText = 'در حال اجرا...';
+                spinner.style.display = 'block';
+                btn.disabled = true; btn.classList.add('opacity-75', 'cursor-not-allowed');
+            }
             
-            text.innerText = 'در حال اجرا...';
-            spinner.style.display = 'block';
-            btn.disabled = true;
-            btn.classList.add('opacity-75', 'cursor-not-allowed');
-
             try {
                 await fetch(`/run/${toolId}`, { method: 'POST' });
-                loadResult(toolId);
-                loadDashboard();
-            } catch (err) { alert('خطا در سرور.'); } 
-            finally {
+            } catch (err) { console.error('خطا در سرور.'); } 
+            
+            if(card) {
+                const btn = card.querySelector('.btn-run');
+                const text = btn.querySelector('.btn-text');
+                const spinner = btn.querySelector('.spinner');
                 text.innerText = 'شروع اسکن';
                 spinner.style.display = 'none';
-                btn.disabled = false;
-                btn.classList.remove('opacity-75', 'cursor-not-allowed');
-            }
-        }
-
-        async function deleteResult(toolId) {
-            if(confirm('گزارش قبلی پاک شود؟')) {
-                await fetch(`/delete/${toolId}`, { method: 'POST' });
+                btn.disabled = false; btn.classList.remove('opacity-75', 'cursor-not-allowed');
                 loadResult(toolId);
-                loadDashboard(); 
+                if(reloadDash) loadDashboard();
             }
         }
+        function runTool(toolId) { runToolProcess(toolId, true); }
 
+        async function deleteResult(toolId) { if(confirm('گزارش قبلی پاک شود؟')) { await fetch(`/delete/${toolId}`, { method: 'POST' }); loadResult(toolId); loadDashboard(); } }
         function copyText(txt) { navigator.clipboard.writeText(txt); }
-
-        function copyAllOg() {
-            if(window.currentOgSuccesses.length === 0) return;
-            const links = window.currentOgSuccesses.map(i => i['Image URL']).join('\n');
-            navigator.clipboard.writeText(links).then(() => alert('تمامی لینک های عکس کپی شدند!'));
-        }
+        function copyAllOg() { if(window.currentOgSuccesses.length === 0) return; navigator.clipboard.writeText(window.currentOgSuccesses.map(i => i['Image URL']).join('\n')).then(() => alert('تمامی لینک های عکس کپی شدند!')); }
 
         function createEmptyState() {
-            return `
-                <div class="flex-1 flex flex-col items-center justify-center text-slate-400 p-10">
-                    <div class="bg-slate-50 p-6 rounded-full mb-5 border border-slate-100 shadow-sm">
-                        <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                    </div>
-                    <p class="font-black text-slate-600 text-lg">هنوز گزارشی وجود ندارد</p>
-                    <p class="text-sm mt-2 text-slate-400">برای شروع، روی دکمه «شروع اسکن» در بالا کلیک کنید.</p>
-                </div>
-            `;
+            return `<div class="flex-1 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 p-10"><div class="bg-slate-50 dark:bg-slate-800 p-6 rounded-full mb-5 border border-slate-100 dark:border-slate-700 shadow-sm"><svg class="w-12 h-12 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div><p class="font-black text-slate-600 dark:text-slate-300 text-lg">هنوز گزارشی وجود ندارد</p><p class="text-sm mt-2">برای شروع، روی دکمه «شروع اسکن» در بالا کلیک کنید.</p></div>`;
         }
 
         async function loadResult(toolId) {
             const res = await fetch(`/results/${toolId}`);
             const data = await res.json();
             const container = document.querySelector(`#view-${toolId} .results-container`);
-            
             container.innerHTML = '';
-            if (data.status === 'empty' || data.data.length === 0) {
-                container.innerHTML = createEmptyState();
-                return;
-            }
+            if (data.status === 'empty' || data.data.length === 0) { container.innerHTML = createEmptyState(); return; }
 
-            // فیلتر اختصاصی بر اساس وجود کلمه سالم به جای برابری مطلق
             if (toolId === 'og_image') {
                 const successes = data.data.filter(i => i.Status && i.Status.includes('سالم'));
                 const errors = data.data.filter(i => !i.Status || !i.Status.includes('سالم'));
                 window.currentOgSuccesses = successes;
 
-                let html = `
-                    <div class="flex gap-6 h-full p-6 bg-slate-50/50">
-                        <div class="w-2/3 bg-white border border-emerald-200 rounded-2xl overflow-hidden flex flex-col shadow-sm">
-                            <div class="bg-emerald-50/50 p-5 border-b border-emerald-100 flex justify-between items-center text-right">
-                                <h3 class="font-bold text-emerald-800 flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    تصاویر پیدا شده <span class="bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full text-xs">${successes.length}</span>
-                                </h3>
-                                <button onclick="copyAllOg()" class="bg-white border border-emerald-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 text-emerald-700 px-4 py-2 rounded-xl text-sm transition-colors shadow-sm font-bold">کپی همه لینک‌ها</button>
-                            </div>
-                            <div class="overflow-y-auto p-5 space-y-4 flex-1">`;
-                
+                let html = `<div class="flex gap-6 h-full p-6 bg-slate-50/50 dark:bg-slate-900/50">
+                    <div class="w-2/3 bg-white dark:bg-slate-800 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl overflow-hidden flex flex-col shadow-sm">
+                        <div class="bg-emerald-50/50 dark:bg-emerald-500/10 p-5 border-b border-emerald-100 dark:border-emerald-500/20 flex justify-between items-center text-right">
+                            <h3 class="font-bold text-emerald-800 dark:text-emerald-400 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> تصاویر پیدا شده <span class="bg-emerald-200 dark:bg-emerald-500/30 text-emerald-900 dark:text-emerald-200 px-2 py-0.5 rounded-full text-xs">${successes.length}</span></h3>
+                            <button onclick="copyAllOg()" class="bg-white dark:bg-slate-700 border border-emerald-200 dark:border-emerald-500/30 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 text-emerald-700 dark:text-emerald-300 px-4 py-2 rounded-xl text-sm transition-colors shadow-sm font-bold">کپی همه لینک‌ها</button>
+                        </div>
+                        <div class="overflow-y-auto p-5 space-y-4 flex-1">`;
                 successes.forEach(item => {
                     const imgUrl = item['Image URL'];
-                    html += `
-                        <div class="bg-white border border-slate-100 p-3 rounded-xl flex justify-between items-center hover:shadow-md transition-shadow group text-right gap-4">
-                            <img src="${imgUrl}" class="w-14 h-14 rounded-lg object-cover border border-slate-200 shrink-0 bg-slate-50" onerror="this.style.display='none'">
-                            <div class="text-sm text-slate-700 truncate font-medium w-full text-right"><bdi dir="ltr" title="${imgUrl}">${imgUrl}</bdi></div>
-                            <button onclick="copyText('${imgUrl}')" class="text-slate-400 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 p-2.5 rounded-lg transition-colors shrink-0 mr-3" title="کپی لینک تصویر">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-                            </button>
-                        </div>`;
+                    html += `<div class="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 p-3 rounded-xl flex justify-between items-center hover:shadow-md transition-shadow group text-right gap-4"><img src="${imgUrl}" class="w-14 h-14 rounded-lg object-cover border border-slate-200 dark:border-slate-600 shrink-0 bg-slate-50 dark:bg-slate-900" onerror="this.style.display='none'"><div class="text-sm text-slate-700 dark:text-slate-300 truncate font-medium w-full text-right"><bdi dir="ltr" title="${imgUrl}">${imgUrl}</bdi></div><button onclick="copyText('${imgUrl}')" class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 bg-slate-50 dark:bg-slate-700 hover:bg-indigo-50 dark:hover:bg-slate-600 p-2.5 rounded-lg transition-colors shrink-0 mr-3" title="کپی لینک تصویر"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button></div>`;
                 });
-                
-                html += `</div></div>
-                        <div class="w-1/3 bg-white border border-rose-200 rounded-2xl overflow-hidden flex flex-col shadow-sm">
-                            <div class="bg-rose-50/50 p-5 border-b border-rose-100 text-right">
-                                <h3 class="font-bold text-rose-800 flex items-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                                    مشکل دارها <span class="bg-rose-200 text-rose-900 px-2 py-0.5 rounded-full text-xs">${errors.length}</span>
-                                </h3>
-                            </div>
-                            <div class="overflow-y-auto p-5 space-y-3 flex-1 text-right">`;
-                
-                errors.forEach(item => {
-                    html += `
-                        <div class="bg-white border border-rose-100 p-4 rounded-xl text-sm text-rose-700 flex flex-col gap-2 hover:shadow-md transition-shadow text-right">
-                            <div class="font-bold border-b border-rose-50 pb-2 w-full text-right"><bdi dir="ltr">${item.URL}</bdi></div>
-                            <div class="opacity-80 w-full text-right truncate" title="${item['Image URL']}"><bdi dir="ltr">${item['Image URL']}</bdi></div>
-                            <div class="text-xs text-rose-500 font-bold mt-1">${item.Status}</div>
-                        </div>`;
-                });
-                
+                html += `</div></div><div class="w-1/3 bg-white dark:bg-slate-800 border border-rose-200 dark:border-rose-500/30 rounded-2xl overflow-hidden flex flex-col shadow-sm"><div class="bg-rose-50/50 dark:bg-rose-500/10 p-5 border-b border-rose-100 dark:border-rose-500/20 text-right"><h3 class="font-bold text-rose-800 dark:text-rose-400 flex items-center gap-2"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg> مشکل دارها <span class="bg-rose-200 dark:bg-rose-500/30 text-rose-900 dark:text-rose-200 px-2 py-0.5 rounded-full text-xs">${errors.length}</span></h3></div><div class="overflow-y-auto p-5 space-y-3 flex-1 text-right">`;
+                errors.forEach(item => { html += `<div class="bg-white dark:bg-slate-800 border border-rose-100 dark:border-rose-500/20 p-4 rounded-xl text-sm text-rose-700 dark:text-rose-400 flex flex-col gap-2 hover:shadow-md transition-shadow text-right"><div class="font-bold border-b border-rose-50 dark:border-rose-500/10 pb-2 w-full text-right"><bdi dir="ltr">${item.URL}</bdi></div><div class="opacity-80 w-full text-right truncate" title="${item['Image URL']}"><bdi dir="ltr">${item['Image URL']}</bdi></div><div class="text-xs font-bold mt-1">${item.Status}</div></div>`; });
                 html += `</div></div></div>`;
-                container.innerHTML = html;
-                return;
+                container.innerHTML = html; return;
             }
 
             if (toolId === 'favicon') {
-                let html = '<div class="overflow-y-auto flex-1"><table class="w-full text-right text-sm"><thead class="bg-slate-50 sticky top-0 border-b border-slate-200 shadow-sm text-slate-500 text-xs uppercase tracking-wider"><tr><th class="px-6 py-4 font-black w-20 text-center">آیکون</th><th class="px-6 py-4 font-black">نام سایت</th><th class="px-6 py-4 font-black">لینک فوآیکون</th><th class="px-6 py-4 font-black">وضعیت</th></tr></thead><tbody class="divide-y divide-slate-100 bg-white">';
-                
+                let html = '<div class="overflow-y-auto flex-1"><table class="w-full text-right text-sm"><thead class="bg-slate-50 dark:bg-slate-900 sticky top-0 border-b border-slate-200 dark:border-slate-700 shadow-sm text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider"><tr><th class="px-6 py-4 font-black w-20 text-center">آیکون</th><th class="px-6 py-4 font-black">نام سایت</th><th class="px-6 py-4 font-black">لینک فوآیکون</th><th class="px-6 py-4 font-black">وضعیت</th></tr></thead><tbody class="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800">';
                 data.data.forEach(row => {
-                    const url = row['URL'];
-                    let domainName = url;
-                    try { domainName = new URL(url).hostname.replace('www.', ''); } catch(e){}
-                    
-                    const favUrl = row['Favicon URL'];
-                    const status = row['Status'] || '';
-                    let badgeClass = status.includes('سالم') ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200';
-                    
-                    const imgHtml = (favUrl && favUrl !== '-' && !status.includes('مسدود') && !status.includes('ارور')) 
-                        ? `<img src="${favUrl}" class="w-10 h-10 rounded-full border border-slate-200 object-cover shadow-sm bg-white mx-auto" onerror="this.style.display='none'">` 
-                        : `<div class="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 mx-auto flex items-center justify-center text-slate-300"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>`;
-
-                    html += `<tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-6 py-3">${imgHtml}</td>
-                        <td class="px-6 py-3 font-bold text-slate-700" dir="ltr"><bdi>${domainName}</bdi></td>
-                        <td class="px-6 py-3 text-left" dir="ltr">
-                            <div class="flex items-center justify-end gap-3">
-                                <div class="truncate max-w-[250px] text-slate-500 font-medium" title="${favUrl}">${favUrl}</div>
-                                <button onclick="copyText('${favUrl}')" class="text-slate-400 hover:text-indigo-600 bg-white border border-slate-200 hover:border-indigo-300 shadow-sm p-1.5 rounded-lg transition-colors" title="کپی لینک فوآیکون"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button>
-                            </div>
-                        </td>
-                        <td class="px-6 py-3"><span class="font-bold border text-[11px] px-2.5 py-1 rounded-full whitespace-nowrap inline-block shadow-sm ${badgeClass}">${status}</span></td>
-                    </tr>`;
+                    const url = row['URL']; let domainName = url; try { domainName = new URL(url).hostname.replace('www.', ''); } catch(e){}
+                    const favUrl = row['Favicon URL']; const status = row['Status'] || '';
+                    let badgeClass = status.includes('سالم') ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30';
+                    const imgHtml = (favUrl && favUrl !== '-' && !status.includes('مسدود') && !status.includes('ارور')) ? `<img src="${favUrl}" class="w-10 h-10 rounded-full border border-slate-200 dark:border-slate-600 object-cover shadow-sm bg-white dark:bg-slate-900 mx-auto" onerror="this.style.display='none'">` : `<div class="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-700 border border-slate-100 dark:border-slate-600 mx-auto flex items-center justify-center text-slate-300 dark:text-slate-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>`;
+                    html += `<tr class="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"><td class="px-6 py-3">${imgHtml}</td><td class="px-6 py-3 font-bold text-slate-700 dark:text-slate-200" dir="ltr"><bdi>${domainName}</bdi></td><td class="px-6 py-3 text-left" dir="ltr"><div class="flex items-center justify-end gap-3"><div class="truncate max-w-[250px] text-slate-500 dark:text-slate-400 font-medium" title="${favUrl}">${favUrl}</div><button onclick="copyText('${favUrl}')" class="text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:border-indigo-300 dark:hover:border-indigo-500 shadow-sm p-1.5 rounded-lg transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg></button></div></td><td class="px-6 py-3"><span class="font-bold border text-[11px] px-2.5 py-1 rounded-full whitespace-nowrap inline-block shadow-sm ${badgeClass}">${status}</span></td></tr>`;
                 });
                 html += '</tbody></table></div>';
-                container.innerHTML = html;
-                return;
+                container.innerHTML = html; return;
             }
 
-            let html = '<div class="overflow-y-auto flex-1"><table class="w-full text-right text-sm"><thead class="bg-slate-50 sticky top-0 border-b border-slate-200 shadow-sm text-slate-500 text-xs uppercase tracking-wider"><tr>';
+            let html = '<div class="overflow-y-auto flex-1"><table class="w-full text-right text-sm"><thead class="bg-slate-50 dark:bg-slate-900 sticky top-0 border-b border-slate-200 dark:border-slate-700 shadow-sm text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider"><tr>';
             const keys = Object.keys(data.data[0]);
             keys.forEach(key => html += `<th class="px-6 py-4 font-black">${key}</th>`);
-            html += '</tr></thead><tbody class="divide-y divide-slate-100 bg-white">';
+            html += '</tr></thead><tbody class="divide-y divide-slate-100 dark:divide-slate-700 bg-white dark:bg-slate-800">';
             
             data.data.forEach(row => {
                 const statusVal = row['Status'] || '';
-                let rowClass = 'hover:bg-slate-50 transition-colors';
-                let badgeClass = 'bg-slate-100 text-slate-700 border-slate-200';
-                
-                if (statusVal.includes('سالم') || statusVal.includes('بدون کاراکتر')) {
-                    badgeClass = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                } else if (statusVal.includes('خطا') || statusVal.includes('نیاز به بررسی')) {
-                    badgeClass = 'bg-rose-50 text-rose-700 border-rose-200';
-                }
+                let badgeClass = 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-600';
+                if (statusVal.includes('سالم') || statusVal.includes('بدون کاراکتر')) badgeClass = 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30';
+                else if (statusVal.includes('خطا') || statusVal.includes('نیاز به بررسی')) badgeClass = 'bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-500/30';
 
-                html += `<tr class="${rowClass}">`;
+                html += `<tr class="hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">`;
                 keys.forEach(key => {
                     html += `<td class="px-6 py-4 align-top text-right">`;
-                    if(key === 'URL') {
-                        html += `<div class="max-w-xs truncate text-slate-600 font-bold w-full text-right" title="${row[key]}"><bdi dir="ltr">${row[key]}</bdi></div>`;
-                    } else if (key === 'Status') {
-                        html += `<span class="font-bold border text-[11px] px-2.5 py-1 rounded-full whitespace-nowrap inline-block shadow-sm ${badgeClass}">${row[key]}</span>`;
-                    } else {
-                        html += `<div class="max-w-xl text-slate-600 font-medium break-words leading-relaxed text-right" dir="rtl">${row[key]}</div>`;
-                    }
+                    if(key === 'URL') html += `<div class="max-w-xs truncate text-slate-600 dark:text-slate-300 font-bold w-full text-right" title="${row[key]}"><bdi dir="ltr">${row[key]}</bdi></div>`;
+                    else if (key === 'Status') html += `<span class="font-bold border text-[11px] px-2.5 py-1 rounded-full whitespace-nowrap inline-block shadow-sm ${badgeClass}">${row[key]}</span>`;
+                    else html += `<div class="max-w-xl text-slate-600 dark:text-slate-300 font-medium break-words leading-relaxed text-right" dir="rtl">${row[key]}</div>`;
                     html += `</td>`;
                 });
                 html += '</tr>';
