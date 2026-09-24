@@ -1,113 +1,77 @@
-import sys
+# -*- coding: utf-8 -*-
+"""
+check_title.py - بررسی تگ <title>
+اجرای تنها:  python check_title.py
+خروجی:       reports/title_report.csv
 
-if sys.stdout.encoding.lower() != 'utf-8':
-    sys.stdout.reconfigure(encoding='utf-8')
-
-from playwright.sync_api import sync_playwright, TimeoutError
-import csv
+قانون‌ها:
+  - اگر صفحه، صفحه واقعی سایت نباشد (چالش، محدودیت VPN، ریدایرکت مشکوک، خطای سرور ...)
+    تایتل آن صفحه «سالم» حساب نمی‌شود → «بررسی نشد: ...»
+  - خالی / خیلی کوتاه / کاراکتر خراب / متن به‌هم‌ریخته (mojibake) → خطا
+  - کلمات پیش‌فرض و تستی (test, untitled, lorem ipsum, تست, دسته‌بندی نشده, ...) → خطا
+  - «home» یا «index» فقط وقتی کل تایتل همین باشد خطاست (نه وقتی بخشی از یک عنوان واقعی است)
+  - نداشتن هیچ حرف فارسی → خطا (سایت‌ها فارسی هستند)
+"""
 import re
-import arabic_reshaper
-from bidi.algorithm import get_display
+import sys
+import qa_core as qc
 
-def print_fa(text):
-    reshaped = arabic_reshaper.reshape(text)
-    bidi_text = get_display(reshaped)
-    print(bidi_text)
+TOOL_ID = 'title'
+CSV_NAME = 'title_report.csv'
+FIELDS = ['URL', 'Title Text', 'Status']
 
-# تفکیک کلمات برای جلوگیری از تطبیق اشتباه زیرمتنی
-BAD_WORDS_EN = ['test', 'home', 'index', 'untitled']
-BAD_WORDS_FA = ['تست', 'دسته بندی نشده', 'just a moment', 'attention required', 'access denied', 'یک لحظه']
+MIN_LEN = 3
+REQUIRE_PERSIAN = True
 
-def safe_csv(text):
-    if text and str(text).startswith(('=', '+', '-', '@')): return "'" + str(text)
-    return text
+BAD_WORDS_EN = ['test', 'testing', 'untitled', 'lorem ipsum', 'just another wordpress site',
+                'my wordpress blog', 'new page', 'sample page', 'hello world', 'undefined', 'null']
+BAD_EXACT = ['home', 'index', 'index.html', 'index.php', 'home page', 'homepage', 'default',
+             'document', 'wordpress', 'website', 'site', 'صفحه اصلی', 'خانه', 'عنوان']
+BAD_WORDS_FA = ['تست', 'آزمایشی', 'دسته بندی نشده', 'دسته‌بندی نشده', 'یک سایت دیگر با وردپرس',
+                'سلام دنیا', 'برگه نمونه', 'بدون عنوان', 'لورم ایپسوم']
+FA_LETTER = '\u0600-\u06FF'
 
-def validate_title(title_text, status_code):
-    if status_code == 403: return "خطا: مسدود (403)"
-    elif status_code >= 400: return f"خطا: سرور ({status_code})"
-    if not title_text: return "خطا: خالی/ناموجود"
-    
-    title_clean = str(title_text).strip().replace('\n', ' ').replace('\r', '')
-    title_clean = re.sub(r'\s+', ' ', title_clean)
-    
-    if '\ufffd' in title_clean: return "خطا: کاراکتر خراب ()"
-    if len(title_clean) < 3: return "خطا: بسیار کوتاه"
-        
-    title_lower = title_clean.lower()
-    
-    # تطبیق مرز کلمه‌ای برای انگلیسی تا کلماتی مثل contest رد نشوند
-    for word in BAD_WORDS_EN:
-        if re.search(r'\b' + re.escape(word) + r'\b', title_lower):
-            return f"خطا: کلمه ممنوعه ({word})"
-            
-    for word in BAD_WORDS_FA:
-        if word in title_lower:
-            return f"خطا: کلمه ممنوعه ({word})"
-            
-    if not re.search(r'[\u0600-\u06FF]', title_clean): return "خطا: فاقد حروف فارسی"
-        
-    return "سالم"
 
-def block_heavy_resources(route):
-    excluded_types = ["image", "media", "font", "stylesheet"]
-    if route.request.resource_type in excluded_types: route.abort()
-    else: route.continue_()
+def validate(text, what='تایتل', min_len=MIN_LEN, require_persian=REQUIRE_PERSIAN,
+             check_bad_words=True, check_exact=True):
+    """اعتبارسنجی Title؛ پارامترها اجازه می‌دهند Description قوانین جدا داشته باشد."""
+    t = qc.clean_text(text)
+    if not t:
+        return f'خطا: {what} خالی/ناموجود'
+    if '\ufffd' in t:
+        return 'خطا: کاراکتر خراب (�) در متن'
+    if qc.mojibake_count(t) >= 2:
+        return 'خطا: متن به‌هم‌ریخته (مشکل انکودینگ)'
+    if len(t) < min_len:
+        return f'خطا: {what} بسیار کوتاه ({len(t)} کاراکتر)'
+    low = t.lower()
+    n = qc.norm_fa(t)
+    if check_exact and n.strip(' -|–—:') in [qc.norm_fa(x) for x in BAD_EXACT]:
+        return f'خطا: {what} پیش‌فرض/نامناسب («{t}»)'
+    if check_bad_words:
+        for w in BAD_WORDS_EN:
+            if re.search(r'(?<![a-z0-9])' + re.escape(w) + r'(?![a-z0-9])', low):
+                return f'خطا: کلمه ممنوعه ({w})'
+        for w in BAD_WORDS_FA:
+            wn = qc.norm_fa(w)
+            if re.search(rf'(?<![{FA_LETTER}]){re.escape(wn)}(?![{FA_LETTER}])', n):
+                return f'خطا: کلمه ممنوعه ({w})'
+    if require_persian and not qc.has_persian(t):
+        return f'خطا: {what} فاقد حروف فارسی'
+    return 'سالم'
 
-def check_titles_only():
-    try:
-        # خواندن ایمن فایل ورودی با پشتیبانی از BOM و خطوط کامنت‌شده
-        with open('urls.txt', 'r', encoding='utf-8-sig') as f:
-            urls = [line.strip() for line in f if line.strip() and not line.startswith('#')]
-    except FileNotFoundError:
-        print_fa("فایل urls.txt پیدا نشد!")
-        return
 
-    report_file = 'title_report.csv'
-    with open(report_file, 'w', newline='', encoding='utf-8-sig') as f:
-        csv.DictWriter(f, fieldnames=["URL", "Title Text", "Status"]).writeheader()
+def analyze(ctx, snap):
+    gate = qc.content_gate(snap)
+    title = qc.clean_text(snap.get('title', ''))
+    if gate:
+        return {'Title Text': title or '-', 'Status': gate}
+    status = validate(title)
+    note = qc.redirect_note(snap)
+    if status == 'سالم' and note:
+        status = 'سالم' + note
+    return {'Title Text': title or '-', 'Status': status}
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        context = browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
-            extra_http_headers={"Accept-Language": "fa-IR,fa;q=0.9,en-US;q=0.8,en;q=0.7"}
-        )
 
-        for url in urls:
-            if not url.startswith('http'): url = 'https://' + url
-            print_fa(f"در حال بررسی: {url} ...")
-            
-            # باز کردن تب اختصاصی برای هر سایت جهت جلوگیری از تداخل دیتای کهنه
-            page = context.new_page()
-            page.route("**/*", block_heavy_resources)
-            
-            result = {"URL": url, "Title Text": "-", "Status": ""}
-            
-            try:
-                response = page.goto(url, wait_until='domcontentloaded', timeout=45000)
-                status_code = response.status if response else 200
-                actual_title = page.title()
-                
-                status_msg = validate_title(actual_title, status_code)
-                if status_code >= 400: actual_title = "-"
-                
-                result["Title Text"] = safe_csv(actual_title)
-                result["Status"] = status_msg
-                
-            except TimeoutError:
-                result["Status"] = "نیاز به بررسی دستی (تایم‌اوت)"
-            except Exception as e:
-                result["Status"] = f"خطا: عدم دسترسی ({str(e).split()[0][:30]})"
-            finally:
-                page.close()
-            
-            # ذخیره ردیف در همان لحظه
-            with open(report_file, 'a', newline='', encoding='utf-8-sig') as f:
-                csv.DictWriter(f, fieldnames=["URL", "Title Text", "Status"]).writerow(result)
-
-        browser.close()
-        
-    print_fa(f"\nبررسی تمام شد! فایل {report_file} را باز کن.")
-
-if __name__ == "__main__":
-    check_titles_only()
+if __name__ == '__main__':
+    sys.exit(qc.run_checks([sys.modules[__name__]]))
