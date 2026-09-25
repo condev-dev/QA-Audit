@@ -1,299 +1,949 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl" class="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QA Master | Enterprise</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            bg: '#000000',
-                            panel: '#09090b',
-                            border: '#27272a',
-                            hover: '#18181b',
-                            text: '#fafafa',
-                            muted: '#a1a1aa'
-                        },
-                        status: {
-                            ok: '#10b981',
-                            err: '#ef4444',
-                            idle: '#52525b'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Vazirmatn', 'system-ui', 'sans-serif'],
-                        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
-                    }
-                }
-            }
-        }
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                bg: "#000000",
+                panel: "#09090b",
+                border: "#27272a",
+                hover: "#18181b",
+                text: "#fafafa",
+                muted: "#a1a1aa",
+              },
+              status: {
+                ok: "#10b981",
+                err: "#ef4444",
+                idle: "#52525b",
+              },
+            },
+            fontFamily: {
+              sans: ["Vazirmatn", "system-ui", "sans-serif"],
+              mono: [
+                "ui-monospace",
+                "SFMono-Regular",
+                "Menlo",
+                "Monaco",
+                "Consolas",
+                "monospace",
+              ],
+            },
+          },
+        },
+      };
     </script>
-    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <link
+      href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"
+      rel="stylesheet"
+      type="text/css"
+    />
     <style>
-        body { font-family: 'Vazirmatn', sans-serif; background-color: #000000; color: #fafafa; -webkit-font-smoothing: antialiased; }
-        
-        ::-webkit-scrollbar { width: 4px; height: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
-        
-        .table-grid {
-            display: grid;
-            grid-template-columns: 40px minmax(0, 1fr) 140px 80px;
-            align-items: center;
-            gap: 16px;
+      body {
+        font-family: "Vazirmatn", sans-serif;
+        background-color: #000000;
+        color: #fafafa;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      ::-webkit-scrollbar {
+        width: 4px;
+        height: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #3f3f46;
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #52525b;
+      }
+
+      .table-grid {
+        display: grid;
+        grid-template-columns: 40px minmax(0, 1fr) 140px 80px;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .drawer-open {
+        transform: translateX(0);
+      }
+      .drawer-closed {
+        transform: translateX(-100%);
+      }
+
+      .status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+      .status-idle {
+        background-color: #3f3f46;
+      }
+      .status-ok {
+        background-color: #10b981;
+        box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+      }
+      .status-err {
+        background-color: #ef4444;
+        box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+        animation: pulse-err 2s infinite;
+      }
+      .status-warn {
+        background-color: #f59e0b;
+        box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+      }
+      .status-skip {
+        background-color: transparent;
+        border: 1px solid #71717a;
+      }
+      .text-status-warn {
+        color: #f59e0b;
+      }
+
+      @keyframes pulse-err {
+        0% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
         }
-
-        .drawer-open { transform: translateX(0); }
-        .drawer-closed { transform: translateX(-100%); }
-        
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; position: relative; cursor: pointer; transition: transform 0.2s; }
-        .status-idle { background-color: #3f3f46; }
-        .status-ok { background-color: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
-        .status-err { background-color: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.6); animation: pulse-err 2s infinite; }
-        .status-warn { background-color: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
-        .status-skip { background-color: transparent; border: 1px solid #71717a; }
-        .text-status-warn { color: #f59e0b; }
-        
-        @keyframes pulse-err { 
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 
-            70% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); } 
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
+        70% {
+          box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
         }
+        100% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+      }
 
-        .status-wrapper { position: relative; display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; }
+      .status-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+      }
 
-        .spinner { border: 2px solid #3f3f46; border-radius: 50%; border-top-color: #fafafa; width: 14px; height: 14px; animation: spin 0.6s linear infinite; display: none; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+      .spinner {
+        border: 2px solid #3f3f46;
+        border-radius: 50%;
+        border-top-color: #fafafa;
+        width: 14px;
+        height: 14px;
+        animation: spin 0.6s linear infinite;
+        display: none;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-        .btn-subtle { background: transparent; color: #a1a1aa; border: 1px solid transparent; transition: all 0.15s; }
-        .btn-subtle:hover { background: #18181b; color: #fafafa; border-color: #27272a; }
-        .btn-primary { background: #fafafa; color: #000000; font-weight: 600; transition: all 0.15s; position: relative; }
-        .btn-primary:hover { background: #e4e4e7; transform: translateY(-1px); }
-        .btn-primary:disabled { background: #52525b; color: #a1a1aa; cursor: not-allowed; }
-        
-        .data-row { border-bottom: 1px solid #27272a; transition: background-color 0.1s; }
-        .data-row:hover { background-color: #18181b; }
-        
-        .drag-over { border: 1px dashed #a1a1aa !important; background-color: #18181b; opacity: 0.8; }
+      .btn-subtle {
+        background: transparent;
+        color: #a1a1aa;
+        border: 1px solid transparent;
+        transition: all 0.15s;
+      }
+      .btn-subtle:hover {
+        background: #18181b;
+        color: #fafafa;
+        border-color: #27272a;
+      }
+      .btn-primary {
+        background: #fafafa;
+        color: #000000;
+        font-weight: 600;
+        transition: all 0.15s;
+        position: relative;
+      }
+      .btn-primary:hover {
+        background: #e4e4e7;
+        transform: translateY(-1px);
+      }
+      .btn-primary:disabled {
+        background: #52525b;
+        color: #a1a1aa;
+        cursor: not-allowed;
+      }
+
+      .data-row {
+        border-bottom: 1px solid #27272a;
+        transition: background-color 0.1s;
+      }
+      .data-row:hover {
+        background-color: #18181b;
+      }
+
+      .drag-over {
+        border: 1px dashed #a1a1aa !important;
+        background-color: #18181b;
+        opacity: 0.8;
+      }
     </style>
-</head>
-<body class="h-screen overflow-hidden flex relative selection:bg-white/20 selection:text-white">
-
-    <aside class="w-[260px] bg-brand-bg border-l border-brand-border flex flex-col z-20 shrink-0">
-        <div class="h-16 border-b border-brand-border flex items-center px-6 justify-between bg-brand-bg">
-            <div class="flex items-center gap-3 font-mono font-bold tracking-tight text-white">
-                <div class="w-6 h-6 bg-white text-black flex items-center justify-center rounded text-[10px] leading-none">QA</div>
-                MASTER
-            </div>
-            <div class="w-1.5 h-1.5 rounded-full bg-status-ok shadow-[0_0_6px_rgba(16,185,129,0.5)]"></div>
+  </head>
+  <body
+    class="h-screen overflow-hidden flex relative selection:bg-white/20 selection:text-white"
+  >
+    <aside
+      class="w-[260px] bg-brand-bg border-l border-brand-border flex flex-col z-20 shrink-0"
+    >
+      <div
+        class="h-16 border-b border-brand-border flex items-center px-6 justify-between bg-brand-bg"
+      >
+        <div
+          class="flex items-center gap-3 font-mono font-bold tracking-tight text-white"
+        >
+          <div
+            class="w-6 h-6 bg-white text-black flex items-center justify-center rounded text-[10px] leading-none"
+          >
+            QA
+          </div>
+          MASTER
         </div>
-        
-        <nav class="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-            <div class="px-3 text-[10px] font-bold text-brand-muted tracking-widest mb-3 mt-2">عمومی</div>
-            <button id="nav-dashboard" onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors bg-white/10 text-white font-medium border border-white/5">
-                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-                داشبورد اصلی
-            </button>
-            <button id="nav-settings" onclick="switchTab('settings')" class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent">
-                <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                تنظیمات (URLs)
-            </button>
-            
-            <div class="px-3 text-[10px] font-bold text-brand-muted tracking-widest mb-3 mt-8">ابزارهای اسکن</div>
-            
-            <button id="nav-health" onclick="switchTab('health')" class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"><svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg> سلامت سرور (Health)</button>
-            <button id="nav-title" onclick="switchTab('title')" class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"><svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg> عنوان سایت (Title)</button>
-            <button id="nav-description" onclick="switchTab('description')" class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"><svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path></svg> متای توضیحات</button>
-            <button id="nav-og_image" onclick="switchTab('og_image')" class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"><svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> تصویر اشتراک گذاری</button>
-            <button id="nav-source_encoding" onclick="switchTab('source_encoding')" class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"><svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg> اسکن سورس کد</button>
-            <button id="nav-favicon" onclick="switchTab('favicon')" class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"><svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg> بررسی آیکون (Favicon)</button>
-        </nav>
+        <div
+          class="w-1.5 h-1.5 rounded-full bg-status-ok shadow-[0_0_6px_rgba(16,185,129,0.5)]"
+        ></div>
+      </div>
+
+      <nav class="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+        <div
+          class="px-3 text-[10px] font-bold text-brand-muted tracking-widest mb-3 mt-2"
+        >
+          عمومی
+        </div>
+        <button
+          id="nav-dashboard"
+          onclick="switchTab('dashboard')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors bg-white/10 text-white font-medium border border-white/5"
+        >
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+            ></path>
+          </svg>
+          داشبورد اصلی
+        </button>
+        <button
+          id="nav-settings"
+          onclick="switchTab('settings')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
+        >
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            ></path>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            ></path>
+          </svg>
+          تنظیمات (URLs)
+        </button>
+
+        <div
+          class="px-3 text-[10px] font-bold text-brand-muted tracking-widest mb-3 mt-8"
+        >
+          ابزارهای اسکن
+        </div>
+
+        <button
+          id="nav-health"
+          onclick="switchTab('health')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
+        >
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+            ></path>
+          </svg>
+          سلامت سرور (Health)
+        </button>
+        <button
+          id="nav-title"
+          onclick="switchTab('title')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
+        >
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+            ></path>
+          </svg>
+          عنوان سایت (Title)
+        </button>
+        <button
+          id="nav-description"
+          onclick="switchTab('description')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
+        >
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 12h16M4 18h7"
+            ></path>
+          </svg>
+          متای توضیحات
+        </button>
+        <button
+          id="nav-og_image"
+          onclick="switchTab('og_image')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
+        >
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+            ></path>
+          </svg>
+          تصویر اشتراک گذاری
+        </button>
+        <button
+          id="nav-source_encoding"
+          onclick="switchTab('source_encoding')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
+        >
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+            ></path>
+          </svg>
+          اسکن سورس کد
+        </button>
+        <button
+          id="nav-favicon"
+          onclick="switchTab('favicon')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
+        >
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+            ></path>
+          </svg>
+          بررسی آیکون (Favicon)
+        </button>
+      </nav>
     </aside>
 
-    <main class="flex-1 flex flex-col h-screen overflow-hidden relative bg-brand-bg">
-        <div id="views-container" class="flex-1 overflow-y-auto">
-            
-            <div id="view-dashboard" class="view-panel flex flex-col h-full fade-in px-8 py-8 max-w-[1400px] mx-auto w-full">
-                <div class="flex items-end justify-between mb-8 pb-6 border-b border-brand-border">
-                    <div>
-                        <h2 class="text-3xl font-bold text-white tracking-tight">بررسی دامین ها</h2>
-                        <div class="flex items-center gap-6 mt-3 text-sm text-brand-muted font-mono">
-                            <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-status-ok shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div> <span id="stat-healthy">0</span> سالم</div>
-                            <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-status-err shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div> <span id="stat-errors">0</span> دارای خطا</div>
-                            <div class="flex items-center gap-2"><div class="w-2 h-2 rounded-full status-warn"></div> <span id="stat-warns">0</span> بررسی دستی</div>
-                            <div class="flex items-center gap-2 text-zinc-500"><div class="w-2 h-2 rounded-full status-skip"></div> <span id="stat-skips">0</span> بررسی‌نشده</div>
-                            <div class="flex items-center gap-2 text-zinc-500"><div class="w-2 h-2 rounded-full bg-zinc-600"></div> انجام‌شده توسط شما: <span id="progress-text">0/0</span></div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-3">
-                        <button onclick="openAllBaseUrls()" class="btn-subtle px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2" title="باز کردن تمام تب ها">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> تب ها
-                        </button>
-                        <button onclick="archiveData()" class="btn-subtle px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg> آرشیو روزانه
-                        </button>
-                        <button id="btn-run-all" onclick="runAllToolsConcurrently()" class="btn-primary px-5 py-2 rounded-md text-xs flex items-center justify-center gap-2 w-44">
-                            <div class="flex items-center gap-2 normal-state">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                <span>اجرای همه ربات ها</span>
-                            </div>
-                            <div class="spinner hidden"></div>
-                        </button>
-                    </div>
+    <main
+      class="flex-1 flex flex-col h-screen overflow-hidden relative bg-brand-bg"
+    >
+      <div id="views-container" class="flex-1 overflow-y-auto">
+        <div
+          id="view-dashboard"
+          class="view-panel flex flex-col h-full fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        >
+          <div
+            class="flex items-end justify-between mb-8 pb-6 border-b border-brand-border"
+          >
+            <div>
+              <h2 class="text-3xl font-bold text-white tracking-tight">
+                بررسی دامین ها
+              </h2>
+              <div
+                class="flex items-center gap-6 mt-3 text-sm text-brand-muted font-mono"
+              >
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-2 h-2 rounded-full bg-status-ok shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                  ></div>
+                  <span id="stat-healthy">0</span> سالم
                 </div>
-
-                <div id="scan-progress" class="hidden mb-6 border border-brand-border rounded-lg bg-brand-panel p-4">
-                    <div class="flex items-center justify-between gap-4 text-xs">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <div id="scan-spin" class="spinner" style="display:block"></div>
-                            <span id="scan-title" class="font-bold text-white">در حال اسکن</span>
-                            <span id="scan-count" class="font-mono text-zinc-400"></span>
-                            <bdi id="scan-url" dir="ltr" class="font-mono text-zinc-500 truncate"></bdi>
-                        </div>
-                        <button id="btn-stop" onclick="stopScan()" class="btn-subtle px-3 py-1.5 rounded-md border border-brand-border text-red-400 text-[11px] font-bold shrink-0">توقف اسکن</button>
-                    </div>
-                    <div class="w-full h-1.5 bg-zinc-800 rounded mt-3 overflow-hidden"><div id="scan-bar" class="h-full bg-white transition-all" style="width:0%"></div></div>
-                    <div id="scan-msg" class="text-[11px] text-zinc-400 mt-2"></div>
+                <div class="flex items-center gap-2">
+                  <div
+                    class="w-2 h-2 rounded-full bg-status-err shadow-[0_0_8px_rgba(239,68,68,0.5)]"
+                  ></div>
+                  <span id="stat-errors">0</span> دارای خطا
                 </div>
-
-                <div class="flex items-center justify-between gap-4 mb-6">
-                    <div class="relative w-80">
-                        <svg class="w-4 h-4 text-zinc-500 absolute top-2.5 right-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        <input type="text" id="search-input" onkeyup="renderMainTable()" placeholder="جستجوی دامنه ها ..." class="w-full bg-brand-panel border border-brand-border text-white text-xs rounded-md pr-9 pl-4 py-2.5 focus:outline-none focus:border-zinc-400 transition-colors placeholder-zinc-600">
-                    </div>
-                    
-                    <div class="flex bg-brand-panel border border-brand-border rounded-md overflow-hidden text-xs font-medium">
-                        <button onclick="setFilter('all')" id="filter-all" class="filter-btn px-4 py-2 bg-white/10 text-white">همه سایت ها</button>
-                        <button onclick="setFilter('errors')" id="filter-errors" class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border">خطادار ها</button>
-                        <button onclick="setFilter('warns')" id="filter-warns" class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border">بررسی دستی</button>
-                        <button onclick="setFilter('todo')" id="filter-todo" class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border">بررسی نشده ها</button>
-                        <button onclick="setFilter('done')" id="filter-done" class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border">انجام شده ها</button>
-                    </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full status-warn"></div>
+                  <span id="stat-warns">0</span> بررسی دستی
                 </div>
-                
-                <div class="flex-1 flex flex-col border border-brand-border rounded-lg bg-brand-panel overflow-hidden shadow-2xl">
-                    <div class="table-grid px-6 py-3 border-b border-brand-border bg-white/[0.02] text-[11px] font-bold text-zinc-400 tracking-wide text-right">
-                        <div class="text-center">وضعیت</div>
-                        <div class="text-right pl-4">آدرس دامنه</div>
-                        <div class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500">
-                            <span>H</span><span>T</span><span>D</span><span>O</span><span>S</span><span>F</span>
-                        </div>
-                        <div class="text-left">عملیات</div>
-                    </div>
-                    <div id="main-data-list" class="overflow-y-auto flex-1 text-right"></div>
+                <div class="flex items-center gap-2 text-zinc-500">
+                  <div class="w-2 h-2 rounded-full status-skip"></div>
+                  <span id="stat-skips">0</span> بررسی‌نشده
                 </div>
-                
-                <div class="mt-3 text-left">
-                    <button onclick="resetDoneList()" class="text-[11px] font-medium text-zinc-500 hover:text-zinc-300 transition-colors border-b border-dashed border-zinc-600 pb-0.5">ریست لیست انجام شده ها</button>
+                <div class="flex items-center gap-2 text-zinc-500">
+                  <div class="w-2 h-2 rounded-full bg-zinc-600"></div>
+                  انجام‌شده توسط شما: <span id="progress-text">0/0</span>
                 </div>
+              </div>
             </div>
 
-            <!-- پنل مدیریت URLها (عرض یکسان 1400px) -->
-            <div id="view-settings" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full">
-                <div class="flex items-end justify-between mb-6 pb-6 border-b border-brand-border">
-                    <div>
-                        <h2 class="text-2xl font-bold text-white tracking-tight">تنظیمات و مدیریت لینک‌ها</h2>
-                        <p class="text-xs text-brand-muted mt-2">افزودن گروهی، ویرایش، حذف و مرتب‌سازی فایل دامنه‌ها</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="saveUrlsList()" class="btn-primary px-5 py-2 rounded-md text-xs flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
-                            <span id="save-urls-text">ذخیره تغییرات در فایل</span>
-                        </button>
-                    </div>
+            <div class="flex gap-3">
+              <button
+                onclick="openAllBaseUrls()"
+                class="btn-subtle px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2"
+                title="باز کردن تمام تب ها"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                  ></path>
+                </svg>
+                تب ها
+              </button>
+              <button
+                onclick="archiveData()"
+                class="btn-subtle px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+                  ></path>
+                </svg>
+                آرشیو روزانه
+              </button>
+              <button
+                id="btn-run-all"
+                onclick="runAllToolsConcurrently()"
+                class="btn-primary px-5 py-2 rounded-md text-xs flex items-center justify-center gap-2 w-44"
+              >
+                <div class="flex items-center gap-2 normal-state">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                    ></path>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
+                  </svg>
+                  <span>اجرای همه ربات ها</span>
                 </div>
+                <div class="spinner hidden"></div>
+              </button>
+            </div>
+          </div>
 
-                <div class="flex flex-col gap-3 mb-6">
-                    <textarea id="new-url-input" placeholder="https://example1.com&#10;example2.com&#10;می‌توانید چندین دامنه را زیر هم کپی/پیست کنید..." class="w-full bg-brand-panel border border-brand-border text-white text-[13px] font-mono rounded-md px-4 py-3 min-h-[120px] focus:outline-none focus:border-zinc-400 text-left resize-y" dir="ltr"></textarea>
-                    <div class="flex justify-end">
-                        <button onclick="addUrlToList()" class="btn-subtle bg-white/5 px-6 py-2.5 border border-brand-border rounded-md text-[12px] font-bold text-white hover:bg-white/10">افزودن دامنه‌ها</button>
-                    </div>
-                </div>
+          <div
+            id="scan-progress"
+            class="hidden mb-6 border border-brand-border rounded-lg bg-brand-panel p-4"
+          >
+            <div class="flex items-center justify-between gap-4 text-xs">
+              <div class="flex items-center gap-3 min-w-0">
+                <div
+                  id="scan-spin"
+                  class="spinner"
+                  style="display: block"
+                ></div>
+                <span id="scan-title" class="font-bold text-white"
+                  >در حال اسکن</span
+                >
+                <span id="scan-count" class="font-mono text-zinc-400"></span>
+                <bdi
+                  id="scan-url"
+                  dir="ltr"
+                  class="font-mono text-zinc-500 truncate"
+                ></bdi>
+              </div>
+              <button
+                id="btn-stop"
+                onclick="stopScan()"
+                class="btn-subtle px-3 py-1.5 rounded-md border border-brand-border text-red-400 text-[11px] font-bold shrink-0"
+              >
+                توقف اسکن
+              </button>
+            </div>
+            <div class="w-full h-1.5 bg-zinc-800 rounded mt-3 overflow-hidden">
+              <div
+                id="scan-bar"
+                class="h-full bg-white transition-all"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div id="scan-msg" class="text-[11px] text-zinc-400 mt-2"></div>
+          </div>
 
-                <div class="flex-1 flex flex-col border border-brand-border rounded-lg bg-brand-panel overflow-hidden shadow-lg">
-                    <div class="flex justify-between items-center px-6 py-3 border-b border-brand-border bg-white/[0.02]">
-                        <span class="text-[11px] font-bold text-zinc-400 tracking-wide">لیست دامنه‌ها (<span id="settings-url-count">0</span>) - <span class="text-zinc-500 font-normal">برای جابه‌جایی درگ کنید</span></span>
-                        <div class="flex gap-4">
-                            <button onclick="copyAllSettingsUrls()" class="text-[11px] font-bold text-zinc-500 hover:text-white transition-colors">کپی همه لیست</button>
-                            <button onclick="clearAllSettingsUrls()" class="text-[11px] font-bold text-rose-500/70 hover:text-rose-400 transition-colors">حذف همه</button>
-                        </div>
-                    </div>
-                    <div id="settings-url-list" class="overflow-y-auto flex-1 p-2 space-y-1"></div>
-                </div>
+          <div class="flex items-center justify-between gap-4 mb-6">
+            <div class="relative w-80">
+              <svg
+                class="w-4 h-4 text-zinc-500 absolute top-2.5 right-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                ></path>
+              </svg>
+              <input
+                type="text"
+                id="search-input"
+                onkeyup="renderMainTable()"
+                placeholder="جستجوی دامنه ها ..."
+                class="w-full bg-brand-panel border border-brand-border text-white text-xs rounded-md pr-9 pl-4 py-2.5 focus:outline-none focus:border-zinc-400 transition-colors placeholder-zinc-600"
+              />
             </div>
 
-            <!-- پنل گزارش ابزارها (عرض یکسان 1400px) -->
-            <div id="view-health" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
-            <div id="view-title" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
-            <div id="view-description" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
-            <div id="view-og_image" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
-            <div id="view-source_encoding" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
-            <div id="view-favicon" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
+            <div
+              class="flex bg-brand-panel border border-brand-border rounded-md overflow-hidden text-xs font-medium"
+            >
+              <button
+                onclick="setFilter('all')"
+                id="filter-all"
+                class="filter-btn px-4 py-2 bg-white/10 text-white"
+              >
+                همه سایت ها
+              </button>
+              <button
+                onclick="setFilter('errors')"
+                id="filter-errors"
+                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border"
+              >
+                خطادار ها
+              </button>
+              <button
+                onclick="setFilter('warns')"
+                id="filter-warns"
+                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border"
+              >
+                بررسی دستی
+              </button>
+              <button
+                onclick="setFilter('todo')"
+                id="filter-todo"
+                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border"
+              >
+                بررسی نشده ها
+              </button>
+              <button
+                onclick="setFilter('done')"
+                id="filter-done"
+                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border"
+              >
+                انجام شده ها
+              </button>
+            </div>
+          </div>
 
+          <div
+            class="flex-1 flex flex-col border border-brand-border rounded-lg bg-brand-panel overflow-hidden shadow-2xl"
+          >
+            <div
+              class="table-grid px-6 py-3 border-b border-brand-border bg-white/[0.02] text-[11px] font-bold text-zinc-400 tracking-wide text-right"
+            >
+              <div class="text-center">وضعیت</div>
+              <div class="text-right pl-4">آدرس دامنه</div>
+              <div
+                class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500"
+              >
+                <span>H</span><span>T</span><span>D</span><span>O</span
+                ><span>S</span><span>F</span>
+              </div>
+              <div class="text-left">عملیات</div>
+            </div>
+            <div
+              id="main-data-list"
+              class="overflow-y-auto flex-1 text-right"
+            ></div>
+          </div>
+
+          <div class="mt-3 text-left">
+            <button
+              onclick="resetDoneList()"
+              class="text-[11px] font-medium text-zinc-500 hover:text-zinc-300 transition-colors border-b border-dashed border-zinc-600 pb-0.5"
+            >
+              ریست لیست انجام شده ها
+            </button>
+          </div>
         </div>
+
+        <!-- پنل مدیریت URLها (عرض یکسان 1400px) -->
+        <div
+          id="view-settings"
+          class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        >
+          <div
+            class="flex items-end justify-between mb-6 pb-6 border-b border-brand-border"
+          >
+            <div>
+              <h2 class="text-2xl font-bold text-white tracking-tight">
+                تنظیمات و مدیریت لینک‌ها
+              </h2>
+              <p class="text-xs text-brand-muted mt-2">
+                افزودن گروهی، ویرایش، حذف و مرتب‌سازی فایل دامنه‌ها
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <button
+                onclick="saveUrlsList()"
+                class="btn-primary px-5 py-2 rounded-md text-xs flex items-center gap-2"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
+                  ></path>
+                </svg>
+                <span id="save-urls-text">ذخیره تغییرات در فایل</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-3 mb-6">
+            <textarea
+              id="new-url-input"
+              placeholder="https://example1.com&#10;example2.com&#10;می‌توانید چندین دامنه را زیر هم کپی/پیست کنید..."
+              class="w-full bg-brand-panel border border-brand-border text-white text-[13px] font-mono rounded-md px-4 py-3 min-h-[120px] focus:outline-none focus:border-zinc-400 text-left resize-y"
+              dir="ltr"
+            ></textarea>
+            <div class="flex justify-end">
+              <button
+                onclick="addUrlToList()"
+                class="btn-subtle bg-white/5 px-6 py-2.5 border border-brand-border rounded-md text-[12px] font-bold text-white hover:bg-white/10"
+              >
+                افزودن دامنه‌ها
+              </button>
+            </div>
+          </div>
+
+          <div
+            class="flex-1 flex flex-col border border-brand-border rounded-lg bg-brand-panel overflow-hidden shadow-lg"
+          >
+            <div
+              class="flex justify-between items-center px-6 py-3 border-b border-brand-border bg-white/[0.02]"
+            >
+              <span class="text-[11px] font-bold text-zinc-400 tracking-wide"
+                >لیست دامنه‌ها (<span id="settings-url-count">0</span>) -
+                <span class="text-zinc-500 font-normal"
+                  >برای جابه‌جایی درگ کنید</span
+                ></span
+              >
+              <div class="flex gap-4">
+                <button
+                  onclick="copyAllSettingsUrls()"
+                  class="text-[11px] font-bold text-zinc-500 hover:text-white transition-colors"
+                >
+                  کپی همه لیست
+                </button>
+                <button
+                  onclick="clearAllSettingsUrls()"
+                  class="text-[11px] font-bold text-rose-500/70 hover:text-rose-400 transition-colors"
+                >
+                  حذف همه
+                </button>
+              </div>
+            </div>
+            <div
+              id="settings-url-list"
+              class="overflow-y-auto flex-1 p-2 space-y-1"
+            ></div>
+          </div>
+        </div>
+
+        <!-- پنل گزارش ابزارها (عرض یکسان 1400px) -->
+        <div
+          id="view-health"
+          class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        ></div>
+        <div
+          id="view-title"
+          class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        ></div>
+        <div
+          id="view-description"
+          class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        ></div>
+        <div
+          id="view-og_image"
+          class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        ></div>
+        <div
+          id="view-source_encoding"
+          class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        ></div>
+        <div
+          id="view-favicon"
+          class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        ></div>
+      </div>
     </main>
 
     <!-- Drawer (کشوی جزئیات سایت) -->
-    <div id="drawer-overlay" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden transition-opacity opacity-0" onclick="closeDrawer()"></div>
-    <div id="site-drawer" class="fixed top-0 left-0 h-full w-[420px] bg-brand-bg shadow-[20px_0_40px_rgba(0,0,0,0.8)] z-50 drawer-closed transition-transform duration-200 border-r border-brand-border flex flex-col text-right">
-        
-        <div class="px-6 py-5 border-b border-brand-border flex justify-between items-center bg-brand-panel">
-            <div class="flex items-center gap-1.5 flex-1 overflow-hidden" dir="ltr">
-                <bdi class="text-sm font-mono font-bold text-white truncate text-left" id="drawer-title">domain.com</bdi>
-            </div>
-            <div class="flex items-center gap-2 shrink-0">
-                <button id="btn-drawer-retry" class="btn-subtle px-3 py-1.5 rounded-md text-[11px] font-bold border border-brand-border flex items-center gap-1.5">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> اسکن سریع
-                </button>
-                <button onclick="closeDrawer()" class="btn-subtle p-1.5 rounded-md">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                </button>
-            </div>
+    <div
+      id="drawer-overlay"
+      class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden transition-opacity opacity-0"
+      onclick="closeDrawer()"
+    ></div>
+    <div
+      id="site-drawer"
+      class="fixed top-0 left-0 h-full w-[420px] bg-brand-bg shadow-[20px_0_40px_rgba(0,0,0,0.8)] z-50 drawer-closed transition-transform duration-200 border-r border-brand-border flex flex-col text-right"
+    >
+      <div
+        class="px-6 py-5 border-b border-brand-border flex justify-between items-center bg-brand-panel"
+      >
+        <div class="flex items-center gap-1.5 flex-1 overflow-hidden" dir="ltr">
+          <bdi
+            class="text-sm font-mono font-bold text-white truncate text-left"
+            id="drawer-title"
+            >domain.com</bdi
+          >
         </div>
-        
-        <div class="flex-1 overflow-y-auto p-6 space-y-4" id="drawer-content"></div>
-        
-        <div class="p-5 border-t border-brand-border bg-brand-panel flex gap-3">
-            <button id="drawer-btn-copy" class="btn-subtle px-4 py-2.5 rounded-md flex items-center justify-center border border-brand-border transition-colors hover:text-white" title="کپی نام دامنه">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
-            </button>
-            <!-- دکمه تب‌ها که باگ داشت، اصلاح شد -->
-            <button id="drawer-btn-tabs" class="flex-1 btn-primary py-2.5 rounded-md flex items-center justify-center gap-2 text-xs font-bold">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg> باز کردن تب های بررسی
-            </button>
+        <div class="flex items-center gap-2 shrink-0">
+          <button
+            id="btn-drawer-retry"
+            class="btn-subtle px-3 py-1.5 rounded-md text-[11px] font-bold border border-brand-border flex items-center gap-1.5"
+          >
+            <svg
+              class="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              ></path>
+            </svg>
+            اسکن سریع
+          </button>
+          <button onclick="closeDrawer()" class="btn-subtle p-1.5 rounded-md">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
+            </svg>
+          </button>
         </div>
+      </div>
+
+      <div
+        class="flex-1 overflow-y-auto p-6 space-y-4"
+        id="drawer-content"
+      ></div>
+
+      <div class="p-5 border-t border-brand-border bg-brand-panel flex gap-3">
+
+
+        <button
+          id="drawer-btn-copy"
+          class="btn-subtle px-4 py-2.5 rounded-md flex items-center justify-center border border-brand-border transition-colors hover:text-white"
+          title="کپی نام دامنه"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+            ></path>
+          </svg>
+        </button>
+                <!-- دکمه ایندکس گوگل -->
+        <button
+          id="drawer-btn-google"
+          class="btn-subtle px-4 py-2.5 rounded-md flex items-center justify-center border border-brand-border transition-colors hover:text-white"
+          title="بررسی ایندکس گوگل"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
+        </button>
+        <!-- دکمه تب‌ها که باگ داشت، اصلاح شد -->
+        <button
+          id="drawer-btn-tabs"
+          class="flex-1 btn-primary py-2.5 rounded-md flex items-center justify-center gap-2 text-xs font-bold"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            ></path>
+          </svg>
+          باز کردن تب های بررسی
+        </button>
+      </div>
     </div>
 
     <script>
-        // ---------- ابزار امنیتی: متن سایت‌ها هرگز به‌صورت HTML اجرا نمی‌شود ----------
-        function esc(v) {
-            return String(v ?? '').replace(/[&<>"'`]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'}[c]));
+      // ---------- ابزار امنیتی: متن سایت‌ها هرگز به‌صورت HTML اجرا نمی‌شود ----------
+      function esc(v) {
+        return String(v ?? "").replace(
+          /[&<>"'`]/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+              "`": "&#96;",
+            })[c],
+        );
+      }
+      function safeHttpUrl(u) {
+        u = String(u || "").replace(/^'/, "");
+        return /^https?:\/\//i.test(u) ? u : "";
+      }
+      function normKey(u) {
+        u = String(u || "").trim();
+        if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(u)) u = "https://" + u;
+        try {
+          const p = new URL(u);
+          let path = p.pathname === "/" ? "" : p.pathname;
+          return (p.protocol + "//" + p.host + path + p.search)
+            .toLowerCase()
+            .replace(/\/$/, "");
+        } catch (e) {
+          return u.toLowerCase().replace(/\/$/, "");
         }
-        function safeHttpUrl(u) {
-            u = String(u || '').replace(/^'/, '');
-            return /^https?:\/\//i.test(u) ? u : '';
-        }
-        function normKey(u) {
-            u = String(u || '').trim();
-            if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(u)) u = 'https://' + u;
-            try {
-                const p = new URL(u);
-                let path = (p.pathname === '/' ? '' : p.pathname);
-                return (p.protocol + '//' + p.host + path + p.search).toLowerCase().replace(/\/$/, '');
-            } catch (e) { return u.toLowerCase().replace(/\/$/, ''); }
-        }
+      }
 
-        const TOOL_NAMES = {health: 'سلامت سرور', title: 'تایتل', description: 'دیسکریپشن', og_image: 'عکس OG', source_encoding: 'سورس', favicon: 'فوآیکون'};
+      const TOOL_NAMES = {
+        health: "سلامت سرور",
+        title: "تایتل",
+        description: "دیسکریپشن",
+        og_image: "عکس OG",
+        source_encoding: "سورس",
+        favicon: "فوآیکون",
+      };
 
-        function generateToolHeader(title, desc, toolId) {
-            return `
+      function generateToolHeader(title, desc, toolId) {
+        return `
                 <div class="flex justify-between items-end mb-8 pb-6 border-b border-brand-border">
                     <div><h2 class="text-2xl font-bold text-white tracking-tight">${title}</h2><p class="text-xs text-brand-muted mt-2">${desc}</p></div>
                     <div class="flex space-x-reverse space-x-2">
@@ -311,130 +961,223 @@
                 <div class="tool-progress hidden mb-4 text-xs text-zinc-400 border border-brand-border rounded-md bg-brand-panel px-4 py-2.5"></div>
                 <div class="results-container flex-1 bg-brand-panel border border-brand-border rounded-lg overflow-hidden flex flex-col text-right"></div>
             `;
+      }
+
+      document.getElementById("view-health").innerHTML = generateToolHeader(
+        "سلامت سرور (Health)",
+        "DNS، SSL، کدهای HTTP، کلودفلر، صفحه سفید، صفحه محدودیت VPN/IP، ریدایرکت مشکوک",
+        "health",
+      );
+      document.getElementById("view-title").innerHTML = generateToolHeader(
+        "بررسی عنوان (Title)",
+        "فقط روی صفحه واقعی سایت؛ کلمات تستی/پیش‌فرض، کاراکتر خراب، حروف فارسی",
+        "title",
+      );
+      document.getElementById("view-description").innerHTML =
+        generateToolHeader(
+          "متای توضیحات (Description)",
+          "وجود، طول، کلمات تستی، کاراکتر خراب و تگ‌های تکراری",
+          "description",
+        );
+      document.getElementById("view-source_encoding").innerHTML =
+        generateToolHeader(
+          "اسکن سورس کد",
+          "کاراکتر �، متن به‌هم‌ریخته (mojibake) و بایت نامعتبر UTF-8",
+          "source_encoding",
+        );
+      document.getElementById("view-og_image").innerHTML = generateToolHeader(
+        "تصویر اشتراک گذاری (OG)",
+        "دانلود واقعی تصویر و بررسی کد، نوع و حجم فایل",
+        "og_image",
+      );
+      document.getElementById("view-favicon").innerHTML = generateToolHeader(
+        "بررسی آیکون (Favicon)",
+        "دانلود واقعی آیکون‌های تعریف‌شده یا favicon.ico",
+        "favicon",
+      );
+
+      window.fullDashboardData = [];
+      let currentFilter = "all";
+
+      // سطح وضعیت: ok سبز / err قرمز / warn نارنجی / skip خاکستری توخالی / idle خاکستری
+      function levelOf(statusStr) {
+        const s = String(statusStr || "")
+          .trim()
+          .replace(/^'/, "");
+        if (!s || s === "بررسی نشده" || s === "-") return "idle";
+        if (s.startsWith("سالم") || s.includes("بدون کاراکتر")) return "ok";
+        if (s.startsWith("خطا")) return "err";
+        if (s.startsWith("نیاز")) return "warn";
+        if (s.startsWith("بررسی نشد")) return "skip";
+        if (s.includes("خطا")) return "err";
+        if (s.includes("نیاز")) return "warn";
+        return "idle";
+      }
+      function getDotClass(statusStr) {
+        return "status-" + levelOf(statusStr);
+      }
+      function textClass(level) {
+        return (
+          {
+            ok: "text-status-ok",
+            err: "text-status-err",
+            warn: "text-status-warn",
+            skip: "text-zinc-400",
+            idle: "text-zinc-500",
+          }[level] || "text-zinc-500"
+        );
+      }
+      function bgDotClass(level) {
+        return (
+          {
+            ok: "bg-status-ok shadow-[0_0_8px_rgba(16,185,129,0.3)]",
+            err: "bg-status-err shadow-[0_0_8px_rgba(239,68,68,0.5)]",
+            warn: "status-warn",
+            skip: "status-skip",
+            idle: "bg-zinc-600",
+          }[level] || "bg-zinc-600"
+        );
+      }
+
+      function setFilter(filterName) {
+        currentFilter = filterName;
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.classList.remove("bg-white/10", "text-white");
+          btn.classList.add("bg-transparent", "text-zinc-400");
+        });
+        const activeBtn = document.getElementById(`filter-${filterName}`);
+        activeBtn.classList.remove("bg-transparent", "text-zinc-400");
+        activeBtn.classList.add("bg-white/10", "text-white");
+        renderMainTable();
+      }
+
+      function getDoneList() {
+        try {
+          return JSON.parse(localStorage.getItem("qa_dashboard_done")) || [];
+        } catch (e) {
+          return [];
+        }
+      }
+      function checkAndResetDailyCache() {
+        const today = new Date().toDateString();
+        const lastDate = localStorage.getItem("qa_dashboard_date");
+        if (lastDate !== today) {
+          localStorage.setItem("qa_dashboard_done", JSON.stringify([]));
+          localStorage.setItem("qa_dashboard_date", today);
+        }
+      }
+
+      function renderMainTable() {
+        const doneUrls = getDoneList().map(normKey);
+        const searchTerm = document
+          .getElementById("search-input")
+          .value.toLowerCase()
+          .trim();
+        const listEl = document.getElementById("main-data-list");
+        let c = { ok: 0, err: 0, warn: 0, skip: 0 };
+
+        window.fullDashboardData.forEach((item) => {
+          if (c[item.overall] !== undefined) c[item.overall]++;
+        });
+
+        const filteredData = window.fullDashboardData.filter((item) => {
+          const key = item.formatted_url;
+          if (searchTerm && !key.toLowerCase().includes(searchTerm))
+            return false;
+          const isDone = doneUrls.includes(key);
+          if (currentFilter === "errors" && item.overall !== "err")
+            return false;
+          if (
+            currentFilter === "warns" &&
+            item.overall !== "warn" &&
+            item.overall !== "skip"
+          )
+            return false;
+          if (currentFilter === "todo" && isDone) return false;
+          if (currentFilter === "done" && !isDone) return false;
+          return true;
+        });
+
+        const total = window.fullDashboardData.length;
+        const doneCount = window.fullDashboardData.filter((i) =>
+          doneUrls.includes(i.formatted_url),
+        ).length;
+        document.getElementById("progress-text").innerText =
+          `${doneCount}/${total}`;
+        document.getElementById("stat-healthy").innerText = c.ok;
+        document.getElementById("stat-errors").innerText = c.err;
+        document.getElementById("stat-warns").innerText = c.warn;
+        document.getElementById("stat-skips").innerText = c.skip;
+
+        if (filteredData.length === 0) {
+          listEl.innerHTML = `<div class="p-10 text-center text-sm text-zinc-500 font-medium">هیچ داده ای یافت نشد.</div>`;
+          return;
         }
 
-        document.getElementById('view-health').innerHTML = generateToolHeader('سلامت سرور (Health)', 'DNS، SSL، کدهای HTTP، کلودفلر، صفحه سفید، صفحه محدودیت VPN/IP، ریدایرکت مشکوک', 'health');
-        document.getElementById('view-title').innerHTML = generateToolHeader('بررسی عنوان (Title)', 'فقط روی صفحه واقعی سایت؛ کلمات تستی/پیش‌فرض، کاراکتر خراب، حروف فارسی', 'title');
-        document.getElementById('view-description').innerHTML = generateToolHeader('متای توضیحات (Description)', 'وجود، طول، کلمات تستی، کاراکتر خراب و تگ‌های تکراری', 'description');
-        document.getElementById('view-source_encoding').innerHTML = generateToolHeader('اسکن سورس کد', 'کاراکتر �، متن به‌هم‌ریخته (mojibake) و بایت نامعتبر UTF-8', 'source_encoding');
-        document.getElementById('view-og_image').innerHTML = generateToolHeader('تصویر اشتراک گذاری (OG)', 'دانلود واقعی تصویر و بررسی کد، نوع و حجم فایل', 'og_image');
-        document.getElementById('view-favicon').innerHTML = generateToolHeader('بررسی آیکون (Favicon)', 'دانلود واقعی آیکون‌های تعریف‌شده یا favicon.ico', 'favicon');
+        const tools = [
+          "health",
+          "title",
+          "description",
+          "og_image",
+          "source_encoding",
+          "favicon",
+        ];
+        let html = "";
+        filteredData.forEach((item) => {
+          const key = item.formatted_url;
+          const isDone = doneUrls.includes(key);
+          const originalIndex = window.fullDashboardData.indexOf(item);
+          const d = item.details;
+          const matrixHtml = tools
+            .map(
+              (t) =>
+                `<div class="status-wrapper" title="${esc(TOOL_NAMES[t] + ": " + (d[t]?.status || ""))}"><div class="status-dot ${getDotClass(d[t]?.status)}"></div></div>`,
+            )
+            .join("");
+          const globalDot =
+            {
+              err: "bg-status-err shadow-[0_0_8px_rgba(239,68,68,0.5)]",
+              warn: "status-warn",
+              skip: "status-skip",
+              ok: "bg-status-ok shadow-[0_0_8px_rgba(16,185,129,0.3)]",
+              idle: "bg-zinc-700",
+            }[item.overall] || "bg-zinc-700";
 
-        window.fullDashboardData = [];
-        let currentFilter = 'all';
-
-        // سطح وضعیت: ok سبز / err قرمز / warn نارنجی / skip خاکستری توخالی / idle خاکستری
-        function levelOf(statusStr) {
-            const s = String(statusStr || '').trim().replace(/^'/, '');
-            if (!s || s === 'بررسی نشده' || s === '-') return 'idle';
-            if (s.startsWith('سالم') || s.includes('بدون کاراکتر')) return 'ok';
-            if (s.startsWith('خطا')) return 'err';
-            if (s.startsWith('نیاز')) return 'warn';
-            if (s.startsWith('بررسی نشد')) return 'skip';
-            if (s.includes('خطا')) return 'err';
-            if (s.includes('نیاز')) return 'warn';
-            return 'idle';
-        }
-        function getDotClass(statusStr) { return 'status-' + levelOf(statusStr); }
-        function textClass(level) {
-            return {ok: 'text-status-ok', err: 'text-status-err', warn: 'text-status-warn', skip: 'text-zinc-400', idle: 'text-zinc-500'}[level] || 'text-zinc-500';
-        }
-        function bgDotClass(level) {
-            return {ok: 'bg-status-ok shadow-[0_0_8px_rgba(16,185,129,0.3)]', err: 'bg-status-err shadow-[0_0_8px_rgba(239,68,68,0.5)]', warn: 'status-warn', skip: 'status-skip', idle: 'bg-zinc-600'}[level] || 'bg-zinc-600';
-        }
-
-        function setFilter(filterName) {
-            currentFilter = filterName;
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('bg-white/10', 'text-white');
-                btn.classList.add('bg-transparent', 'text-zinc-400');
-            });
-            const activeBtn = document.getElementById(`filter-${filterName}`);
-            activeBtn.classList.remove('bg-transparent', 'text-zinc-400');
-            activeBtn.classList.add('bg-white/10', 'text-white');
-            renderMainTable();
-        }
-
-        function getDoneList() { try { return JSON.parse(localStorage.getItem('qa_dashboard_done')) || []; } catch (e) { return []; } }
-        function checkAndResetDailyCache() {
-            const today = new Date().toDateString();
-            const lastDate = localStorage.getItem('qa_dashboard_date');
-            if (lastDate !== today) { localStorage.setItem('qa_dashboard_done', JSON.stringify([])); localStorage.setItem('qa_dashboard_date', today); }
-        }
-
-        function renderMainTable() {
-            const doneUrls = getDoneList().map(normKey);
-            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
-            const listEl = document.getElementById('main-data-list');
-            let c = {ok: 0, err: 0, warn: 0, skip: 0};
-
-            window.fullDashboardData.forEach(item => { if (c[item.overall] !== undefined) c[item.overall]++; });
-
-            const filteredData = window.fullDashboardData.filter(item => {
-                const key = item.formatted_url;
-                if (searchTerm && !key.toLowerCase().includes(searchTerm)) return false;
-                const isDone = doneUrls.includes(key);
-                if (currentFilter === 'errors' && item.overall !== 'err') return false;
-                if (currentFilter === 'warns' && item.overall !== 'warn' && item.overall !== 'skip') return false;
-                if (currentFilter === 'todo' && isDone) return false;
-                if (currentFilter === 'done' && !isDone) return false;
-                return true;
-            });
-
-            const total = window.fullDashboardData.length;
-            const doneCount = window.fullDashboardData.filter(i => doneUrls.includes(i.formatted_url)).length;
-            document.getElementById('progress-text').innerText = `${doneCount}/${total}`;
-            document.getElementById('stat-healthy').innerText = c.ok;
-            document.getElementById('stat-errors').innerText = c.err;
-            document.getElementById('stat-warns').innerText = c.warn;
-            document.getElementById('stat-skips').innerText = c.skip;
-
-            if (filteredData.length === 0) {
-                listEl.innerHTML = `<div class="p-10 text-center text-sm text-zinc-500 font-medium">هیچ داده ای یافت نشد.</div>`;
-                return;
-            }
-
-            const tools = ['health', 'title', 'description', 'og_image', 'source_encoding', 'favicon'];
-            let html = '';
-            filteredData.forEach(item => {
-                const key = item.formatted_url;
-                const isDone = doneUrls.includes(key);
-                const originalIndex = window.fullDashboardData.indexOf(item);
-                const d = item.details;
-                const matrixHtml = tools.map(t => `<div class="status-wrapper" title="${esc(TOOL_NAMES[t] + ': ' + (d[t]?.status || ''))}"><div class="status-dot ${getDotClass(d[t]?.status)}"></div></div>`).join('');
-                const globalDot = {err: 'bg-status-err shadow-[0_0_8px_rgba(239,68,68,0.5)]', warn: 'status-warn', skip: 'status-skip', ok: 'bg-status-ok shadow-[0_0_8px_rgba(16,185,129,0.3)]', idle: 'bg-zinc-700'}[item.overall] || 'bg-zinc-700';
-
-                html += `
-                    <div class="table-grid px-6 py-3.5 data-row cursor-pointer ${isDone ? 'opacity-30 grayscale hover:opacity-100 hover:grayscale-0' : ''}" onclick="openDrawer(${originalIndex})">
+          html += `
+                    <div class="table-grid px-6 py-3.5 data-row cursor-pointer ${isDone ? "opacity-30 grayscale hover:opacity-100 hover:grayscale-0" : ""}" onclick="openDrawer(${originalIndex})">
                         <div class="flex justify-center"><div class="w-2 h-2 rounded-full ${globalDot}"></div></div>
                         <div class="overflow-hidden w-full text-left pl-2" dir="ltr">
                             <span class="font-mono text-[13px] text-zinc-200 block truncate">${esc(key)}</span>
                         </div>
                         <div class="flex items-center justify-between px-2" dir="ltr">${matrixHtml}</div>
                         <div class="flex justify-end pr-2">
-                            ${isDone ? `<span class="text-[9px] font-bold text-zinc-500 bg-white/5 border border-white/10 px-2 py-0.5 rounded">بررسی شده</span>` : ''}
+                            ${isDone ? `<span class="text-[9px] font-bold text-zinc-500 bg-white/5 border border-white/10 px-2 py-0.5 rounded">بررسی شده</span>` : ""}
                         </div>
                     </div>`;
-            });
-            listEl.innerHTML = html;
-        }
+        });
+        listEl.innerHTML = html;
+      }
 
-        async function loadDashboard() {
-            checkAndResetDailyCache();
-            try {
-                const res = await fetch('/urls');
-                window.fullDashboardData = await res.json();
-                renderMainTable();
-            } catch (err) { console.error("Error loading urls:", err); }
+      async function loadDashboard() {
+        checkAndResetDailyCache();
+        try {
+          const res = await fetch("/urls");
+          window.fullDashboardData = await res.json();
+          renderMainTable();
+        } catch (err) {
+          console.error("Error loading urls:", err);
         }
+      }
 
-        // text = متن ساده (escape می‌شود) ، html = محتوای ساخته‌شده توسط خود پنل
-        function createCardHtml(title, status, text, iconPath, html) {
-            const lvl = levelOf(status);
-            let body = '';
-            if (html) body = `<div class="p-4 text-[13px] text-zinc-400 font-medium leading-relaxed break-words w-full text-right">${html}</div>`;
-            else if (text && text !== '-') body = `<div class="p-4 text-[13px] text-zinc-400 font-medium leading-relaxed break-words w-full text-right" dir="auto">${esc(text)}</div>`;
-            return `
+      // text = متن ساده (escape می‌شود) ، html = محتوای ساخته‌شده توسط خود پنل
+      function createCardHtml(title, status, text, iconPath, html) {
+        const lvl = levelOf(status);
+        let body = "";
+        if (html)
+          body = `<div class="p-4 text-[13px] text-zinc-400 font-medium leading-relaxed break-words w-full text-right">${html}</div>`;
+        else if (text && text !== "-")
+          body = `<div class="p-4 text-[13px] text-zinc-400 font-medium leading-relaxed break-words w-full text-right" dir="auto">${esc(text)}</div>`;
+        return `
                 <div class="border border-brand-border rounded-md bg-white/[0.02] overflow-hidden text-right">
                     <div class="px-4 py-2.5 border-b border-brand-border flex justify-between items-start gap-3 bg-brand-panel">
                         <div class="flex items-center gap-2 shrink-0">
@@ -445,128 +1188,242 @@
                     </div>
                     ${body}
                 </div>`;
-        }
+      }
 
-        function copyDomainOnly(fullUrl) {
-            let domain = fullUrl.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
-            navigator.clipboard.writeText(domain).then(() => alert('دامنه کپی شد: ' + domain)).catch(() => alert('خطا در دسترسی به کلیپ‌بورد'));
-        }
+      function copyDomainOnly(fullUrl) {
+        let domain = fullUrl
+          .replace(/^(https?:\/\/)?(www\.)?/, "")
+          .split("/")[0];
+        navigator.clipboard
+          .writeText(domain)
+          .then(() => console.log("دامنه کپی شد: " + domain))
+          .catch(() => alert("خطا در دسترسی به کلیپ‌بورد"));
+      }
 
-        function openDrawer(index) {
-            const data = window.fullDashboardData[index];
-            if (!data) return;
-            const url = data.formatted_url;
-            document.getElementById('drawer-title').textContent = url;
-            document.getElementById('drawer-btn-copy').onclick = () => copyDomainOnly(url);
-            document.getElementById('drawer-btn-tabs').onclick = () => openCheckTabs(url);
 
-            document.getElementById('btn-drawer-retry').onclick = async function() {
-                const originalHtml = this.innerHTML;
-                this.innerHTML = '<div class="spinner !border-zinc-500 !block mx-auto"></div>';
-                this.disabled = true;
-                try {
-                    const r = await fetch('/retry_single', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({url: url}) });
-                    const j = await r.json().catch(() => ({}));
-                    if (!r.ok) alert(j.message || 'اسکن سریع انجام نشد.');
-                    await loadDashboard();
-                    const newIndex = window.fullDashboardData.findIndex(i => i.formatted_url === url);
-                    if (newIndex !== -1) openDrawer(newIndex);
-                } catch (e) { alert('خطا در ارتباط با سرور'); }
-                finally { this.innerHTML = originalHtml; this.disabled = false; }
-            };
+function openGoogleIndex(baseUrl) {
+    try {
+        const formatted = /^https?:\/\//i.test(baseUrl) ? baseUrl : 'https://' + baseUrl;
+        const domain = new URL(formatted).hostname.replace(/^www\./, '');
+        window.open(`https://www.google.com/search?q=site:${encodeURIComponent(domain)}`, '_blank');
+    } catch(e) {}
+}
 
-            const d = data.details;
-            const favUrl = safeHttpUrl(d.favicon.text);
-            const favHtml = `<div class="flex items-center w-full bg-brand-panel p-2.5 border border-brand-border rounded">${favUrl ? `<img src="${esc(favUrl)}" referrerpolicy="no-referrer" class="w-7 h-7 rounded border border-brand-border bg-brand-bg object-contain shrink-0 ml-3" onerror="this.style.display='none'">` : ''}<div class="truncate flex-1 text-left text-xs font-mono text-zinc-400" dir="ltr" title="${esc(d.favicon.text)}">${esc(d.favicon.text)}</div></div>`;
+      function openDrawer(index) {
+        const data = window.fullDashboardData[index];
+        if (!data) return;
+        const url = data.formatted_url;
+        document.getElementById("drawer-title").textContent = url;
+        document.getElementById("drawer-btn-copy").onclick = () =>
+          copyDomainOnly(url);
+          document.getElementById('drawer-btn-google').onclick = () => openGoogleIndex(url);
+        document.getElementById("drawer-btn-tabs").onclick = () =>
+          openCheckTabs(url);
 
-            const ogUrl = safeHttpUrl(d.og_image.text);
-            const ogHtml = `<div class="flex flex-col gap-3 w-full">${ogUrl ? `<div class="w-full bg-brand-bg border border-brand-border rounded flex items-center justify-center p-1"><img src="${esc(ogUrl)}" referrerpolicy="no-referrer" class="w-full rounded-sm max-h-40 object-cover" onerror="this.parentElement.style.display='none'"></div>` : ''}<div class="w-full truncate text-[11px] text-zinc-500 font-mono text-left" dir="ltr" title="${esc(d.og_image.text)}">${esc(d.og_image.text)}</div></div>`;
-
-            const fin = d.health.final_url && d.health.final_url !== '-' ? d.health.final_url : '';
-            const healthHtml = `<div dir="auto">${esc(d.health.text)}</div>${fin && normKey(fin) !== url ? `<div class="mt-2 text-[11px] font-mono text-zinc-500 text-left" dir="ltr">→ ${esc(fin)}</div>` : ''}`;
-
-            document.getElementById('drawer-content').innerHTML =
-                createCardHtml('سلامت سرور (Health)', d.health.status, null, "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", (d.health.text !== '-' || fin) ? healthHtml : '') +
-                createCardHtml('عنوان (Title)', d.title.status, d.title.text, "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z") +
-                createCardHtml('توضیحات (Description)', d.description.status, d.description.text, "M4 6h16M4 12h16M4 18h7") +
-                createCardHtml('تصویر اشتراک (OG)', d.og_image.status, null, "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z", ogHtml) +
-                createCardHtml('فوآیکون (Favicon)', d.favicon.status, null, "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z", favHtml) +
-                createCardHtml('کاراکترهای سورس', d.source_encoding.status, d.source_encoding.text, "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4");
-
-            document.getElementById('drawer-overlay').classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('drawer-overlay').classList.remove('opacity-0');
-                document.getElementById('drawer-overlay').classList.add('opacity-100');
-                document.getElementById('site-drawer').classList.remove('drawer-closed');
-                document.getElementById('site-drawer').classList.add('drawer-open');
-            }, 10);
-        }
-
-        function closeDrawer() {
-            document.getElementById('site-drawer').classList.remove('drawer-open');
-            document.getElementById('site-drawer').classList.add('drawer-closed');
-            document.getElementById('drawer-overlay').classList.remove('opacity-100');
-            document.getElementById('drawer-overlay').classList.add('opacity-0');
-            setTimeout(() => document.getElementById('drawer-overlay').classList.add('hidden'), 200);
-        }
-
-        function openCheckTabs(baseUrl) {
+        document.getElementById("btn-drawer-retry").onclick =
+          async function () {
+            const originalHtml = this.innerHTML;
+            this.innerHTML =
+              '<div class="spinner !border-zinc-500 !block mx-auto"></div>';
+            this.disabled = true;
             try {
-                const formatted = /^https?:\/\//i.test(baseUrl) ? baseUrl : 'https://' + baseUrl;
-                const domain = new URL(formatted).hostname.replace(/^www\./, '');
-                window.open(formatted, '_blank');
-                setTimeout(() => window.open(`${formatted.replace(/\/$/, '')}/robots.txt`, '_blank'), 150);
-                setTimeout(() => window.open(`https://www.google.com/search?q=site:${encodeURIComponent(domain)}`, '_blank'), 300);
-
-                const key = normKey(formatted);
-                const doneUrls = getDoneList().map(normKey);
-                if (!doneUrls.includes(key)) { doneUrls.push(key); localStorage.setItem('qa_dashboard_done', JSON.stringify(doneUrls)); }
-                renderMainTable();
-            } catch (e) { alert("فرمت لینک نامعتبر است"); }
-        }
-
-        function resetDoneList() { if (confirm('لیست تاریخچه انجام شده ها پاک شود؟')) { localStorage.setItem('qa_dashboard_done', JSON.stringify([])); renderMainTable(); } }
-
-        function openAllBaseUrls() {
-            const list = window.fullDashboardData.map(item => item.formatted_url);
-            if (list.length === 0) return;
-            if (confirm(`باز کردن ${list.length} تب به صورت همزمان؟ (پاپ‌آپ بلاکر باید خاموش باشد)`)) {
-                list.forEach((u, i) => setTimeout(() => window.open(u, '_blank'), i * 120));
+              const r = await fetch("/retry_single", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: url }),
+              });
+              const j = await r.json().catch(() => ({}));
+              if (!r.ok) alert(j.message || "اسکن سریع انجام نشد.");
+              await loadDashboard();
+              const newIndex = window.fullDashboardData.findIndex(
+                (i) => i.formatted_url === url,
+              );
+              if (newIndex !== -1) openDrawer(newIndex);
+            } catch (e) {
+              alert("خطا در ارتباط با سرور");
+            } finally {
+              this.innerHTML = originalHtml;
+              this.disabled = false;
             }
+          };
+
+        const d = data.details;
+        const favUrl = safeHttpUrl(d.favicon.text);
+        const favHtml = `<div class="flex items-center w-full bg-brand-panel p-2.5 border border-brand-border rounded">${favUrl ? `<img src="${esc(favUrl)}" referrerpolicy="no-referrer" class="w-7 h-7 rounded border border-brand-border bg-brand-bg object-contain shrink-0 ml-3" onerror="this.style.display='none'">` : ""}<div class="truncate flex-1 text-left text-xs font-mono text-zinc-400" dir="ltr" title="${esc(d.favicon.text)}">${esc(d.favicon.text)}</div></div>`;
+
+        const ogUrl = safeHttpUrl(d.og_image.text);
+        const ogHtml = `<div class="flex flex-col gap-3 w-full">${ogUrl ? `<div class="w-full bg-brand-bg border border-brand-border rounded flex items-center justify-center p-1"><img src="${esc(ogUrl)}" referrerpolicy="no-referrer" class="w-full rounded-sm max-h-40 object-cover" onerror="this.parentElement.style.display='none'"></div>` : ""}<div class="w-full truncate text-[11px] text-zinc-500 font-mono text-left" dir="ltr" title="${esc(d.og_image.text)}">${esc(d.og_image.text)}</div></div>`;
+
+        const fin =
+          d.health.final_url && d.health.final_url !== "-"
+            ? d.health.final_url
+            : "";
+        const healthHtml = `<div dir="auto">${esc(d.health.text)}</div>${fin && normKey(fin) !== url ? `<div class="mt-2 text-[11px] font-mono text-zinc-500 text-left" dir="ltr">→ ${esc(fin)}</div>` : ""}`;
+
+        document.getElementById("drawer-content").innerHTML =
+          createCardHtml(
+            "سلامت سرور (Health)",
+            d.health.status,
+            null,
+            "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z",
+            d.health.text !== "-" || fin ? healthHtml : "",
+          ) +
+          createCardHtml(
+            "عنوان (Title)",
+            d.title.status,
+            d.title.text,
+            "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
+          ) +
+          createCardHtml(
+            "توضیحات (Description)",
+            d.description.status,
+            d.description.text,
+            "M4 6h16M4 12h16M4 18h7",
+          ) +
+          createCardHtml(
+            "تصویر اشتراک (OG)",
+            d.og_image.status,
+            null,
+            "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z",
+            ogHtml,
+          ) +
+          createCardHtml(
+            "فوآیکون (Favicon)",
+            d.favicon.status,
+            null,
+            "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
+            favHtml,
+          ) +
+          createCardHtml(
+            "کاراکترهای سورس",
+            d.source_encoding.status,
+            d.source_encoding.text,
+            "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4",
+          );
+
+        document.getElementById("drawer-overlay").classList.remove("hidden");
+        setTimeout(() => {
+          document
+            .getElementById("drawer-overlay")
+            .classList.remove("opacity-0");
+          document
+            .getElementById("drawer-overlay")
+            .classList.add("opacity-100");
+          document
+            .getElementById("site-drawer")
+            .classList.remove("drawer-closed");
+          document.getElementById("site-drawer").classList.add("drawer-open");
+        }, 10);
+      }
+
+      function closeDrawer() {
+        document.getElementById("site-drawer").classList.remove("drawer-open");
+        document.getElementById("site-drawer").classList.add("drawer-closed");
+        document
+          .getElementById("drawer-overlay")
+          .classList.remove("opacity-100");
+        document.getElementById("drawer-overlay").classList.add("opacity-0");
+        setTimeout(
+          () =>
+            document.getElementById("drawer-overlay").classList.add("hidden"),
+          200,
+        );
+      }
+
+      function openCheckTabs(baseUrl) {
+        try {
+          const formatted = /^https?:\/\//i.test(baseUrl)
+            ? baseUrl
+            : "https://" + baseUrl;
+          const domain = new URL(formatted).hostname.replace(/^www\./, "");
+          window.open(formatted, "_blank");
+          setTimeout(
+            () =>
+              window.open(
+                `${formatted.replace(/\/$/, "")}/robots.txt`,
+                "_blank",
+              ),
+            150,
+          );
+          setTimeout(
+            () =>
+              window.open(
+                `https://www.google.com/search?q=site:${encodeURIComponent(domain)}`,
+                "_blank",
+              ),
+            300,
+          );
+
+          const key = normKey(formatted);
+          const doneUrls = getDoneList().map(normKey);
+          if (!doneUrls.includes(key)) {
+            doneUrls.push(key);
+            localStorage.setItem("qa_dashboard_done", JSON.stringify(doneUrls));
+          }
+          renderMainTable();
+        } catch (e) {
+          alert("فرمت لینک نامعتبر است");
         }
+      }
 
-        async function archiveData() {
-            if (!confirm('اطلاعات امروز آرشیو و سیستم صفر شود؟')) return;
-            try {
-                const res = await fetch('/archive', { method: 'POST' });
-                const data = await res.json();
-                alert(data.message);
-                loadDashboard();
-            } catch (e) { alert('خطا در فرآیند آرشیو'); }
+      function resetDoneList() {
+        if (confirm("لیست تاریخچه انجام شده ها پاک شود؟")) {
+          localStorage.setItem("qa_dashboard_done", JSON.stringify([]));
+          renderMainTable();
         }
+      }
 
-        // --- مدیریت دامنه ها ---
-        window.settingsUrls = [];
-        let dragStartIndex = null;
-
-        async function loadSettingsUrls() {
-            try {
-                const res = await fetch('/api/urls/raw');
-                window.settingsUrls = await res.json();
-                renderSettingsUrls();
-            } catch (e) { console.error("Error loading raw urls", e); }
+      function openAllBaseUrls() {
+        const list = window.fullDashboardData.map((item) => item.formatted_url);
+        if (list.length === 0) return;
+        if (
+          confirm(
+            `باز کردن ${list.length} تب به صورت همزمان؟ (پاپ‌آپ بلاکر باید خاموش باشد)`,
+          )
+        ) {
+          list.forEach((u, i) =>
+            setTimeout(() => window.open(u, "_blank"), i * 120),
+          );
         }
+      }
 
-        function renderSettingsUrls() {
-            const listEl = document.getElementById('settings-url-list');
-            document.getElementById('settings-url-count').innerText = window.settingsUrls.length;
-            if (window.settingsUrls.length === 0) {
-                listEl.innerHTML = `<div class="p-8 text-center text-zinc-500 text-sm font-medium">هیچ لینکی یافت نشد.</div>`;
-                return;
-            }
-            let html = '';
-            window.settingsUrls.forEach((url, idx) => {
-                html += `
+      async function archiveData() {
+        if (!confirm("اطلاعات امروز آرشیو و سیستم صفر شود؟")) return;
+        try {
+          const res = await fetch("/archive", { method: "POST" });
+          const data = await res.json();
+          alert(data.message);
+          loadDashboard();
+        } catch (e) {
+          alert("خطا در فرآیند آرشیو");
+        }
+      }
+
+      // --- مدیریت دامنه ها ---
+      window.settingsUrls = [];
+      let dragStartIndex = null;
+
+      async function loadSettingsUrls() {
+        try {
+          const res = await fetch("/api/urls/raw");
+          window.settingsUrls = await res.json();
+          renderSettingsUrls();
+        } catch (e) {
+          console.error("Error loading raw urls", e);
+        }
+      }
+
+      function renderSettingsUrls() {
+        const listEl = document.getElementById("settings-url-list");
+        document.getElementById("settings-url-count").innerText =
+          window.settingsUrls.length;
+        if (window.settingsUrls.length === 0) {
+          listEl.innerHTML = `<div class="p-8 text-center text-zinc-500 text-sm font-medium">هیچ لینکی یافت نشد.</div>`;
+          return;
+        }
+        let html = "";
+        window.settingsUrls.forEach((url, idx) => {
+          html += `
                     <div draggable="true" ondragstart="dragStart(event, ${idx})" ondragend="dragEnd(event)" ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="drop(event, ${idx})"
                          class="flex justify-between items-center bg-white/[0.02] hover:bg-white/5 border border-transparent hover:border-brand-border rounded-md px-4 py-2.5 transition-colors cursor-move group">
                         <div class="flex items-center gap-3 flex-1 overflow-hidden pointer-events-none" dir="ltr">
@@ -579,217 +1436,331 @@
                             <button onclick="removeUrl(${idx})" class="btn-subtle p-1.5 rounded text-zinc-500 hover:text-red-500" title="حذف"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                         </div>
                     </div>`;
-            });
-            listEl.innerHTML = html;
+        });
+        listEl.innerHTML = html;
+      }
+
+      function dragStart(e, idx) {
+        dragStartIndex = idx;
+        e.dataTransfer.effectAllowed = "move";
+        setTimeout(() => (e.target.style.opacity = "0.5"), 0);
+      }
+      function dragEnd(e) {
+        e.target.style.opacity = "1";
+        document
+          .querySelectorAll("div[draggable]")
+          .forEach((el) => el.classList.remove("drag-over"));
+      }
+      function dragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        const t = e.target.closest("div[draggable]");
+        if (t) t.classList.add("drag-over");
+      }
+      function dragLeave(e) {
+        const t = e.target.closest("div[draggable]");
+        if (t) t.classList.remove("drag-over");
+      }
+      function drop(e, dropIndex) {
+        e.preventDefault();
+        const t = e.target.closest("div[draggable]");
+        if (t) t.classList.remove("drag-over");
+        if (dragStartIndex !== null && dragStartIndex !== dropIndex) {
+          const item = window.settingsUrls.splice(dragStartIndex, 1)[0];
+          window.settingsUrls.splice(dropIndex, 0, item);
+          renderSettingsUrls();
+        }
+        dragStartIndex = null;
+      }
+
+      function addUrlToList() {
+        const input = document.getElementById("new-url-input");
+        const existing = new Set(window.settingsUrls.map(normKey));
+        const newUrls = input.value
+          .split("\n")
+          .map((u) => u.trim())
+          .filter((u) => u.length > 0);
+        let dup = 0;
+        newUrls.forEach((u) => {
+          const k = normKey(u);
+          if (existing.has(k)) dup++;
+          else {
+            existing.add(k);
+            window.settingsUrls.push(u);
+          }
+        });
+        input.value = "";
+        renderSettingsUrls();
+        if (dup) alert(`${dup} لینک تکراری بود و اضافه نشد.`);
+      }
+
+      function removeUrl(idx) {
+        window.settingsUrls.splice(idx, 1);
+        renderSettingsUrls();
+      }
+      function clearAllSettingsUrls() {
+        if (confirm("کل لیست حذف شود؟")) {
+          window.settingsUrls = [];
+          renderSettingsUrls();
+        }
+      }
+      function copyAllSettingsUrls() {
+        navigator.clipboard
+          .writeText(window.settingsUrls.join("\n"))
+          .then(() => alert("همه لینک‌ها کپی شدند"));
+      }
+      function copySingleUrl(idx) {
+        navigator.clipboard.writeText(window.settingsUrls[idx] || "");
+      }
+
+      async function saveUrlsList() {
+        const btnText = document.getElementById("save-urls-text");
+        btnText.innerText = "در حال ذخیره...";
+        try {
+          const r = await fetch("/api/urls/save", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ urls: window.settingsUrls }),
+          });
+          if (!r.ok) throw new Error();
+          alert("فایل با موفقیت ذخیره شد!");
+          loadSettingsUrls();
+          loadDashboard();
+        } catch (e) {
+          alert("خطا در ذخیره سازی");
+        }
+        btnText.innerText = "ذخیره تغییرات در فایل";
+      }
+
+      let currentTab = "dashboard";
+      function switchTab(tabId) {
+        currentTab = tabId;
+        document
+          .querySelectorAll(".view-panel")
+          .forEach((el) => el.classList.add("hidden"));
+        document.getElementById(`view-${tabId}`).classList.remove("hidden");
+        document.querySelectorAll(".nav-btn").forEach((el) => {
+          el.classList.remove("bg-white/10", "text-white", "border-white/5");
+          el.classList.add("text-brand-muted", "border-transparent");
+        });
+        const activeBtn = document.getElementById(`nav-${tabId}`);
+        activeBtn.classList.remove("text-brand-muted", "border-transparent");
+        activeBtn.classList.add("bg-white/10", "text-white", "border-white/5");
+        if (tabId === "dashboard") loadDashboard();
+        else if (tabId === "settings") loadSettingsUrls();
+        else loadResult(tabId);
+      }
+
+      // ---------- اجرای اسکن و نمایش پیشرفت زنده ----------
+      let pollTimer = null,
+        lastRunning = false,
+        lastRefreshDone = -1;
+
+      function setButtonsBusy(busy) {
+        const master = document.getElementById("btn-run-all");
+        master.querySelector(".normal-state").classList.toggle("hidden", busy);
+        master.querySelector(".spinner").style.display = busy
+          ? "block"
+          : "none";
+        master.disabled = busy;
+        document.querySelectorAll(".btn-run").forEach((b) => {
+          b.querySelector(".normal-state").classList.toggle("hidden", busy);
+          b.querySelector(".spinner").style.display = busy ? "block" : "none";
+          b.disabled = busy;
+        });
+        document.getElementById("btn-drawer-retry").disabled = busy;
+      }
+
+      async function startJob(endpoint) {
+        try {
+          const r = await fetch(endpoint, { method: "POST" });
+          const j = await r.json().catch(() => ({}));
+          if (r.status === 409) {
+            alert(j.message || "یک اسکن در حال اجراست.");
+          } else if (!r.ok) {
+            alert("شروع اسکن انجام نشد.");
+            return;
+          }
+        } catch (e) {
+          alert("خطا در ارتباط با سرور");
+          return;
+        }
+        lastRefreshDone = -1;
+        pollProgress();
+      }
+
+      function runAllToolsConcurrently() {
+        if (
+          !confirm(
+            "اسکن کامل همه سایت‌ها شروع شود؟ (گزارش‌های فعلی جایگزین می‌شوند)",
+          )
+        )
+          return;
+        startJob("/run_all");
+      }
+      function runToolProcess(toolId) {
+        startJob(`/run/${toolId}`);
+      }
+      async function stopScan() {
+        if (!confirm("اسکن بعد از سایت جاری متوقف شود؟")) return;
+        await fetch("/stop", { method: "POST" }).catch(() => {});
+        document.getElementById("scan-msg").textContent =
+          "درخواست توقف ثبت شد؛ بعد از سایت جاری متوقف می‌شود ...";
+      }
+
+      async function pollProgress() {
+        clearTimeout(pollTimer);
+        let p = {};
+        try {
+          p = await (await fetch("/progress")).json();
+        } catch (e) {
+          pollTimer = setTimeout(pollProgress, 4000);
+          return;
+        }
+        const box = document.getElementById("scan-progress");
+        const running = !!p.running;
+        const total = p.total || 0,
+          done = p.done || 0;
+        const pct = total ? Math.min(100, Math.round((done * 100) / total)) : 0;
+        const tools = (p.tools || []).map((t) => TOOL_NAMES[t] || t).join("، ");
+
+        if (running || (p.state && p.state !== "done" && p.message)) {
+          box.classList.remove("hidden");
+          document.getElementById("scan-spin").style.display = running
+            ? "block"
+            : "none";
+          document.getElementById("btn-stop").style.display = running
+            ? ""
+            : "none";
+          document.getElementById("scan-title").textContent = running
+            ? `در حال اسکن (${tools})`
+            : p.state === "stopped"
+              ? "اسکن متوقف شد"
+              : "اسکن ناقص ماند";
+          document.getElementById("scan-count").textContent = total
+            ? `${done}/${total} — ${pct}%`
+            : "";
+          document.getElementById("scan-url").textContent = p.current_url || "";
+          document.getElementById("scan-bar").style.width = pct + "%";
+          document.getElementById("scan-msg").textContent = running
+            ? p.phase || ""
+            : p.message || "";
+          document.getElementById("scan-msg").className =
+            "text-[11px] mt-2 " +
+            (running ? "text-zinc-400" : "text-status-warn");
+        } else {
+          box.classList.add("hidden");
         }
 
-        function dragStart(e, idx) { dragStartIndex = idx; e.dataTransfer.effectAllowed = 'move'; setTimeout(() => e.target.style.opacity = '0.5', 0); }
-        function dragEnd(e) { e.target.style.opacity = '1'; document.querySelectorAll('div[draggable]').forEach(el => el.classList.remove('drag-over')); }
-        function dragOver(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; const t = e.target.closest('div[draggable]'); if (t) t.classList.add('drag-over'); }
-        function dragLeave(e) { const t = e.target.closest('div[draggable]'); if (t) t.classList.remove('drag-over'); }
-        function drop(e, dropIndex) {
-            e.preventDefault();
-            const t = e.target.closest('div[draggable]'); if (t) t.classList.remove('drag-over');
-            if (dragStartIndex !== null && dragStartIndex !== dropIndex) {
-                const item = window.settingsUrls.splice(dragStartIndex, 1)[0];
-                window.settingsUrls.splice(dropIndex, 0, item);
-                renderSettingsUrls();
-            }
-            dragStartIndex = null;
+        document.querySelectorAll(".tool-progress").forEach((el) => {
+          const toolId = el.parentElement.id.replace("view-", "");
+          if (running && (p.tools || []).includes(toolId)) {
+            el.classList.remove("hidden");
+            el.textContent = `در حال اسکن: ${done}/${total} (${pct}%) — ${p.current_url || ""}`;
+          } else el.classList.add("hidden");
+        });
+
+        setButtonsBusy(running);
+
+        // رفرش تدریجی نتایج هر ۵ سایت
+        if (running && done !== lastRefreshDone && done % 5 === 0) {
+          lastRefreshDone = done;
+          if (currentTab === "dashboard") loadDashboard();
+          else if (currentTab !== "settings") loadResult(currentTab);
+        }
+        if (lastRunning && !running) {
+          if (currentTab === "dashboard") loadDashboard();
+          else if (currentTab !== "settings") loadResult(currentTab);
+          if (p.state === "done") loadDashboard();
+        }
+        lastRunning = running;
+        pollTimer = setTimeout(pollProgress, running ? 2000 : 10000);
+      }
+
+      async function deleteResult(toolId) {
+        if (!confirm("گزارش فایل حذف شود؟")) return;
+        const r = await fetch(`/delete/${toolId}`, { method: "POST" });
+        if (r.status === 409) alert("این ابزار در حال اسکن است.");
+        loadResult(toolId);
+        loadDashboard();
+      }
+
+      function createEmptyState() {
+        return `<div class="flex-1 flex flex-col items-center justify-center p-16"><div class="w-12 h-12 border border-brand-border rounded bg-brand-bg flex items-center justify-center mb-5 shadow-sm"><svg class="w-6 h-6 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012-2v2M7 7h10"></path></svg></div><p class="text-sm font-bold text-zinc-500">هیچ اطلاعاتی یافت نشد</p></div>`;
+      }
+
+      async function loadResult(toolId) {
+        const container = document.querySelector(
+          `#view-${toolId} .results-container`,
+        );
+        let data;
+        try {
+          data = await (await fetch(`/results/${toolId}`)).json();
+        } catch (e) {
+          return;
+        }
+        if (data.status === "empty" || !data.data || data.data.length === 0) {
+          container.innerHTML = createEmptyState();
+          return;
         }
 
-        function addUrlToList() {
-            const input = document.getElementById('new-url-input');
-            const existing = new Set(window.settingsUrls.map(normKey));
-            const newUrls = input.value.split('\n').map(u => u.trim()).filter(u => u.length > 0);
-            let dup = 0;
-            newUrls.forEach(u => { const k = normKey(u); if (existing.has(k)) dup++; else { existing.add(k); window.settingsUrls.push(u); } });
-            input.value = '';
-            renderSettingsUrls();
-            if (dup) alert(`${dup} لینک تکراری بود و اضافه نشد.`);
-        }
-
-        function removeUrl(idx) { window.settingsUrls.splice(idx, 1); renderSettingsUrls(); }
-        function clearAllSettingsUrls() { if (confirm('کل لیست حذف شود؟')) { window.settingsUrls = []; renderSettingsUrls(); } }
-        function copyAllSettingsUrls() { navigator.clipboard.writeText(window.settingsUrls.join('\n')).then(() => alert('همه لینک‌ها کپی شدند')); }
-        function copySingleUrl(idx) { navigator.clipboard.writeText(window.settingsUrls[idx] || ''); }
-
-        async function saveUrlsList() {
-            const btnText = document.getElementById('save-urls-text');
-            btnText.innerText = 'در حال ذخیره...';
-            try {
-                const r = await fetch('/api/urls/save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ urls: window.settingsUrls }) });
-                if (!r.ok) throw new Error();
-                alert('فایل با موفقیت ذخیره شد!');
-                loadSettingsUrls();
-                loadDashboard();
-            } catch (e) { alert('خطا در ذخیره سازی'); }
-            btnText.innerText = 'ذخیره تغییرات در فایل';
-        }
-
-        let currentTab = 'dashboard';
-        function switchTab(tabId) {
-            currentTab = tabId;
-            document.querySelectorAll('.view-panel').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`view-${tabId}`).classList.remove('hidden');
-            document.querySelectorAll('.nav-btn').forEach(el => {
-                el.classList.remove('bg-white/10', 'text-white', 'border-white/5');
-                el.classList.add('text-brand-muted', 'border-transparent');
-            });
-            const activeBtn = document.getElementById(`nav-${tabId}`);
-            activeBtn.classList.remove('text-brand-muted', 'border-transparent');
-            activeBtn.classList.add('bg-white/10', 'text-white', 'border-white/5');
-            if (tabId === 'dashboard') loadDashboard();
-            else if (tabId === 'settings') loadSettingsUrls();
-            else loadResult(tabId);
-        }
-
-        // ---------- اجرای اسکن و نمایش پیشرفت زنده ----------
-        let pollTimer = null, lastRunning = false, lastRefreshDone = -1;
-
-        function setButtonsBusy(busy) {
-            const master = document.getElementById('btn-run-all');
-            master.querySelector('.normal-state').classList.toggle('hidden', busy);
-            master.querySelector('.spinner').style.display = busy ? 'block' : 'none';
-            master.disabled = busy;
-            document.querySelectorAll('.btn-run').forEach(b => {
-                b.querySelector('.normal-state').classList.toggle('hidden', busy);
-                b.querySelector('.spinner').style.display = busy ? 'block' : 'none';
-                b.disabled = busy;
-            });
-            document.getElementById('btn-drawer-retry').disabled = busy;
-        }
-
-        async function startJob(endpoint) {
-            try {
-                const r = await fetch(endpoint, { method: 'POST' });
-                const j = await r.json().catch(() => ({}));
-                if (r.status === 409) { alert(j.message || 'یک اسکن در حال اجراست.'); }
-                else if (!r.ok) { alert('شروع اسکن انجام نشد.'); return; }
-            } catch (e) { alert('خطا در ارتباط با سرور'); return; }
-            lastRefreshDone = -1;
-            pollProgress();
-        }
-
-        function runAllToolsConcurrently() {
-            if (!confirm('اسکن کامل همه سایت‌ها شروع شود؟ (گزارش‌های فعلی جایگزین می‌شوند)')) return;
-            startJob('/run_all');
-        }
-        function runToolProcess(toolId) { startJob(`/run/${toolId}`); }
-        async function stopScan() {
-            if (!confirm('اسکن بعد از سایت جاری متوقف شود؟')) return;
-            await fetch('/stop', { method: 'POST' }).catch(() => {});
-            document.getElementById('scan-msg').textContent = 'درخواست توقف ثبت شد؛ بعد از سایت جاری متوقف می‌شود ...';
-        }
-
-        async function pollProgress() {
-            clearTimeout(pollTimer);
-            let p = {};
-            try { p = await (await fetch('/progress')).json(); } catch (e) { pollTimer = setTimeout(pollProgress, 4000); return; }
-            const box = document.getElementById('scan-progress');
-            const running = !!p.running;
-            const total = p.total || 0, done = p.done || 0;
-            const pct = total ? Math.min(100, Math.round(done * 100 / total)) : 0;
-            const tools = (p.tools || []).map(t => TOOL_NAMES[t] || t).join('، ');
-
-            if (running || (p.state && p.state !== 'done' && p.message)) {
-                box.classList.remove('hidden');
-                document.getElementById('scan-spin').style.display = running ? 'block' : 'none';
-                document.getElementById('btn-stop').style.display = running ? '' : 'none';
-                document.getElementById('scan-title').textContent = running ? `در حال اسکن (${tools})` : (p.state === 'stopped' ? 'اسکن متوقف شد' : 'اسکن ناقص ماند');
-                document.getElementById('scan-count').textContent = total ? `${done}/${total} — ${pct}%` : '';
-                document.getElementById('scan-url').textContent = p.current_url || '';
-                document.getElementById('scan-bar').style.width = pct + '%';
-                document.getElementById('scan-msg').textContent = running ? (p.phase || '') : (p.message || '');
-                document.getElementById('scan-msg').className = 'text-[11px] mt-2 ' + (running ? 'text-zinc-400' : 'text-status-warn');
-            } else {
-                box.classList.add('hidden');
-            }
-
-            document.querySelectorAll('.tool-progress').forEach(el => {
-                const toolId = el.parentElement.id.replace('view-', '');
-                if (running && (p.tools || []).includes(toolId)) {
-                    el.classList.remove('hidden');
-                    el.textContent = `در حال اسکن: ${done}/${total} (${pct}%) — ${p.current_url || ''}`;
-                } else el.classList.add('hidden');
-            });
-
-            setButtonsBusy(running);
-
-            // رفرش تدریجی نتایج هر ۵ سایت
-            if (running && done !== lastRefreshDone && done % 5 === 0) {
-                lastRefreshDone = done;
-                if (currentTab === 'dashboard') loadDashboard(); else if (currentTab !== 'settings') loadResult(currentTab);
-            }
-            if (lastRunning && !running) {
-                if (currentTab === 'dashboard') loadDashboard(); else if (currentTab !== 'settings') loadResult(currentTab);
-                if (p.state === 'done') loadDashboard();
-            }
-            lastRunning = running;
-            pollTimer = setTimeout(pollProgress, running ? 2000 : 10000);
-        }
-
-        async function deleteResult(toolId) {
-            if (!confirm('گزارش فایل حذف شود؟')) return;
-            const r = await fetch(`/delete/${toolId}`, { method: 'POST' });
-            if (r.status === 409) alert('این ابزار در حال اسکن است.');
-            loadResult(toolId); loadDashboard();
-        }
-
-        function createEmptyState() {
-            return `<div class="flex-1 flex flex-col items-center justify-center p-16"><div class="w-12 h-12 border border-brand-border rounded bg-brand-bg flex items-center justify-center mb-5 shadow-sm"><svg class="w-6 h-6 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012-2v2M7 7h10"></path></svg></div><p class="text-sm font-bold text-zinc-500">هیچ اطلاعاتی یافت نشد</p></div>`;
-        }
-
-        async function loadResult(toolId) {
-            const container = document.querySelector(`#view-${toolId} .results-container`);
-            let data;
-            try { data = await (await fetch(`/results/${toolId}`)).json(); } catch (e) { return; }
-            if (data.status === 'empty' || !data.data || data.data.length === 0) { container.innerHTML = createEmptyState(); return; }
-
-            if (toolId === 'og_image') {
-                const successes = data.data.filter(i => levelOf(i.Status) === 'ok');
-                const others = data.data.filter(i => levelOf(i.Status) !== 'ok');
-                let html = `<div class="flex gap-5 h-full p-5 bg-brand-bg">
+        if (toolId === "og_image") {
+          const successes = data.data.filter((i) => levelOf(i.Status) === "ok");
+          const others = data.data.filter((i) => levelOf(i.Status) !== "ok");
+          let html = `<div class="flex gap-5 h-full p-5 bg-brand-bg">
                     <div class="w-2/3 bg-brand-panel border border-brand-border rounded-lg overflow-hidden flex flex-col">
                         <div class="bg-white/[0.02] px-5 py-3 border-b border-brand-border flex justify-between items-center text-right">
                             <h3 class="text-xs font-bold text-zinc-300">تصاویر سالم <span class="text-zinc-600 mr-2 text-[10px] bg-brand-bg px-2 py-0.5 rounded border border-brand-border">${successes.length} مورد</span></h3>
                         </div>
                         <div class="overflow-y-auto p-5 flex-1 grid grid-cols-2 gap-4 content-start" dir="ltr">`;
-                successes.forEach(item => {
-                    const img = safeHttpUrl(item['Image URL']);
-                    html += `<div class="bg-brand-bg border border-brand-border p-2.5 rounded-md flex items-center gap-3">${img ? `<img src="${esc(img)}" referrerpolicy="no-referrer" loading="lazy" class="w-12 h-12 rounded-[4px] object-cover border border-zinc-800 bg-black shrink-0" onerror="this.style.display='none'">` : ''}<div class="w-full min-w-0"><div class="text-[11px] text-zinc-300 font-mono truncate">${esc(item.URL)}</div><div class="text-[10px] text-zinc-500 font-mono truncate" title="${esc(item['Image URL'])}">${esc(item['Image URL'])}</div></div></div>`;
-                });
-                html += `</div></div><div class="w-1/3 bg-brand-panel border border-brand-border rounded-lg overflow-hidden flex flex-col"><div class="bg-white/[0.02] px-5 py-3 border-b border-brand-border text-right"><h3 class="text-xs font-bold text-status-err">خطا / بررسی دستی / بررسی‌نشده <span class="text-status-err/50 mr-2 text-[10px] bg-red-950/30 border border-red-900/50 px-2 py-0.5 rounded">${others.length} مورد</span></h3></div><div class="overflow-y-auto p-5 space-y-3 flex-1 text-right">`;
-                others.forEach(item => {
-                    const lvl = levelOf(item.Status);
-                    html += `<div class="bg-brand-bg border border-brand-border p-3.5 rounded-md text-[10px] flex flex-col gap-2"><div class="font-bold text-zinc-300 truncate font-mono text-left" dir="ltr">${esc(item.URL)}</div><div class="text-zinc-600 font-mono truncate text-left" dir="ltr">${esc(item['Image URL'])}</div><div class="font-bold ${textClass(lvl)} mt-1">${esc(item.Status)}</div></div>`;
-                });
-                html += `</div></div></div>`;
-                container.innerHTML = html; return;
-            }
-
-            const keys = Object.keys(data.data[0]).filter(k => !k.startsWith('_'));
-            let html = '<div class="overflow-y-auto flex-1"><table class="w-full text-right text-[13px]"><thead class="bg-white/[0.02] sticky top-0 border-b border-brand-border text-zinc-500 font-bold text-[11px] tracking-wide"><tr>';
-            keys.forEach(key => html += `<th class="px-5 py-3">${esc(key)}</th>`);
-            html += '</tr></thead><tbody class="divide-y divide-brand-border bg-brand-panel">';
-            data.data.forEach(row => {
-                const lvl = levelOf(row['Status']);
-                html += `<tr class="data-row">`;
-                keys.forEach(key => {
-                    const v = row[key] ?? '';
-                    html += `<td class="px-5 py-3.5 align-middle">`;
-                    if (key === 'URL' || key === 'Final URL' || key.endsWith('URL')) html += `<bdi dir="ltr" class="max-w-[260px] inline-block truncate text-zinc-300 font-mono text-[12px] text-left" title="${esc(v)}">${esc(v)}</bdi>`;
-                    else if (key === 'Status') html += `<div class="flex items-center justify-end gap-2.5"><span class="${textClass(lvl)} text-[11px] font-bold">${esc(v)}</span><div class="w-2 h-2 rounded-full ${bgDotClass(lvl)} shrink-0"></div></div>`;
-                    else html += `<div class="max-w-md text-zinc-400 break-words leading-relaxed" dir="auto">${esc(v)}</div>`;
-                    html += `</td>`;
-                });
-                html += '</tr>';
-            });
-            html += '</tbody></table></div>';
-            container.innerHTML = html;
+          successes.forEach((item) => {
+            const img = safeHttpUrl(item["Image URL"]);
+            html += `<div class="bg-brand-bg border border-brand-border p-2.5 rounded-md flex items-center gap-3">${img ? `<img src="${esc(img)}" referrerpolicy="no-referrer" loading="lazy" class="w-12 h-12 rounded-[4px] object-cover border border-zinc-800 bg-black shrink-0" onerror="this.style.display='none'">` : ""}<div class="w-full min-w-0"><div class="text-[11px] text-zinc-300 font-mono truncate">${esc(item.URL)}</div><div class="text-[10px] text-zinc-500 font-mono truncate" title="${esc(item["Image URL"])}">${esc(item["Image URL"])}</div></div></div>`;
+          });
+          html += `</div></div><div class="w-1/3 bg-brand-panel border border-brand-border rounded-lg overflow-hidden flex flex-col"><div class="bg-white/[0.02] px-5 py-3 border-b border-brand-border text-right"><h3 class="text-xs font-bold text-status-err">خطا / بررسی دستی / بررسی‌نشده <span class="text-status-err/50 mr-2 text-[10px] bg-red-950/30 border border-red-900/50 px-2 py-0.5 rounded">${others.length} مورد</span></h3></div><div class="overflow-y-auto p-5 space-y-3 flex-1 text-right">`;
+          others.forEach((item) => {
+            const lvl = levelOf(item.Status);
+            html += `<div class="bg-brand-bg border border-brand-border p-3.5 rounded-md text-[10px] flex flex-col gap-2"><div class="font-bold text-zinc-300 truncate font-mono text-left" dir="ltr">${esc(item.URL)}</div><div class="text-zinc-600 font-mono truncate text-left" dir="ltr">${esc(item["Image URL"])}</div><div class="font-bold ${textClass(lvl)} mt-1">${esc(item.Status)}</div></div>`;
+          });
+          html += `</div></div></div>`;
+          container.innerHTML = html;
+          return;
         }
 
-        window.onload = () => { loadDashboard(); pollProgress(); };
+        const keys = Object.keys(data.data[0]).filter(
+          (k) => !k.startsWith("_"),
+        );
+        let html =
+          '<div class="overflow-y-auto flex-1"><table class="w-full text-right text-[13px]"><thead class="bg-white/[0.02] sticky top-0 border-b border-brand-border text-zinc-500 font-bold text-[11px] tracking-wide"><tr>';
+        keys.forEach(
+          (key) => (html += `<th class="px-5 py-3">${esc(key)}</th>`),
+        );
+        html +=
+          '</tr></thead><tbody class="divide-y divide-brand-border bg-brand-panel">';
+        data.data.forEach((row) => {
+          const lvl = levelOf(row["Status"]);
+          html += `<tr class="data-row">`;
+          keys.forEach((key) => {
+            const v = row[key] ?? "";
+            html += `<td class="px-5 py-3.5 align-middle">`;
+            if (key === "URL" || key === "Final URL" || key.endsWith("URL"))
+              html += `<bdi dir="ltr" class="max-w-[260px] inline-block truncate text-zinc-300 font-mono text-[12px] text-left" title="${esc(v)}">${esc(v)}</bdi>`;
+            else if (key === "Status")
+              html += `<div class="flex items-center justify-end gap-2.5"><span class="${textClass(lvl)} text-[11px] font-bold">${esc(v)}</span><div class="w-2 h-2 rounded-full ${bgDotClass(lvl)} shrink-0"></div></div>`;
+            else
+              html += `<div class="max-w-md text-zinc-400 break-words leading-relaxed" dir="auto">${esc(v)}</div>`;
+            html += `</td>`;
+          });
+          html += "</tr>";
+        });
+        html += "</tbody></table></div>";
+        container.innerHTML = html;
+      }
+
+      window.onload = () => {
+        loadDashboard();
+        pollProgress();
+      };
     </script>
-</body>
+  </body>
 </html>
