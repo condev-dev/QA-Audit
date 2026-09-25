@@ -9,8 +9,10 @@ check_favicon.py - بررسی فوآیکون
   - اولین آیکون سالم → سالم
   - آیکون تعریف‌شده خراب ولی آیکون دیگری سالم → سالم با توضیح
   - هیچ آیکون سالمی نیست → خطا (یا «نیاز به بررسی دستی» اگر فقط به خاطر 403/شبکه دانلود نشد)
+  - سقف زمان دانلود آیکون‌های هر سایت qc.ASSET_BUDGET_S است تا سایت خراب، اسکن را کند نکند.
 """
 import sys
+import time
 from urllib.parse import urlsplit
 import qa_core as qc
 
@@ -43,6 +45,8 @@ def analyze(ctx, snap):
     tries = declared[:MAX_TRY] if declared else [default_ico]
 
     results = []
+    # سقف زمان: اگر سایت تعداد زیادی آیکون خراب/کند داشته باشد، اسکن معطل نماند
+    deadline = time.time() + qc.ASSET_BUDGET_S
     for u in tries:
         level, reason = qc.check_asset(ctx, u, base)
         results.append((u, level, reason))
@@ -52,6 +56,8 @@ def analyze(ctx, snap):
             if u != tries[0]:
                 return {'Favicon URL': u, 'Status': f'سالم ({reason}) — آیکون اول خراب بود: {results[0][2]}'}
             return {'Favicon URL': u, 'Status': f'سالم ({reason})'}
+        if time.time() > deadline:
+            break
 
     u0, _, r0 = results[0]
     if any(lv == 'warn' for _, lv, _ in results) and not any(lv == 'err' for _, lv, _ in results):

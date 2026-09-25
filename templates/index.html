@@ -817,7 +817,7 @@
               <button
                 onclick="llPasteAndExtract()"
                 class="btn-subtle px-4 py-2 rounded-md text-xs font-medium border border-brand-border flex items-center gap-2"
-                title="خواندن مستقیم از کلیپ‌بورد و استخراج فوری"
+                title="متن و لیست قبلی پاک می‌شود و فقط لینک‌های داخل کلیپ‌بورد استخراج می‌شوند"
               >
                 <svg
                   class="w-4 h-4"
@@ -2388,21 +2388,28 @@ function openGoogleIndex(baseUrl) {
   }
 
   async function pasteAndExtract() {
+    var t = "";
     try {
-      var t = await navigator.clipboard.readText();
-      if (!t || !t.trim()) {
-        toast("کلیپ‌بورد خالی است؛ متن را داخل کادر پیست کنید.", "err");
-        return;
-      }
-      var inp = $("ll-input");
-      if (inp) {
-        var cur = (inp.value || "").replace(/\s+$/, "");
-        inp.value = cur ? cur + "\n\n" + t : t;
-      }
-      extract();
+      t = await navigator.clipboard.readText();
     } catch (e) {
       toast("خواندن کلیپ‌بورد ممکن نشد؛ با Ctrl+V پیست کنید.", "err");
+      return;
     }
+    if (!t || !t.trim()) {
+      toast("کلیپ‌بورد خالی است؛ چیزی جایگزین نشد.", "err");
+      return;
+    }
+    // طبق درخواست: هرچه از قبل هست پاک می‌شود و فقط لینک‌های همین کلیپ‌بورد می‌مانند
+    state.items = [];
+    state.stats = null;
+    save();
+    render();
+    var inp = $("ll-input");
+    if (inp) {
+      inp.value = t;
+      inp.scrollTop = 0;
+    }
+    extract();
   }
 
   function inputKey(e) {

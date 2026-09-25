@@ -47,7 +47,17 @@ MAX_ATTEMPTS = 3                # تعداد تلاش برای هر سایت د�
 RETRY_STATUSES = {429, 500, 502, 503, 504, 520, 521, 522, 523, 524}
 PAUSE_RANGE = (1.0, 2.5)        # مکث تصادفی بین سایت‌ها (رفتار انسانی، جلوگیری از بلاک)
 HEADLESS = os.environ.get('QA_HEADLESS', '1') != '0'   # برای دیدن مرورگر: QA_HEADLESS=0
-REDIRECT_SAME_BRAND_OK = True   # ریدایرکت delbet.art → delbet.xyz سالم حساب شود (هم‌برند)
+REDIRECT_SAME_BRAND_OK = os.environ.get('QA_SAME_BRAND_REDIRECT_OK', '1') != '0'
+# ↑ پیش‌فرض دقیقا مثل قبل است (ریدایرکت به دامنه‌ی هم‌برند سالم حساب می‌شود).
+#   اگر خواستی طبق بند ۵ سند کارفرما «ریدایرکت به دامنه‌ی دیگر» هم گزارش شود:
+#   QA_SAME_BRAND_REDIRECT_OK=0
+
+# این‌ها فقط برای تنظیم زمان بدون دست‌زدن به کد هستند (پیش‌فرض‌ها هیچ تغییری نکرده‌اند)
+IDLE_WAIT_MS = int(os.environ.get('QA_IDLE_WAIT_MS') or IDLE_WAIT_MS)
+NAV_TIMEOUT_MS = int(os.environ.get('QA_NAV_TIMEOUT_MS') or NAV_TIMEOUT_MS)
+CHALLENGE_WAIT_S = int(os.environ.get('QA_CHALLENGE_WAIT_S') or CHALLENGE_WAIT_S)
+# سقف زمان دانلود تصویرهای هر سایت (og/آیکون) تا یک سایت خراب، کل اسکن را کند نکند
+ASSET_BUDGET_S = float(os.environ.get('QA_ASSET_BUDGET_S') or 30)
 CONNECTIVITY_URLS = [
     'https://www.google.com/generate_204',
     'https://www.cloudflare.com/cdn-cgi/trace',
@@ -288,11 +298,28 @@ def _route_block(route):
         pass
 
 
+def _probe_ok(u, r):
+    """پاسخ واقعی اینترنت است یا صفحه‌ی جایگزین (کپتیو پورتال / هشدار VPN)؟"""
+    if r.status >= 500:
+        return False
+    try:
+        body = r.body() or b''
+    except Exception:
+        body = b''
+    head = body[:600].lstrip().lower()
+    # جای پاسخ واقعی، یک صفحه‌ی HTML برگشته = اینترنت/VPN سالم نیست
+    if head.startswith(b'<!doctype') or head.startswith(b'<html') or b'<html' in head[:200]:
+        return False
+    if 'cdn-cgi/trace' in u and body and b'ip=' not in body[:600]:
+        return False
+    return True
+
+
 def internet_ok(ctx):
     for u in CONNECTIVITY_URLS:
         try:
             r = ctx.request.get(u, timeout=12000, max_redirects=3)
-            ok = r.status < 500
+            ok = _probe_ok(u, r)
             try:
                 r.dispose()
             except Exception:
@@ -320,7 +347,10 @@ _COLLECT_JS = r"""
   const qa = (s) => Array.from(document.querySelectorAll(s));
   const descs = qa('meta[name="description" i]').map(m => m.getAttribute('content') || '');
   const og1 = qa('meta[property="og:image" i], meta[name="og:image" i]').map(m => (m.getAttribute('content') || '').trim()).filter(Boolean);
-  const og2 = qa('meta[property="og:image:secure_url" i], meta[property="og:image:url" i]').map(m => (m.getAttribute('content') || '').trim()).filter(Boolean);
+  const og2 = qa('meta[property="og:image:secure_url" i], meta[name="og:image:secure_url" i], meta[property="og:image:url" i], meta[name="og:image:url" i]').map(m => (m.getAttribute('content') || '').trim()).filter(Boolean);
+  const canon = qa('link[rel="canonical" i][href]').map(l => (l.getAttribute('href') || '').trim()).filter(Boolean);
+  const ogtags = qa('meta[property^="og:" i], meta[name^="og:" i]').length;
+  const ogurl = qa('meta[property="og:url" i], meta[name="og:url" i]').map(m => (m.getAttribute('content') || '').trim()).filter(Boolean);
   const icons = qa('link[rel][href]')
     .filter(l => /(^|\s)(icon|apple-touch-icon|apple-touch-icon-precomposed)(\s|$)/i.test(l.getAttribute('rel') || ''))
     .map(l => ({rel: (l.getAttribute('rel') || '').toLowerCase().trim(), href: abs(l.getAttribute('href'))}));
@@ -328,6 +358,7 @@ _COLLECT_JS = r"""
   const b = document.body;
   return {
     descs: descs, og: og1.concat(og2).map(abs), icons: icons,
+    canon: canon.map(abs), ogurl: ogurl.map(abs), ogtags: ogtags,
     refresh: mr ? (mr.getAttribute('content') || '') : '',
     text: b ? (b.innerText || '') : '',
     elements: b ? b.getElementsByTagName('*').length : 0,
@@ -337,7 +368,7 @@ _COLLECT_JS = r"""
 """
 
 _EMPTY_INFO = {'title': '', 'html': '', 'descs': [], 'og': [], 'icons': [], 'refresh': '',
-               'text': '', 'elements': 0, 'charset': ''}
+               'canon': [], 'ogurl': [], 'ogtags': 0, 'text': '', 'elements': 0, 'charset': ''}
 
 
 def _collect(page):
@@ -422,7 +453,7 @@ def _new_snap(url):
     s.update({'url': url, 'loaded': False, 'final_url': '', 'status': None, 'content_type': '',
               'raw': None, 'load_s': None, 'attempts': 1, 'error_kind': None, 'error_code': '',
               'error_msg': '', 'slow': False, 'filter': False, 'challenge': False,
-              'block_msg': '', 'page_error': ''})
+              'block_msg': '', 'page_error': '', 'foreign': ''})
     return s
 
 
@@ -480,7 +511,10 @@ def _load_once(ctx, url):
             except Exception:
                 pass
             try:
-                if host_of(r.url) == host_of(page.url) and 200 <= r.status < 300:
+                # بدنه‌ی همان پاسخ نهایی صفحه (برای بررسی بایت‌های نامعتبر UTF-8).
+                # شرط میزبان برداشته شد تا اگر ریدایرکت داخلی بوده هم سورس خام داشته باشیم
+                # و بیش از حد «بررسی نشد» نگیریم.
+                if 200 <= r.status < 300:
                     snap['raw'] = r.body()
             except Exception:
                 pass
@@ -498,6 +532,25 @@ def _load_once(ctx, url):
             except Exception:
                 pass
     return snap
+
+
+def _foreign_declared_host(snap):
+    """اگر canonical یا og:url صفحه به دامنه‌ی غیرهم‌برند اشاره کند، همان هاست برگردانده می‌شود.
+    این حالت یعنی احتمال دارد صفحه‌ی سایت دیگری به ما نشان داده شده باشد (VPN/کلوکینگ)."""
+    req = host_of(snap['url'])
+    if not req:
+        return ''
+    fin = host_of(snap.get('final_url') or snap['url'])
+    if fin and reg_domain(fin) != reg_domain(req):
+        return ''   # ریدایرکت به دامنه‌ی دیگر جداگانه گزارش می‌شود
+    for u in list(snap.get('canon') or []) + list(snap.get('ogurl') or []):
+        h = host_of(u)
+        if not h or h == fin:
+            continue
+        if reg_domain(h) == reg_domain(req) or same_brand(req, h):
+            continue
+        return h
+    return ''
 
 
 def _detect(snap):
@@ -531,8 +584,14 @@ def _detect(snap):
             th = host_of(target if '://' in target else 'https://x/' + target) if '://' in target else ''
             if th and reg_domain(th) != reg_domain(host_of(fin)):
                 snap['block_msg'] = f'صفحه انتقال (meta refresh) به دامنه دیگر: {th}'
-        if not snap['block_msg'] and medium and _any(REDIRECT_WORDS, both):
+        if not snap.get('block_msg') and medium and _any(REDIRECT_WORDS, both):
             snap['block_msg'] = f'صفحه «رفتن به آدرس جدید/دیگر» نمایش داده شد («{_any(REDIRECT_WORDS, both)}»)'
+
+    # صفحه‌ی متعلق به دامنه‌ی دیگر (canonical/og:url) → یعنی صفحه‌ی سایت اشتباه برگشته.
+    # به‌صورت «بررسی نشد» ثبت می‌شود (نه «بررسی دستی») تا کاربر مجبور به چک دستی نشود
+    # و در دور دوم، خودِ اسکریپت همان سایت را دوباره بررسی می‌کند.
+    if not snap.get('block_msg'):
+        snap['foreign'] = _foreign_declared_host(snap)
 
     if title.startswith('index of /'):
         snap['page_error'] = 'لیست فایل‌های سرور (Index of) به‌جای سایت'
@@ -612,6 +671,9 @@ def page_verdict(snap):
         return V('err', f'خطا: خطای سرور ({st})', fin)
     if st >= 400:
         return V('err', f'خطا: خطای HTTP ({st})', fin)
+    if snap.get('foreign'):
+        return V('skip', f'بررسی نشد: صفحه‌ی سایت دیگری برگشت (canonical/og:url → {snap["foreign"]}) '
+                         '— با VPN/آی‌پی دیگر دوباره اجرا شود', fin)
     if snap.get('block_msg'):
         return V('warn', 'نیاز به بررسی دستی: ' + snap['block_msg'], fin)
     if snap.get('page_error'):
@@ -708,62 +770,78 @@ def _is_image_bytes(b, content_type=''):
         return True
     return False
 
-
 def check_asset(ctx, url, referer):
-    """دانلود واقعی فایل تصویر (نه با تگ img که با CSP خطای الکی می‌دهد).
-    خروجی: (level, reason) — level یکی از ok / err / warn"""
-    if not url:
-        return 'err', 'آدرس خالی'
+    """دانلود فایل تصویر. دور زدن مسدودی با باز کردن تب واقعی."""
+    if not url: return 'err', 'آدرس خالی'
     if url.startswith('data:'):
-        # data:image/* را فقط در حد نوع URI می‌پذیریم؛ دانلود شبکه‌ای در این حالت وجود ندارد.
         return ('ok', 'data URI') if url.lower().startswith('data:image/') else ('err', 'data URI غیرتصویری')
-    if not url.lower().startswith(('http://', 'https://')):
-        return 'err', 'آدرس نامعتبر'
-    last = ('warn', 'دانلود فایل ممکن نشد')
+    if not url.lower().startswith(('http://', 'https://')): return 'err', 'آدرس نامعتبر'
+
+    ua = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+    
+    # 1. تلاش اول: درخواست سریع با request.get
     for attempt in (1, 2):
+        r = None
         try:
-            r = ctx.request.get(url, timeout=20000, max_redirects=10, headers={
-                'Referer': referer,
-                'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'})
-        except Exception as e:
-            kind, code = classify_error(str(e))
-            if kind in ('dns', 'refused', 'cert'):
-                last = ('err', f'سرور فایل در دسترس نیست ({code or kind})')
-            else:
-                last = ('warn', f'دانلود فایل ممکن نشد ({code or kind}) — احتمال VPN')
-            if attempt == 1:
-                time.sleep(2)
-                continue
-            return last
-        try:
+            headers = {'User-Agent': ua, 'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8', 'Accept-Language': 'fa,en;q=0.9'}
+            if attempt == 1: headers['Referer'] = referer
+            r = ctx.request.get(url, timeout=15000, max_redirects=10, headers=headers)
             st = r.status
             if st in (429, 500, 502, 503, 504) and attempt == 1:
-                time.sleep(3)
+                time.sleep(2)
                 continue
-            if st in (404, 410):
-                return 'err', f'فایل وجود ندارد ({st})'
-            if st in (401, 403, 451):
-                return 'warn', f'دسترسی به فایل رد شد ({st}) — احتمال محدودیت IP/hotlink'
-            if st >= 400:
-                return 'err', f'سرور فایل خطا داد ({st})'
+            if st in (404, 410): return 'err', f'فایل وجود ندارد ({st})'
+            if st >= 400 and st not in (401, 403, 451): return 'err', f'خطای دریافت فایل ({st})'
+            
+            # اگر عکس واقعا دانلود شد (و خطای مسدودی نداشتیم)
+            if st not in (401, 403, 451):
+                body = r.body() or b''
+                ctype = (r.headers.get('content-type', '') or '').split(';')[0].strip().lower()
+                if _is_image_bytes(body, ctype):
+                    kb = max(1, len(body) // 1024)
+                    return 'ok', f'{ctype or "image"} — {kb}KB'
+        except Exception:
+            pass
+        finally:
+            if r:
+                try: r.dispose()
+                except: pass
+
+    # 2. تلاش دوم (ضد بلاک): باز کردن مستقیم لینک در یک تب واقعی مرورگر
+    page = None
+    try:
+        page = ctx.new_page()
+        page.set_extra_http_headers({'Referer': referer})
+        r = page.goto(url, timeout=20000)
+        if r:
+            st = r.status
+            if st >= 400: return 'err', f'خطای دریافت فایل ({st})'
+            
             body = r.body() or b''
+            if len(body) == 0: return 'err', 'فایل خالی است (0 بایت)'
+            
             ctype = (r.headers.get('content-type', '') or '').split(';')[0].strip().lower()
-            if len(body) == 0:
-                return 'err', 'فایل خالی است (0 بایت)'
             head = body[:500].lstrip().lower()
+            
             if (head.startswith(b'<!doctype html') or head.startswith(b'<html') or b'<html' in head[:200]) and not _is_image_bytes(body, ctype):
                 return 'err', 'به‌جای تصویر یک صفحه HTML برگشت'
-            # هدر image/* بدون امضای واقعی، برای صفحه خطای CDN کافی نیست.
-            if not _is_image_bytes(body, ctype):
+            
+            if _is_image_bytes(body, ctype):
+                kb = max(1, len(body) // 1024)
+                return 'ok', f'{ctype or "image"} — {kb}KB'
+            else:
                 return 'err', f'فایل تصویر معتبر نیست ({ctype or "نامشخص"})'
-            kb = max(1, len(body) // 1024)
-            return 'ok', f'{ctype or "image"} — {kb}KB'
-        finally:
-            try:
-                r.dispose()
-            except Exception:
-                pass
-    return last
+                
+        return 'warn', 'دانلود فایل ممکن نشد (ارتباط قطع شد)'
+    except Exception as e:
+        kind, code = classify_error(str(e))
+        if kind in ('dns', 'refused', 'cert'):
+            return 'err', f'سرور فایل در دسترس نیست ({code or kind})'
+        return 'warn', f'دانلود فایل ممکن نشد ({code or kind})'
+    finally:
+        if page:
+            try: page.close()
+            except: pass
 
 # ----------------------------------------------------------------- CSV و پیشرفت
 def csv_path(module):
@@ -910,7 +988,7 @@ def run_checks(modules, urls=None):
             for m in modules:
                 init_csv(m)
 
-            suspects, filter_streak = [], 0
+            suspects, filter_streak, cert_streak, cert_max = [], 0, 0, 0
             prog['phase'] = 'اسکن'
             for i, url in enumerate(urls):
                 if stop_requested():
@@ -922,6 +1000,11 @@ def run_checks(modules, urls=None):
                 snap = take_snapshot(ctx, url)
                 v = snap['verdict']
                 log(f"   → {v['status']}")
+                if snap.get('error_kind') == 'cert':
+                    cert_streak += 1
+                    cert_max = max(cert_max, cert_streak)
+                else:
+                    cert_streak = 0
 
                 if snap.get('error_kind') == 'offline':
                     for m in modules:
@@ -968,7 +1051,15 @@ def run_checks(modules, urls=None):
                     human_pause()
 
             prog['done'] = len(urls)
-            finish('done', f'اسکن تمام شد: {len(urls)} سایت.')
+            notes = []
+            if cert_max >= 3:
+                notes.append('چند سایت پشت‌سرهم خطای گواهی SSL داشتند؛ اگر VPN یا آنتی‌ویروس شما '
+                             'TLS را باز می‌کند، ستون سلامت را دستی تأیید کنید.')
+            skipped = prog['counts'].get('skip', 0)
+            if skipped >= max(3, len(urls) // 10):
+                notes.append(f'{skipped} سایت «بررسی نشد» شدند؛ احتمالا VPN در آن بازه ناپایدار '
+                             'بوده و باید دوباره بررسی شوند.')
+            finish('done', f'اسکن تمام شد: {len(urls)} سایت.' + (('  |  ' + '  |  '.join(notes)) if notes else ''))
             return 0
         except Exception as e:
             traceback.print_exc()
