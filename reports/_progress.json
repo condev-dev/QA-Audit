@@ -1,1 +1,0 @@
-{"state": "done", "tools": ["favicon"], "total": 5, "done": 5, "current_url": "", "phase": "اسکن", "started_at": "2026-09-25 16:38:11", "finished_at": "2026-09-25 16:39:40", "message": "اسکن تمام شد: 5 سایت.", "counts": {"ok": 5, "err": 0, "warn": 0, "skip": 0}, "updated_at": "2026-09-25 16:39:40", "updated_ts": 1790341780.8981085}

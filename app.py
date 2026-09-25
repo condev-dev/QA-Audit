@@ -183,6 +183,67 @@ def stop():
     return jsonify({'status': 'stopping'})
 
 
+@app.route('/check_sitemap', methods=['POST'])
+def check_sitemap():
+    import re
+    import urllib.request
+    from urllib.parse import urlparse
+    
+    url = (request.get_json(silent=True) or {}).get('url')
+    if not url:
+        return jsonify({'status': 'error'})
+    
+    try:
+        if not url.startswith('http'):
+            url = 'https://' + url
+        parsed = urlparse(url)
+        robots_url = f"{parsed.scheme}://{parsed.netloc}/robots.txt"
+        
+        def extract_sitemap(text):
+            match = re.search(r'(?i)^sitemap\s*:\s*(https?://[^\s]+)', text or '', re.MULTILINE)
+            return match.group(1).strip() if match else None
+
+        # مرحله اول: تست سریع با حداکثر ۱.۵ ثانیه انتظار برای جلوگیری از معطلی فایروال
+        try:
+            req = urllib.request.Request(
+                robots_url,
+                headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0 Safari/537.36'}
+            )
+            with urllib.request.urlopen(req, timeout=1.5) as response:
+                if response.status == 200:
+                    s_url = extract_sitemap(response.read().decode('utf-8', errors='ignore'))
+                    if s_url: return jsonify({'status': 'found', 'sitemap': s_url})
+                    return jsonify({'status': 'not_found'})
+        except Exception:
+            pass
+            
+        # مرحله دوم: دور زدن فایروال با سرعت بالا (بدون انتظار برای رندر)
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            try:
+                ctx = browser.new_context(
+                    ignore_https_errors=True,
+                    user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/124.0.0.0 Safari/537.36'
+                )
+                page = ctx.new_page()
+                
+                # wait_until='commit' باعث می‌شود به محض دریافت متن، کار تمام شود
+                r = page.goto(robots_url, timeout=10000, wait_until='commit')
+                
+                if r and r.status < 400:
+                    s_url = extract_sitemap(r.body().decode('utf-8', errors='ignore'))
+                    if s_url: return jsonify({'status': 'found', 'sitemap': s_url})
+            finally:
+                try:
+                    browser.close()
+                except Exception:
+                    pass
+                    
+        return jsonify({'status': 'not_found'})
+    except Exception:
+        return jsonify({'status': 'not_found'})
+
 @app.route('/progress')
 def progress():
     prog = qc.read_progress()

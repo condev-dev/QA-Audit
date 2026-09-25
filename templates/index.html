@@ -1154,6 +1154,24 @@
             ></path>
           </svg>
         </button>
+        <!-- دکمه سایت مپ -->
+        <button
+          id="drawer-btn-sitemap"
+          class="btn-subtle px-4 py-2.5 rounded-md flex items-center justify-center border border-brand-border transition-colors hover:text-white"
+          title="بررسی سایت مپ در robots.txt"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7"></path></svg>
+        </button>
+        <!-- دکمه فایل Robots.txt -->
+        <button
+          id="drawer-btn-robots"
+          class="btn-subtle px-4 py-2.5 rounded-md flex items-center justify-center border border-brand-border transition-colors hover:text-white"
+          title="باز کردن فایل robots.txt"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </button>
         <!-- دکمه تب‌ها که باگ داشت، اصلاح شد -->
         <button
           id="drawer-btn-tabs"
@@ -1172,8 +1190,7 @@
               d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
             ></path>
           </svg>
-          باز کردن تب های بررسی
-        </button>
+تب ها        </button>
       </div>
     </div>
 
@@ -1487,6 +1504,34 @@ function openGoogleIndex(baseUrl) {
     } catch(e) {}
 }
 
+async function checkSitemap(baseUrl, btnEl) {
+    const originalHtml = btnEl.innerHTML;
+    // تغییر آیکون به حالت لودینگ
+    btnEl.innerHTML = '<div class="spinner !border-zinc-500 !block mx-auto"></div>';
+    btnEl.disabled = true;
+    
+    try {
+        const r = await fetch('/check_sitemap', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: baseUrl })
+        });
+        const data = await r.json();
+        
+        if (data.status === 'found' && data.sitemap) {
+            window.open(data.sitemap, '_blank');
+        } else {
+            alert('هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.');
+        }
+    } catch (e) {
+        alert('هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.');
+    } finally {
+        // بازگرداندن دکمه به حالت عادی
+        btnEl.innerHTML = originalHtml;
+        btnEl.disabled = false;
+    }
+}
+
       function openDrawer(index) {
         const data = window.fullDashboardData[index];
         if (!data) return;
@@ -1495,6 +1540,12 @@ function openGoogleIndex(baseUrl) {
         document.getElementById("drawer-btn-copy").onclick = () =>
           copyDomainOnly(url);
           document.getElementById('drawer-btn-google').onclick = () => openGoogleIndex(url);
+          document.getElementById('drawer-btn-sitemap').onclick = () => checkSitemap(url, document.getElementById('drawer-btn-sitemap'));
+          document.getElementById('drawer-btn-robots').onclick = () => {
+            const formattedUrl = /^https?:\/\//i.test(url) ? url : 'https://' + url;
+            const robotsUrl = formattedUrl.replace(/\/$/, '') + '/robots.txt';
+            window.open(robotsUrl, '_blank');
+        };
         document.getElementById("drawer-btn-tabs").onclick = () =>
           openCheckTabs(url);
 
