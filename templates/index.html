@@ -407,6 +407,15 @@
           لینک کانونی (Canonical)
         </button>
 
+        <button
+          id="nav-ssl"
+          onclick="switchTab('ssl')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
+        >
+          <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          وضعیت SSL
+        </button>
+
         <div
           class="px-3 text-[10px] font-bold text-brand-muted tracking-widest mb-3 mt-8"
         >
@@ -665,8 +674,8 @@
             >
               <div class="text-center">وضعیت</div>
               <div class="text-right pl-4">آدرس دامنه</div>
-           <div class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500">
-                <span>H</span><span>T</span><span>D</span><span>O</span><span>S</span><span>F</span><span>C</span>
+       <div class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500">
+                <span>H</span><span>T</span><span>D</span><span>O</span><span>S</span><span>F</span><span>C</span><span>L</span>
               </div>
               <div class="text-left">عملیات</div>
             </div>
@@ -802,6 +811,8 @@
           class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
         ></div>
 <div id="view-canonical" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
+
+<div id="view-ssl" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
         <!-- بخش «استخراج لینک از متن» (ابزارهای کمکی) -->
         <div
           id="view-links"
@@ -1303,6 +1314,12 @@
         "canonical",
       );
 
+      document.getElementById("view-ssl").innerHTML = generateToolHeader(
+        "وضعیت امنیتی (SSL)",
+        "بررسی معتبر بودن گواهینامه و تعداد روزهای باقیمانده انقضا",
+        "ssl"
+      );
+
       window.fullDashboardData = [];
       let currentFilter = "all";
 
@@ -1421,14 +1438,15 @@
           return;
         }
 
-   const tools = [
+const tools = [
           "health",
           "title",
           "description",
           "og_image",
           "source_encoding",
           "favicon",
-          "canonical"
+          "canonical",
+          "ssl"
         ];
         let html = "";
         filteredData.forEach((item) => {
@@ -1646,7 +1664,12 @@ async function checkSitemap(baseUrl, btnEl) {
             d.canonical.status,
             d.canonical.text,
             "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1",
-          ) ;
+          ) + createCardHtml(
+            "وضعیت امنیتی (SSL)",
+            d.ssl.status,
+            d.ssl.text,
+            "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+          );
 
         document.getElementById("drawer-overlay").classList.remove("hidden");
         setTimeout(() => {

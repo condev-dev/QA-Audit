@@ -37,7 +37,7 @@ STOP_FILE = os.path.join(REPORTS_DIR, '_stop')
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
 # ترتیب اجرای چک‌ها. برای افزودن چک جدید: فایل check_<id>.py بسازید و id را اینجا اضافه کنید.
-ALL_TOOLS = ['health', 'title', 'description', 'og_image', 'source_encoding', 'favicon', 'canonical']
+ALL_TOOLS = ['health', 'title', 'description', 'og_image', 'source_encoding', 'favicon', 'canonical', 'ssl']
 
 # ----------------------------------------------------------------- تنظیمات
 NAV_TIMEOUT_MS = 45000          # حداکثر زمان لود اولیه صفحه

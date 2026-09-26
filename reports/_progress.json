@@ -1,1 +1,0 @@
-{"state": "done", "tools": ["canonical"], "total": 93, "done": 93, "current_url": "", "phase": "اسکن", "started_at": "2026-09-26 10:05:16", "finished_at": "2026-09-26 10:18:23", "message": "اسکن تمام شد: 93 سایت.", "counts": {"ok": 93, "err": 0, "warn": 0, "skip": 0}, "updated_at": "2026-09-26 10:18:23", "updated_ts": 1790405303.8081915}

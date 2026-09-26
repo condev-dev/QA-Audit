@@ -33,11 +33,12 @@ TOOLS = {
     'source_encoding': {'script': 'check_source_encoding.py', 'output': 'source_encoding_report.csv', 'name': 'سورس'},
     'favicon': {'script': 'check_favicon.py', 'output': 'favicon_report.csv', 'name': 'فوآیکون'},
     'canonical': {'script': 'check_canonical.py', 'output': 'canonical_report.csv', 'name': 'تگ کانونی'},
+    'ssl': {'script': 'check_ssl.py', 'output': 'ssl_report.csv', 'name': 'گواهینامه SSL'},
 }
 
 TEXT_FIELD = {'health': 'Details', 'title': 'Title Text', 'description': 'Description Text',
               'og_image': 'Image URL', 'source_encoding': 'Details', 'favicon': 'Favicon URL',
-              'canonical': 'Canonical URL'}
+              'canonical': 'Canonical URL', 'ssl': 'Details'}
 
 # ---------------------------------------------------------------- مدیریت اجرا (فقط یک اسکن همزمان)
 _job_lock = threading.Lock()
