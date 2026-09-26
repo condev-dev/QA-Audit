@@ -32,9 +32,12 @@ TOOLS = {
     'og_image': {'script': 'check_og_image.py', 'output': 'og_image_report.csv', 'name': 'عکس OG'},
     'source_encoding': {'script': 'check_source_encoding.py', 'output': 'source_encoding_report.csv', 'name': 'سورس'},
     'favicon': {'script': 'check_favicon.py', 'output': 'favicon_report.csv', 'name': 'فوآیکون'},
+    'canonical': {'script': 'check_canonical.py', 'output': 'canonical_report.csv', 'name': 'تگ کانونی'},
 }
+
 TEXT_FIELD = {'health': 'Details', 'title': 'Title Text', 'description': 'Description Text',
-              'og_image': 'Image URL', 'source_encoding': 'Details', 'favicon': 'Favicon URL'}
+              'og_image': 'Image URL', 'source_encoding': 'Details', 'favicon': 'Favicon URL',
+              'canonical': 'Canonical URL'}
 
 # ---------------------------------------------------------------- مدیریت اجرا (فقط یک اسکن همزمان)
 _job_lock = threading.Lock()

@@ -398,6 +398,15 @@
           بررسی آیکون (Favicon)
         </button>
 
+<button
+          id="nav-canonical"
+          onclick="switchTab('canonical')"
+          class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
+        >
+          <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+          لینک کانونی (Canonical)
+        </button>
+
         <div
           class="px-3 text-[10px] font-bold text-brand-muted tracking-widest mb-3 mt-8"
         >
@@ -656,11 +665,8 @@
             >
               <div class="text-center">وضعیت</div>
               <div class="text-right pl-4">آدرس دامنه</div>
-              <div
-                class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500"
-              >
-                <span>H</span><span>T</span><span>D</span><span>O</span
-                ><span>S</span><span>F</span>
+           <div class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500">
+                <span>H</span><span>T</span><span>D</span><span>O</span><span>S</span><span>F</span><span>C</span>
               </div>
               <div class="text-left">عملیات</div>
             </div>
@@ -795,7 +801,7 @@
           id="view-favicon"
           class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
         ></div>
-
+<div id="view-canonical" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
         <!-- بخش «استخراج لینک از متن» (ابزارهای کمکی) -->
         <div
           id="view-links"
@@ -1291,6 +1297,12 @@
         "favicon",
       );
 
+      document.getElementById("view-canonical").innerHTML = generateToolHeader(
+        "لینک کانونی (Canonical)",
+        "بررسی وجود و اعتبار آدرس در تگ canonical",
+        "canonical",
+      );
+
       window.fullDashboardData = [];
       let currentFilter = "all";
 
@@ -1409,13 +1421,14 @@
           return;
         }
 
-        const tools = [
+   const tools = [
           "health",
           "title",
           "description",
           "og_image",
           "source_encoding",
           "favicon",
+          "canonical"
         ];
         let html = "";
         filteredData.forEach((item) => {
@@ -1628,7 +1641,12 @@ async function checkSitemap(baseUrl, btnEl) {
             d.source_encoding.status,
             d.source_encoding.text,
             "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4",
-          );
+          )+ createCardHtml(
+            "لینک کانونی (Canonical)",
+            d.canonical.status,
+            d.canonical.text,
+            "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1",
+          ) ;
 
         document.getElementById("drawer-overlay").classList.remove("hidden");
         setTimeout(() => {
