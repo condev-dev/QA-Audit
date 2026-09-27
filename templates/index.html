@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QA Master | Enterprise</title>
+    <link id="app-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%2310b981'/%3E%3C/svg%3E" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -108,8 +109,17 @@
         box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
       }
       .status-skip {
+        /* توخالی و خاکستری (روشن‌تر از قبل تا در پس‌زمینه‌ی تیره دیده شود)
+           و بدون هم‌رنگ شدن با warn که نارنجیِ توپر است */
         background-color: transparent;
-        border: 1px solid #71717a;
+        border: 1px solid rgba(212, 212, 216, 0.55);
+      }
+      .row-err { background-color: rgba(239, 68, 68, 0.06); }
+      .row-warn { background-color: rgba(245, 158, 11, 0.06); }
+      .row-skip { background-color: rgba(161, 161, 170, 0.04); }
+      .kbd-selected {
+        outline: 1px solid rgba(250, 250, 250, 0.45) !important;
+        background-color: #18181b !important;
       }
       .text-status-warn {
         color: #f59e0b;
@@ -295,7 +305,8 @@
               d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
             ></path>
           </svg>
-          سلامت سرور (Health)
+          <span class="flex-1">سلامت سرور (Health)</span>
+          <span id="nav-count-health" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
         </button>
         <button
           id="nav-title"
@@ -315,7 +326,8 @@
               d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
             ></path>
           </svg>
-          عنوان سایت (Title)
+          <span class="flex-1">عنوان سایت (Title)</span>
+          <span id="nav-count-title" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
         </button>
         <button
           id="nav-description"
@@ -335,7 +347,8 @@
               d="M4 6h16M4 12h16M4 18h7"
             ></path>
           </svg>
-          متای توضیحات
+          <span class="flex-1">متای توضیحات</span>
+          <span id="nav-count-description" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
         </button>
         <button
           id="nav-og_image"
@@ -355,7 +368,8 @@
               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
             ></path>
           </svg>
-          تصویر اشتراک گذاری
+          <span class="flex-1">تصویر اشتراک گذاری</span>
+          <span id="nav-count-og_image" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
         </button>
         <button
           id="nav-source_encoding"
@@ -375,7 +389,8 @@
               d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
             ></path>
           </svg>
-          اسکن سورس کد
+          <span class="flex-1">اسکن سورس کد</span>
+          <span id="nav-count-source_encoding" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
         </button>
         <button
           id="nav-favicon"
@@ -395,16 +410,18 @@
               d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
             ></path>
           </svg>
-          بررسی آیکون (Favicon)
+          <span class="flex-1">بررسی آیکون (Favicon)</span>
+          <span id="nav-count-favicon" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
         </button>
 
-<button
+        <button
           id="nav-canonical"
           onclick="switchTab('canonical')"
           class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
         >
           <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-          لینک کانونی (Canonical)
+          <span class="flex-1">لینک کانونی (Canonical)</span>
+          <span id="nav-count-canonical" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
         </button>
 
         <button
@@ -413,7 +430,8 @@
           class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
         >
           <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-          وضعیت SSL
+          <span class="flex-1">وضعیت SSL</span>
+          <span id="nav-count-ssl" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
         </button>
 
         <div
@@ -492,9 +510,10 @@
 
             <div class="flex gap-3">
               <button
+                id="btn-open-tabs"
                 onclick="openAllBaseUrls()"
                 class="btn-subtle px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2"
-                title="باز کردن تمام تب ها"
+                title="باز کردن تب‌های فیلتر فعلی"
               >
                 <svg
                   class="w-4 h-4"
@@ -509,7 +528,7 @@
                     d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                   ></path>
                 </svg>
-                تب ها
+                <span id="btn-open-tabs-text">تب ها</span>
               </button>
               <button
                 onclick="archiveData()"
@@ -577,6 +596,7 @@
                   >در حال اسکن</span
                 >
                 <span id="scan-count" class="font-mono text-zinc-400"></span>
+                <span id="scan-eta" class="hidden font-mono text-[11px] text-zinc-400 bg-zinc-800/70 border border-zinc-700 px-2 py-0.5 rounded"></span>
                 <bdi
                   id="scan-url"
                   dir="ltr"
@@ -599,6 +619,7 @@
               ></div>
             </div>
             <div id="scan-msg" class="text-[11px] text-zinc-400 mt-2"></div>
+            <div id="scan-counts" class="hidden mt-2 text-[11px] font-mono flex items-center gap-3 text-zinc-300 flex-wrap"></div>
           </div>
 
           <div class="flex items-center justify-between gap-4 mb-6">
@@ -619,7 +640,7 @@
               <input
                 type="text"
                 id="search-input"
-                onkeyup="renderMainTable()"
+                onkeyup="onDashboardSearch()"
                 placeholder="جستجوی دامنه ها ..."
                 class="w-full bg-brand-panel border border-brand-border text-white text-xs rounded-md pr-9 pl-4 py-2.5 focus:outline-none focus:border-zinc-400 transition-colors placeholder-zinc-600"
               />
@@ -631,37 +652,42 @@
               <button
                 onclick="setFilter('all')"
                 id="filter-all"
-                class="filter-btn px-4 py-2 bg-white/10 text-white"
+                class="filter-btn px-4 py-2 bg-white/10 text-white flex items-center gap-1.5"
               >
-                همه سایت ها
+                <span>همه سایت ها</span>
+                <span id="cnt-all" class="text-[10px] font-mono opacity-80"></span>
               </button>
               <button
                 onclick="setFilter('errors')"
                 id="filter-errors"
-                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border"
+                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border flex items-center gap-1.5"
               >
-                خطادار ها
+                <span>خطادار ها</span>
+                <span id="cnt-errors" class="text-[10px] font-mono opacity-80"></span>
               </button>
               <button
                 onclick="setFilter('warns')"
                 id="filter-warns"
-                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border"
+                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border flex items-center gap-1.5"
               >
-                بررسی دستی
+                <span>بررسی دستی</span>
+                <span id="cnt-warns" class="text-[10px] font-mono opacity-80"></span>
               </button>
               <button
                 onclick="setFilter('todo')"
                 id="filter-todo"
-                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border"
+                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border flex items-center gap-1.5"
               >
-                بررسی نشده ها
+                <span>بررسی نشده ها</span>
+                <span id="cnt-todo" class="text-[10px] font-mono opacity-80"></span>
               </button>
               <button
                 onclick="setFilter('done')"
                 id="filter-done"
-                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border"
+                class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border flex items-center gap-1.5"
               >
-                انجام شده ها
+                <span>انجام شده ها</span>
+                <span id="cnt-done" class="text-[10px] font-mono opacity-80"></span>
               </button>
             </div>
           </div>
@@ -670,12 +696,33 @@
             class="flex-1 flex flex-col border border-brand-border rounded-lg bg-brand-panel overflow-hidden shadow-2xl"
           >
             <div
-              class="table-grid px-6 py-3 border-b border-brand-border bg-white/[0.02] text-[11px] font-bold text-zinc-400 tracking-wide text-right"
+              class="table-grid px-6 py-3 border-b border-brand-border bg-white/[0.02] text-[11px] font-bold text-zinc-400 tracking-wide text-right select-none"
             >
-              <div class="text-center">وضعیت</div>
-              <div class="text-right pl-4">آدرس دامنه</div>
-       <div class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500">
-                <span>H</span><span>T</span><span>D</span><span>O</span><span>S</span><span>F</span><span>C</span><span>L</span>
+              <div
+                onclick="toggleSort('overall')"
+                class="text-center cursor-pointer hover:text-white transition-colors flex items-center justify-center gap-1"
+                title="مرتب سازی بر اساس وضعیت"
+              >
+                <span>وضعیت</span>
+                <span id="sort-indicator-overall" class="text-[10px] text-zinc-500"></span>
+              </div>
+              <div
+                onclick="toggleSort('alpha')"
+                class="text-right pl-4 cursor-pointer hover:text-white transition-colors flex items-center gap-1"
+                title="مرتب سازی الفبایی دامنه"
+              >
+                <span>آدرس دامنه</span>
+                <span id="sort-indicator-alpha" class="text-[10px] text-zinc-500"></span>
+              </div>
+              <div class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500">
+                <span title="سلامت سرور (Health)">H</span>
+                <span title="عنوان (Title)">T</span>
+                <span title="متای توضیحات (Description)">D</span>
+                <span title="تصویر اشتراک (OG)">O</span>
+                <span title="سورس کد (Source)">S</span>
+                <span title="آیکون (Favicon)">F</span>
+                <span title="لینک کانونی (Canonical)">C</span>
+                <span title="امنیت (SSL)">L</span>
               </div>
               <div class="text-left">عملیات</div>
             </div>
@@ -1077,16 +1124,39 @@
       class="fixed top-0 left-0 h-full w-[420px] bg-brand-bg shadow-[20px_0_40px_rgba(0,0,0,0.8)] z-50 drawer-closed transition-transform duration-200 border-r border-brand-border flex flex-col text-right"
     >
       <div
-        class="px-6 py-5 border-b border-brand-border flex justify-between items-center bg-brand-panel"
+        class="px-6 py-5 border-b border-brand-border flex justify-between items-center bg-brand-panel" style="flex-direction: column-reverse;"
       >
-        <div class="flex items-center gap-1.5 flex-1 overflow-hidden" dir="ltr">
+        <div class="flex items-center gap-1.5 flex-1 overflow-hidden mt-4" style="width: 100%;" dir="ltr">
           <bdi
             class="text-sm font-mono font-bold text-white truncate text-left"
             id="drawer-title"
             >domain.com</bdi
           >
         </div>
-        <div class="flex items-center gap-2 shrink-0">
+        <div class="flex items-center gap-2 shrink-0" style="width: 100%; justify-content: space-between;" >
+          <div class="flex items-center bg-zinc-900 border border-brand-border rounded-md overflow-hidden">
+            <button
+              id="drawer-btn-prev"
+              onclick="drawerPrev()"
+              class="btn-subtle px-2.5 py-1 text-xs text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              title="سایت قبلی در این فیلتر (←)"
+            >
+              ← قبلی
+            </button>
+            <span class="w-[1px] h-4 bg-brand-border"></span>
+            <button
+              id="drawer-btn-next"
+              onclick="drawerNext()"
+              class="btn-subtle px-2.5 py-1 text-xs text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              title="سایت بعدی در این فیلتر (→)"
+            >
+              بعدی →
+            </button>
+          </div>
+          <span
+            id="drawer-nav-counter"
+            class="text-[10px] font-mono text-zinc-500"
+          ></span>
           <button
             id="btn-drawer-retry"
             class="btn-subtle px-3 py-1.5 rounded-md text-[11px] font-bold border border-brand-border flex items-center gap-1.5"
@@ -1212,6 +1282,37 @@
     </div>
 
     <script>
+      // ---------- toast غیرمزاحم به‌جای alert() ----------
+      // نوع kind: 'ok' (پیش‌فرض تیره) یا 'err' (قرمز)
+      // اگر ll-toast (از link_lab) هنوز آماده نباشد، خودمان یکی می‌سازیم؛
+      // پس این تابع در هر لحظه‌ای از عمر صفحه امن است.
+      function notify(msg, kind) {
+        if (typeof window.llToast === "function") {
+          window.llToast(msg, kind);
+          return;
+        }
+        var el = document.getElementById("ll-toast");
+        if (!el) {
+          el = document.createElement("div");
+          el.id = "ll-toast";
+          document.body.appendChild(el);
+        }
+        var err = kind === "err";
+        el.style.cssText =
+          "position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:9999;" +
+          "padding:10px 18px;border-radius:8px;font-size:12px;font-weight:700;" +
+          "font-family:Vazirmatn,sans-serif;max-width:80vw;text-align:center;line-height:1.7;" +
+          "box-shadow:0 12px 34px rgba(0,0,0,.65);transition:opacity .25s;opacity:1;" +
+          // toast فقط پیام است؛ نباید کلیک‌های زیرش را بگیرد (چه دیده شود چه محو شده باشد)
+          "pointer-events:none;" +
+          "border:1px solid " + (err ? "#7f1d1d" : "#27272a") +
+          ";background:" + (err ? "#450a0a" : "#09090b") +
+          ";color:" + (err ? "#fca5a5" : "#fafafa") + ";";
+        el.textContent = msg;
+        clearTimeout(el._t);
+        el._t = setTimeout(function () { el.style.opacity = "0"; }, 2600);
+      }
+
       // ---------- ابزار امنیتی: متن سایت‌ها هرگز به‌صورت HTML اجرا نمی‌شود ----------
       function esc(v) {
         return String(v ?? "").replace(
@@ -1252,11 +1353,36 @@
         og_image: "عکس OG",
         source_encoding: "سورس",
         favicon: "فوآیکون",
+        canonical: "لینک کانونی",
+        ssl: "SSL",
       };
+
+      function setFavicon(color) {
+        try {
+          const hex = color.startsWith("#") ? color : ({
+            ok: "#10b981",
+            err: "#ef4444",
+            warn: "#f59e0b",
+            blue: "#3b82f6",
+            idle: "#71717a"
+          }[color] || "#10b981");
+          const encoded = encodeURIComponent(hex);
+          const href = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='${encoded}'/%3E%3C/svg%3E`;
+          let link = document.getElementById("app-favicon");
+          if (!link) {
+            link = document.createElement("link");
+            link.id = "app-favicon";
+            link.rel = "icon";
+            link.type = "image/svg+xml";
+            document.head.appendChild(link);
+          }
+          link.href = href;
+        } catch(e) {}
+      }
 
       function generateToolHeader(title, desc, toolId) {
         return `
-                <div class="flex justify-between items-end mb-8 pb-6 border-b border-brand-border">
+                <div class="flex justify-between items-end mb-6 pb-6 border-b border-brand-border">
                     <div><h2 class="text-2xl font-bold text-white tracking-tight">${title}</h2><p class="text-xs text-brand-muted mt-2">${desc}</p></div>
                     <div class="flex space-x-reverse space-x-2">
                         <button onclick="runToolProcess('${toolId}')" class="btn-run btn-primary px-5 py-2 rounded-md flex items-center gap-2 text-xs">
@@ -1271,6 +1397,19 @@
                     </div>
                 </div>
                 <div class="tool-progress hidden mb-4 text-xs text-zinc-400 border border-brand-border rounded-md bg-brand-panel px-4 py-2.5"></div>
+                <div class="flex items-center justify-between gap-4 mb-4">
+                  <div class="relative w-80">
+                    <svg class="w-4 h-4 text-zinc-500 absolute top-2.5 right-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" id="tool-search-${toolId}" onkeyup="onToolFilterChange('${toolId}')" placeholder="جستجو در نتایج این ابزار ..." class="w-full bg-brand-panel border border-brand-border text-white text-xs rounded-md pr-9 pl-4 py-2.5 focus:outline-none focus:border-zinc-400 transition-colors placeholder-zinc-600" />
+                  </div>
+                  <div class="flex bg-brand-panel border border-brand-border rounded-md overflow-hidden text-xs font-medium">
+                    <button onclick="setToolFilter('${toolId}', 'all')" id="tool-flt-${toolId}-all" class="tool-flt-btn px-3 py-1.5 bg-white/10 text-white">همه</button>
+                    <button onclick="setToolFilter('${toolId}', 'err')" id="tool-flt-${toolId}-err" class="tool-flt-btn px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border">خطادار</button>
+                    <button onclick="setToolFilter('${toolId}', 'warn')" id="tool-flt-${toolId}-warn" class="tool-flt-btn px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border">بررسی دستی</button>
+                    <button onclick="setToolFilter('${toolId}', 'skip')" id="tool-flt-${toolId}-skip" class="tool-flt-btn px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border">بررسی‌نشده</button>
+                    <button onclick="setToolFilter('${toolId}', 'ok')" id="tool-flt-${toolId}-ok" class="tool-flt-btn px-3 py-1.5 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border">سالم</button>
+                  </div>
+                </div>
                 <div class="results-container flex-1 bg-brand-panel border border-brand-border rounded-lg overflow-hidden flex flex-col text-right"></div>
             `;
       }
@@ -1321,7 +1460,27 @@
       );
 
       window.fullDashboardData = [];
+      window.currentFilteredData = [];
       let currentFilter = "all";
+      // تسک ۸ — مرتب‌سازی (با ذخیره در localStorage)
+      let sortKey = "none";
+      let sortDir = "asc";
+      try {
+        const savedSort = JSON.parse(
+          localStorage.getItem("qa_dashboard_sort") || "null",
+        );
+        if (savedSort && savedSort.key) {
+          sortKey = savedSort.key;
+          sortDir = savedSort.dir === "desc" ? "desc" : "asc";
+        }
+      } catch (e) {}
+      // تسک ۱۰ — ایندکس سایت جاری در Drawer و لیست فیلترشده
+      window.currentDrawerIndex = -1;
+      window.drawerList = [];
+      // تسک ۱۸ — فیلتر و سرچ اختصاصی هر تب ابزار
+      const toolFilters = {};
+      // تسک ۲۱ — زمان آخرین رفرش خودکار
+      let lastRefreshTs = 0;
 
       // سطح وضعیت: ok سبز / err قرمز / warn نارنجی / skip خاکستری توخالی / idle خاکستری
       function levelOf(statusStr) {
@@ -1373,22 +1532,206 @@
         activeBtn.classList.remove("bg-transparent", "text-zinc-400");
         activeBtn.classList.add("bg-white/10", "text-white");
         renderMainTable();
+        updateUrlState();
+      }
+
+      // ---------- تسک ۱۲: نگه‌داشتن وضعیت فیلتر/سرچ/تب در URL ----------
+      function updateUrlState() {
+        try {
+          const params = new URLSearchParams(window.location.search);
+          params.set("tab", currentTab);
+          if (currentTab === "dashboard") {
+            params.set("filter", currentFilter);
+            const s = document.getElementById("search-input");
+            const q = s ? s.value.trim() : "";
+            if (q) params.set("q", q);
+            else params.delete("q");
+          } else {
+            params.delete("q");
+          }
+          const qs = params.toString();
+          history.replaceState({}, "", qs ? "?" + qs : window.location.pathname);
+        } catch (e) {}
+      }
+
+      function onDashboardSearch() {
+        renderMainTable();
+        updateUrlState();
+      }
+
+      function applyUrlState() {
+        let params;
+        try {
+          params = new URLSearchParams(window.location.search);
+        } catch (e) {
+          return;
+        }
+        const q = params.get("q") || "";
+        if (q) {
+          const s = document.getElementById("search-input");
+          if (s) s.value = q;
+        }
+        const tab = params.get("tab");
+        // اول تب را در state بگذار تا updateUrlState داخل setFilter مقدار درست را بنویسد
+        if (tab && document.getElementById("view-" + tab)) currentTab = tab;
+        const flt = params.get("filter");
+        if (flt && document.getElementById("filter-" + flt)) setFilter(flt);
+        if (tab && document.getElementById("view-" + tab)) switchTab(tab);
+        // setFilter در حالت داشبورد URL را کامل می‌کند؛ برای تب‌های دیگر هم
+        // اگر filter نامعتبر بود، state باید به حالت all پیش‌فرض بماند.
+        if (currentTab === "dashboard" && (!flt || !document.getElementById("filter-" + flt))) {
+          renderMainTable();
+          updateUrlState();
+        }
+      }
+
+      // ---------- تسک ۱۸: فیلتر/سرچ داخل صفحه‌ی هر ابزار ----------
+      function setToolFilter(toolId, flt) {
+        const st = toolFilters[toolId] || (toolFilters[toolId] = { q: "", flt: "all" });
+        st.flt = flt;
+        const box = document.getElementById(`view-${toolId}`);
+        if (box) {
+          box.querySelectorAll(`.tool-flt-btn[id^="tool-flt-${toolId}-"]`).forEach((b) => {
+            const on = b.id === `tool-flt-${toolId}-${flt}`;
+            b.classList.toggle("bg-white/10", on);
+            b.classList.toggle("text-white", on);
+            b.classList.toggle("text-zinc-400", !on);
+          });
+        }
+        loadResult(toolId);
+      }
+
+      function onToolFilterChange(toolId) {
+        const st = toolFilters[toolId] || (toolFilters[toolId] = { q: "", flt: "all" });
+        const el = document.getElementById("tool-search-" + toolId);
+        st.q = el ? el.value : "";
+        loadResult(toolId);
+      }
+
+      // ---------- تسک ۸: مرتب‌سازی ستون‌ها ----------
+      function toggleSort(key) {
+        if (sortKey !== key) {
+          sortKey = key;
+          sortDir = "asc";
+        } else if (sortDir === "asc") {
+          sortDir = "desc";
+        } else {
+          sortKey = "none";
+          sortDir = "asc";
+        }
+        try {
+          localStorage.setItem(
+            "qa_dashboard_sort",
+            JSON.stringify({ key: sortKey, dir: sortDir }),
+          );
+        } catch (e) {}
+        renderMainTable();
+      }
+
+      function applySort(arr) {
+        if (sortKey === "none") return arr;
+        const rank = { err: 0, skip: 1, warn: 2, ok: 3, idle: 4 };
+        const out = arr.slice();
+        out.sort((a, b) => {
+          let r = 0;
+          if (sortKey === "alpha") {
+            r = String(a.formatted_url).localeCompare(String(b.formatted_url));
+          } else {
+            r =
+              (rank[a.overall] === undefined ? 9 : rank[a.overall]) -
+              (rank[b.overall] === undefined ? 9 : rank[b.overall]);
+          }
+          return sortDir === "desc" ? -r : r;
+        });
+        return out;
+      }
+
+      function updateSortIndicators() {
+        const pairs = [
+          ["overall", "sort-indicator-overall"],
+          ["alpha", "sort-indicator-alpha"],
+        ];
+        pairs.forEach(([key, id]) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          if (sortKey !== key) {
+            el.textContent = "";
+            el.style.color = "#71717a"; // خاموش شدن نشانگر، رنگش هم به حالت اول برگردد
+            return;
+          }
+          el.textContent = sortDir === "asc" ? "↑" : "↓";
+          el.style.color = "#fafafa";
+        });
+      }
+
+      function updateFilterCounts(c, doneCount, total) {
+        const set = (id, value) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.textContent = "(" + value + ")";
+          el.parentElement.style.opacity = value === 0 ? "0.6" : "1";
+        };
+        set("cnt-all", total);
+        set("cnt-errors", c.err);
+        set("cnt-warns", c.warn + c.skip);
+        set("cnt-todo", total - doneCount);
+        set("cnt-done", doneCount);
+      }
+
+      // ---------- تسک ۱۳: لیست «انجام‌شده» با کلید تاریخ ----------
+      function todayKey() {
+        const d = new Date();
+        const p = (n) => String(n).padStart(2, "0");
+        return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+      }
+
+      function readDoneStore() {
+        let raw = null;
+        try {
+          raw = JSON.parse(localStorage.getItem("qa_dashboard_done") || "null");
+        } catch (e) {
+          return {};
+        }
+        if (Array.isArray(raw)) {
+          const migrated = {};
+          migrated[todayKey()] = raw;
+          return migrated;
+        }
+        if (raw && typeof raw === "object") return raw;
+        return {};
+      }
+
+      function saveDoneStore(store) {
+        const keys = Object.keys(store).sort();
+        while (keys.length > 7) {
+          delete store[keys.shift()];
+        }
+        try {
+          localStorage.setItem("qa_dashboard_done", JSON.stringify(store));
+        } catch (e) {}
       }
 
       function getDoneList() {
-        try {
-          return JSON.parse(localStorage.getItem("qa_dashboard_done")) || [];
-        } catch (e) {
-          return [];
-        }
+        const store = readDoneStore();
+        const list = store[todayKey()];
+        return Array.isArray(list) ? list : [];
       }
+
+      function setDoneList(list) {
+        const store = readDoneStore();
+        store[todayKey()] = list;
+        saveDoneStore(store);
+      }
+
+      // تاریخ‌هایی که داده‌ی «انجام‌شده» دارند (برای «ریست فقط امروز»)
+      function doneHistoryKeys() {
+        return Object.keys(readDoneStore()).sort();
+      }
+
       function checkAndResetDailyCache() {
-        const today = new Date().toDateString();
-        const lastDate = localStorage.getItem("qa_dashboard_date");
-        if (lastDate !== today) {
-          localStorage.setItem("qa_dashboard_done", JSON.stringify([]));
-          localStorage.setItem("qa_dashboard_date", today);
-        }
+        // تسک ۱۳: دیگر هر روز پاک نمی‌شود؛ فقط داده‌های قدیمی‌تر از ۷ روز حذف می‌شوند.
+        const store = readDoneStore();
+        saveDoneStore(store);
       }
 
       function renderMainTable() {
@@ -1404,7 +1747,7 @@
           if (c[item.overall] !== undefined) c[item.overall]++;
         });
 
-        const filteredData = window.fullDashboardData.filter((item) => {
+        let filteredData = window.fullDashboardData.filter((item) => {
           const key = item.formatted_url;
           if (searchTerm && !key.toLowerCase().includes(searchTerm))
             return false;
@@ -1422,6 +1765,10 @@
           return true;
         });
 
+        // تسک ۸: مرتب‌سازی + نگه‌داشتن لیست فیلترشده برای تسک ۱۰ و ۱۴
+        filteredData = applySort(filteredData);
+        window.currentFilteredData = filteredData;
+
         const total = window.fullDashboardData.length;
         const doneCount = window.fullDashboardData.filter((i) =>
           doneUrls.includes(i.formatted_url),
@@ -1432,6 +1779,14 @@
         document.getElementById("stat-errors").innerText = c.err;
         document.getElementById("stat-warns").innerText = c.warn;
         document.getElementById("stat-skips").innerText = c.skip;
+        updateFilterCounts(c, doneCount, total);
+        updateSortIndicators();
+        const openTabsText = document.getElementById("btn-open-tabs-text");
+        if (openTabsText) openTabsText.textContent = `تب ها (${filteredData.length})`;
+        // تسک ۱۰: لیست پیمایش Drawer از همان فیلتر فعلی ساخته می‌شود
+        window.drawerList = filteredData.map((item) =>
+          window.fullDashboardData.indexOf(item),
+        );
 
         if (filteredData.length === 0) {
           listEl.innerHTML = `<div class="p-10 text-center text-sm text-zinc-500 font-medium">هیچ داده ای یافت نشد.</div>`;
@@ -1484,12 +1839,65 @@ const tools = [
         listEl.innerHTML = html;
       }
 
+      // ---------- تسک ۱۶: شمارش خطا/دستی کنار نام هر check در sidebar ----------
+      function updateSidebarCounts() {
+        const ids = [
+          "health",
+          "title",
+          "description",
+          "og_image",
+          "source_encoding",
+          "favicon",
+          "canonical",
+          "ssl",
+        ];
+        const agg = {};
+        ids.forEach((id) => (agg[id] = { err: 0, warn: 0, skip: 0 }));
+        (window.fullDashboardData || []).forEach((item) => {
+          const d = item.details || {};
+          ids.forEach((id) => {
+            const lvl = d[id] ? d[id].level : "idle";
+            if (agg[id][lvl] !== undefined) agg[id][lvl]++;
+          });
+        });
+        ids.forEach((id) => {
+          const el = document.getElementById("nav-count-" + id);
+          if (!el) return;
+          const a = agg[id];
+          let value = 0;
+          let color = "";
+          if (a.err) {
+            value = a.err;
+            color = "#ef4444";
+          } else if (a.warn) {
+            value = a.warn;
+            color = "#f59e0b";
+          } else if (a.skip) {
+            value = a.skip;
+            color = "#a1a1aa";
+          }
+          if (!value) {
+            el.classList.add("hidden");
+            el.textContent = "";
+            return;
+          }
+          el.classList.remove("hidden");
+          el.textContent = String(value);
+          el.style.color = color;
+          el.style.background = color + "1f";
+          el.style.border = "1px solid " + color + "40";
+          el.title =
+            a.err + " خطا • " + a.warn + " بررسی دستی • " + a.skip + " بررسی‌نشده";
+        });
+      }
+
       async function loadDashboard() {
         checkAndResetDailyCache();
         try {
           const res = await fetch("/urls");
           window.fullDashboardData = await res.json();
           renderMainTable();
+          updateSidebarCounts();
         } catch (err) {
           console.error("Error loading urls:", err);
         }
@@ -1523,7 +1931,7 @@ const tools = [
         navigator.clipboard
           .writeText(domain)
           .then(() => console.log("دامنه کپی شد: " + domain))
-          .catch(() => alert("خطا در دسترسی به کلیپ‌بورد"));
+          .catch(() => notify("خطا در دسترسی به کلیپ‌بورد", "err"));
       }
 
 
@@ -1552,10 +1960,10 @@ async function checkSitemap(baseUrl, btnEl) {
         if (data.status === 'found' && data.sitemap) {
             window.open(data.sitemap, '_blank');
         } else {
-            alert('هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.');
+            notify('هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.', 'err');
         }
     } catch (e) {
-        alert('هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.');
+        notify('هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.', 'err');
     } finally {
         // بازگرداندن دکمه به حالت عادی
         btnEl.innerHTML = originalHtml;
@@ -1563,19 +1971,55 @@ async function checkSitemap(baseUrl, btnEl) {
     }
 }
 
+      // ---------- تسک ۱۰: پیمایش سایت بعدی/قبلی داخل Drawer ----------
+      function updateDrawerNav() {
+        const prev = document.getElementById("drawer-btn-prev");
+        const next = document.getElementById("drawer-btn-next");
+        if (!prev || !next) return;
+        const list = window.drawerList || [];
+        const pos = list.indexOf(window.currentDrawerIndex);
+        const hasPrev = list.length > 1 && pos > 0;
+        const hasNext = list.length > 1 && pos !== -1 && pos < list.length - 1;
+        prev.disabled = !hasPrev;
+        next.disabled = !hasNext;
+        const counter = document.getElementById("drawer-nav-counter");
+        if (counter) {
+          counter.textContent =
+            pos === -1 || !list.length ? "" : pos + 1 + " / " + list.length;
+        }
+      }
+
+      function drawerNext() {
+        const list = window.drawerList || [];
+        const pos = list.indexOf(window.currentDrawerIndex);
+        if (pos === -1 || pos >= list.length - 1) return;
+        openDrawer(list[pos + 1]);
+      }
+
+      function drawerPrev() {
+        const list = window.drawerList || [];
+        const pos = list.indexOf(window.currentDrawerIndex);
+        if (pos <= 0) return;
+        openDrawer(list[pos - 1]);
+      }
+
       function openDrawer(index) {
         const data = window.fullDashboardData[index];
         if (!data) return;
         const url = data.formatted_url;
+        window.currentDrawerIndex = index;
+        // تسک ۱۸: هر سایت با فیلتر تازه‌ی همان تب باز می‌شود
+        Object.keys(toolFilters).forEach((k) => delete toolFilters[k]);
         document.getElementById("drawer-title").textContent = url;
         document.getElementById("drawer-btn-copy").onclick = () =>
           copyDomainOnly(url);
-          document.getElementById('drawer-btn-google').onclick = () => openGoogleIndex(url);
-          document.getElementById('drawer-btn-sitemap').onclick = () => checkSitemap(url, document.getElementById('drawer-btn-sitemap'));
-          document.getElementById('drawer-btn-robots').onclick = () => {
-            const formattedUrl = /^https?:\/\//i.test(url) ? url : 'https://' + url;
-            const robotsUrl = formattedUrl.replace(/\/$/, '') + '/robots.txt';
-            window.open(robotsUrl, '_blank');
+        document.getElementById("drawer-btn-google").onclick = () => openGoogleIndex(url);
+        document.getElementById("drawer-btn-sitemap").onclick = () =>
+          checkSitemap(url, document.getElementById("drawer-btn-sitemap"));
+        document.getElementById("drawer-btn-robots").onclick = () => {
+          const formattedUrl = /^https?:\/\//i.test(url) ? url : "https://" + url;
+          const robotsUrl = formattedUrl.replace(/\/$/, "") + "/robots.txt";
+          window.open(robotsUrl, "_blank");
         };
         document.getElementById("drawer-btn-tabs").onclick = () =>
           openCheckTabs(url);
@@ -1593,14 +2037,14 @@ async function checkSitemap(baseUrl, btnEl) {
                 body: JSON.stringify({ url: url }),
               });
               const j = await r.json().catch(() => ({}));
-              if (!r.ok) alert(j.message || "اسکن سریع انجام نشد.");
+              if (!r.ok) notify(j.message || "اسکن سریع انجام نشد.", "err");
               await loadDashboard();
               const newIndex = window.fullDashboardData.findIndex(
                 (i) => i.formatted_url === url,
               );
               if (newIndex !== -1) openDrawer(newIndex);
             } catch (e) {
-              alert("خطا در ارتباط با سرور");
+              notify("خطا در ارتباط با سرور", "err");
             } finally {
               this.innerHTML = originalHtml;
               this.disabled = false;
@@ -1671,6 +2115,7 @@ async function checkSitemap(baseUrl, btnEl) {
             "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
           );
 
+        updateDrawerNav();
         document.getElementById("drawer-overlay").classList.remove("hidden");
         setTimeout(() => {
           document
@@ -1728,27 +2173,37 @@ async function checkSitemap(baseUrl, btnEl) {
           const doneUrls = getDoneList().map(normKey);
           if (!doneUrls.includes(key)) {
             doneUrls.push(key);
-            localStorage.setItem("qa_dashboard_done", JSON.stringify(doneUrls));
+            setDoneList(doneUrls);
           }
           renderMainTable();
         } catch (e) {
-          alert("فرمت لینک نامعتبر است");
+          notify("فرمت لینک نامعتبر است", "err");
         }
       }
 
       function resetDoneList() {
-        if (confirm("لیست تاریخچه انجام شده ها پاک شود؟")) {
-          localStorage.setItem("qa_dashboard_done", JSON.stringify([]));
-          renderMainTable();
-        }
+        // تسک ۲: این کار تخریبی نیست (localStorage) پس بدون confirm انجام می‌شود
+        // تسک ۱۳: فقط لیست «امروز» پاک می‌شود؛ تاریخ‌های قبلی (تا ۷ روز) می‌مانند
+        setDoneList([]);
+        renderMainTable();
+        notify("لیست بررسی‌شده‌های امروز ریست شد", "ok");
       }
 
       function openAllBaseUrls() {
-        const list = window.fullDashboardData.map((item) => item.formatted_url);
-        if (list.length === 0) return;
+        // تسک ۱۴: فقط موارد «فیلتر فعلی» باز می‌شوند، نه کل لیست.
+        // اگر لیست فیلترشده خالی است، هیچ چیز باز نمی‌شود (نه این‌که به کل لیست برگردیم).
+        const source = Array.isArray(window.currentFilteredData)
+          ? window.currentFilteredData
+          : window.fullDashboardData || [];
+        const list = source.map((item) => item.formatted_url);
+        if (list.length === 0) {
+          notify("در فیلتر فعلی موردی برای باز کردن نیست.", "err");
+          return;
+        }
+        const label = currentFilter === "all" ? "کل لیست" : "فیلتر فعلی";
         if (
           confirm(
-            `باز کردن ${list.length} تب به صورت همزمان؟ (پاپ‌آپ بلاکر باید خاموش باشد)`,
+            `باز کردن ${list.length} تب ${label} به صورت همزمان؟ (پاپ‌آپ بلاکر باید خاموش باشد)`,
           )
         ) {
           list.forEach((u, i) =>
@@ -1762,10 +2217,10 @@ async function checkSitemap(baseUrl, btnEl) {
         try {
           const res = await fetch("/archive", { method: "POST" });
           const data = await res.json();
-          alert(data.message);
+          notify(data.message, "ok");
           loadDashboard();
         } catch (e) {
-          alert("خطا در فرآیند آرشیو");
+          notify("خطا در فرآیند آرشیو", "err");
         }
       }
 
@@ -1861,7 +2316,7 @@ async function checkSitemap(baseUrl, btnEl) {
         });
         input.value = "";
         renderSettingsUrls();
-        if (dup) alert(`${dup} لینک تکراری بود و اضافه نشد.`);
+        if (dup) notify(`${dup} لینک تکراری بود و اضافه نشد.`, "err");
       }
 
       function removeUrl(idx) {
@@ -1877,7 +2332,7 @@ async function checkSitemap(baseUrl, btnEl) {
       function copyAllSettingsUrls() {
         navigator.clipboard
           .writeText(window.settingsUrls.join("\n"))
-          .then(() => alert("همه لینک‌ها کپی شدند"));
+          .then(() => notify("همه لینک‌ها کپی شدند", "ok"));
       }
       function copySingleUrl(idx) {
         navigator.clipboard.writeText(window.settingsUrls[idx] || "");
@@ -1893,11 +2348,11 @@ async function checkSitemap(baseUrl, btnEl) {
             body: JSON.stringify({ urls: window.settingsUrls }),
           });
           if (!r.ok) throw new Error();
-          alert("فایل با موفقیت ذخیره شد!");
+          notify("فایل با موفقیت ذخیره شد!", "ok");
           loadSettingsUrls();
           loadDashboard();
         } catch (e) {
-          alert("خطا در ذخیره سازی");
+          notify("خطا در ذخیره سازی", "err");
         }
         btnText.innerText = "ذخیره تغییرات در فایل";
       }
@@ -1919,6 +2374,7 @@ async function checkSitemap(baseUrl, btnEl) {
         if (tabId === "dashboard") loadDashboard();
         else if (tabId === "settings") loadSettingsUrls();
         else loadResult(tabId);
+        updateUrlState();
       }
 
       // ---------- اجرای اسکن و نمایش پیشرفت زنده ----------
@@ -1946,16 +2402,17 @@ async function checkSitemap(baseUrl, btnEl) {
           const r = await fetch(endpoint, { method: "POST" });
           const j = await r.json().catch(() => ({}));
           if (r.status === 409) {
-            alert(j.message || "یک اسکن در حال اجراست.");
+            notify(j.message || "یک اسکن در حال اجراست.", "err");
           } else if (!r.ok) {
-            alert("شروع اسکن انجام نشد.");
+            notify("شروع اسکن انجام نشد.", "err");
             return;
           }
         } catch (e) {
-          alert("خطا در ارتباط با سرور");
+          notify("خطا در ارتباط با سرور", "err");
           return;
         }
         lastRefreshDone = -1;
+        lastRefreshTs = 0;
         pollProgress();
       }
 
@@ -1976,6 +2433,35 @@ async function checkSitemap(baseUrl, btnEl) {
         await fetch("/stop", { method: "POST" }).catch(() => {});
         document.getElementById("scan-msg").textContent =
           "درخواست توقف ثبت شد؛ بعد از سایت جاری متوقف می‌شود ...";
+      }
+
+      // ---------- کمکی‌های زمان برای تسک ۳ ----------
+      function nowTs() {
+        return Date.now() / 1000;
+      }
+      // started_at از سرور با فرمت "YYYY-MM-DD HH:MM:SS" می‌آید
+      function parseProgressTs(s) {
+        if (!s) return 0;
+        const m = String(s)
+          .trim()
+          .match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
+        if (!m) return 0;
+        return new Date(
+          Number(m[1]),
+          Number(m[2]) - 1,
+          Number(m[3]),
+          Number(m[4]),
+          Number(m[5]),
+          Number(m[6]),
+        ).getTime() / 1000;
+      }
+      function fmtDur(sec) {
+        sec = Math.max(0, Math.round(sec || 0));
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        const p = (n) => String(n).padStart(2, "0");
+        return h ? h + ":" + p(m) + ":" + p(s) : m + ":" + p(s);
       }
 
       async function pollProgress() {
@@ -2018,9 +2504,57 @@ async function checkSitemap(baseUrl, btnEl) {
           document.getElementById("scan-msg").className =
             "text-[11px] mt-2 " +
             (running ? "text-zinc-400" : "text-status-warn");
+
+          // ---------- تسک ۳: زمان سپری‌شده و ETA ----------
+          const etaEl = document.getElementById("scan-eta");
+          if (etaEl) {
+            const startedTs = p.started_at ? parseProgressTs(p.started_at) : 0;
+            if (running && startedTs && done > 0) {
+              const elapsed = Math.max(0, nowTs() - startedTs);
+              const perSite = elapsed / done;
+              etaEl.classList.remove("hidden");
+              if (done < 3) {
+                etaEl.textContent = `گذشته: ${fmtDur(elapsed)} • باقی‌مانده: در حال محاسبه ...`;
+              } else {
+                const remaining = Math.max(0, perSite * (total - done));
+                etaEl.textContent = `گذشته: ${fmtDur(elapsed)} • باقی‌مانده: ~${fmtDur(remaining)}`;
+              }
+            } else {
+              etaEl.classList.add("hidden");
+              etaEl.textContent = "";
+            }
+          }
         } else {
           box.classList.add("hidden");
+          const etaHide = document.getElementById("scan-eta");
+          if (etaHide) {
+            etaHide.classList.add("hidden");
+            etaHide.textContent = "";
+          }
         }
+
+        // ---------- تسک ۴: شمارش زنده ok/err/warn/skip ----------
+        const countsEl = document.getElementById("scan-counts");
+        const cnt = p.counts || null;
+        if (countsEl) {
+          if (cnt && (running || done > 0)) {
+            countsEl.classList.remove("hidden");
+            countsEl.innerHTML =
+              `<span class="text-status-ok">✓ ${cnt.ok || 0} سالم</span>` +
+              `<span class="text-status-err">✕ ${cnt.err || 0} خطا</span>` +
+              `<span class="text-status-warn">! ${cnt.warn || 0} دستی</span>` +
+              `<span class="text-zinc-400">○ ${cnt.skip || 0} نشد</span>`;
+          } else {
+            countsEl.classList.add("hidden");
+            countsEl.innerHTML = "";
+          }
+        }
+
+        // ---------- تسک ۲۵: favicon پویا بر اساس وضعیت ----------
+        if (running) setFavicon("blue");
+        else if (cnt && (cnt.err || 0) > 0) setFavicon("err");
+        else if (cnt && (cnt.warn || 0) > 0) setFavicon("warn");
+        else setFavicon("ok");
 
         document.querySelectorAll(".tool-progress").forEach((el) => {
           const toolId = el.parentElement.id.replace("view-", "");
@@ -2032,25 +2566,32 @@ async function checkSitemap(baseUrl, btnEl) {
 
         setButtonsBusy(running);
 
-        // رفرش تدریجی نتایج هر ۵ سایت
-        if (running && done !== lastRefreshDone && done % 5 === 0) {
-          lastRefreshDone = done;
-          if (currentTab === "dashboard") loadDashboard();
-          else if (currentTab !== "settings") loadResult(currentTab);
+        // ---------- تسک ۲۱: رفرش تدریجی بر اساس زمان (حداقل هر ۳۰ ثانیه) ----------
+        if (running && done !== lastRefreshDone) {
+          if (!lastRefreshTs || nowTs() - lastRefreshTs >= 30000) {
+            lastRefreshDone = done;
+            lastRefreshTs = nowTs();
+            if (currentTab === "dashboard") loadDashboard();
+            else if (currentTab !== "settings") loadResult(currentTab);
+          }
         }
         if (lastRunning && !running) {
-          if (currentTab === "dashboard") loadDashboard();
-          else if (currentTab !== "settings") loadResult(currentTab);
-          if (p.state === "done") loadDashboard();
+          // پایان اسکن: آمار داشبورد و بج‌های سایدبار همیشه به‌روز شوند
+          // (loadDashboard خودش renderMainTable و updateSidebarCounts را صدا می‌زند)
+          loadDashboard();
+          if (currentTab !== "dashboard" && currentTab !== "settings")
+            loadResult(currentTab);
         }
         lastRunning = running;
-        pollTimer = setTimeout(pollProgress, running ? 2000 : 10000);
+        // ---------- تسک ۲۰: در تب پس‌زمینه کمتر به سرور فشار بیار ----------
+        const idleDelay = document.visibilityState === "hidden" ? 30000 : 10000;
+        pollTimer = setTimeout(pollProgress, running ? 2000 : idleDelay);
       }
 
       async function deleteResult(toolId) {
         if (!confirm("گزارش فایل حذف شود؟")) return;
         const r = await fetch(`/delete/${toolId}`, { method: "POST" });
-        if (r.status === 409) alert("این ابزار در حال اسکن است.");
+        if (r.status === 409) notify("این ابزار در حال اسکن است.", "err");
         loadResult(toolId);
         loadDashboard();
       }
@@ -2074,9 +2615,37 @@ async function checkSitemap(baseUrl, btnEl) {
           return;
         }
 
+        // ---------- تسک ۱۸: سرچ و فیلتر مستقل برای هر تب ابزار ----------
+        const fst = toolFilters[toolId] || (toolFilters[toolId] = { q: "", flt: "all" });
+        const searchEl = document.getElementById("tool-search-" + toolId);
+        if (searchEl && searchEl.value !== fst.q) searchEl.value = fst.q;
+        document.querySelectorAll(`.tool-flt-btn[id^="tool-flt-${toolId}-"]`).forEach((b) => {
+          const on = b.id === `tool-flt-${toolId}-${fst.flt}`;
+          b.classList.toggle("bg-white/10", on);
+          b.classList.toggle("text-white", on);
+          b.classList.toggle("text-zinc-400", !on);
+          b.classList.toggle("bg-transparent", !on);
+        });
+        const needle = (fst.q || "").toLowerCase().trim();
+        const allRows = data.data.filter((row) => {
+          if (fst.flt !== "all" && levelOf(row["Status"]) !== fst.flt) return false;
+          if (!needle) return true;
+          let hit = false;
+          Object.keys(row).forEach((k) => {
+            if (hit || k.startsWith("_")) return;
+            if (String(row[k] ?? "").toLowerCase().includes(needle)) hit = true;
+          });
+          return hit;
+        });
+        if (allRows.length === 0) {
+          container.innerHTML = `<div class="p-10 text-center text-sm text-zinc-500 font-medium">موردی با این فیلتر/جستجو یافت نشد.</div>`;
+          return;
+        }
+
         if (toolId === "og_image") {
-          const successes = data.data.filter((i) => levelOf(i.Status) === "ok");
-          const others = data.data.filter((i) => levelOf(i.Status) !== "ok");
+          // همه‌ی رندرها باید روی همان ردیف‌های فیلترشده (allRows) انجام شود
+          const successes = allRows.filter((i) => levelOf(i.Status) === "ok");
+          const others = allRows.filter((i) => levelOf(i.Status) !== "ok");
           let html = `<div class="flex gap-5 h-full p-5 bg-brand-bg">
                     <div class="w-2/3 bg-brand-panel border border-brand-border rounded-lg overflow-hidden flex flex-col">
                         <div class="bg-white/[0.02] px-5 py-3 border-b border-brand-border flex justify-between items-center text-right">
@@ -2097,7 +2666,7 @@ async function checkSitemap(baseUrl, btnEl) {
           return;
         }
 
-        const keys = Object.keys(data.data[0]).filter(
+        const keys = Object.keys(allRows[0]).filter(
           (k) => !k.startsWith("_"),
         );
         let html =
@@ -2107,9 +2676,10 @@ async function checkSitemap(baseUrl, btnEl) {
         );
         html +=
           '</tr></thead><tbody class="divide-y divide-brand-border bg-brand-panel">';
-        data.data.forEach((row) => {
+        allRows.forEach((row) => {
           const lvl = levelOf(row["Status"]);
-          html += `<tr class="data-row">`;
+          // تسک ۱۷: رنگ خفیف کل سطر بر اساس وضعیت
+          html += `<tr class="data-row row-${lvl}">`;
           keys.forEach((key) => {
             const v = row[key] ?? "";
             html += `<td class="px-5 py-3.5 align-middle">`;
@@ -2127,9 +2697,102 @@ async function checkSitemap(baseUrl, btnEl) {
         container.innerHTML = html;
       }
 
+      // ---------- تسک ۹: میان‌برهای کیبورد ----------
+      function isDrawerOpen() {
+        const d = document.getElementById("site-drawer");
+        return !!d && d.classList.contains("drawer-open");
+      }
+
+      function drawerRetry() {
+        const btn = document.getElementById("btn-drawer-retry");
+        if (btn && !btn.disabled) btn.click();
+      }
+
+      function moveSelection(step) {
+        const rows = document.querySelectorAll("#main-data-list .data-row");
+        if (!rows.length) return;
+        let idx = -1;
+        rows.forEach((r, i) => {
+          if (r.classList.contains("kbd-selected")) idx = i;
+        });
+        let next = idx + step;
+        if (next < 0) next = 0;
+        if (next > rows.length - 1) next = rows.length - 1;
+        rows.forEach((r) => r.classList.remove("kbd-selected"));
+        rows[next].classList.add("kbd-selected");
+        rows[next].scrollIntoView({ block: "nearest" });
+      }
+
+      function openSelectedRow() {
+        const row = document.querySelector(
+          "#main-data-list .data-row.kbd-selected",
+        );
+        if (!row) return;
+        const m = (row.getAttribute("onclick") || "").match(/openDrawer\((\d+)\)/);
+        if (m) openDrawer(Number(m[1]));
+      }
+
+      document.addEventListener("keydown", function (e) {
+        const t = e.target || {};
+        const tag = (t.tagName || "").toLowerCase();
+        const typing = tag === "input" || tag === "textarea" || t.isContentEditable;
+
+        // Esc در هر شرایطی: بستن Drawer یا خروج از سرچ
+        if (e.key === "Escape") {
+          if (isDrawerOpen()) {
+            closeDrawer();
+            return;
+          }
+          if (tag === "input") {
+            t.blur();
+            return;
+          }
+        }
+        if (typing) return;
+
+        if (e.key === "/") {
+          if (currentTab === "dashboard") {
+            const s = document.getElementById("search-input");
+            if (s) {
+              e.preventDefault();
+              s.focus();
+              s.select();
+            }
+          }
+          return;
+        }
+        if (isDrawerOpen()) {
+          // طبق برچسب دکمه‌ها: «بعدی →» با کلید → و «← قبلی» با کلید ←
+          if (e.key === "ArrowRight") {
+            e.preventDefault();
+            drawerNext();
+          } else if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            drawerPrev();
+          } else if (e.key === "r" || e.key === "R") {
+            e.preventDefault();
+            drawerRetry();
+          }
+          return;
+        }
+        if (currentTab !== "dashboard") return;
+        if (e.key === "ArrowDown") {
+          e.preventDefault();
+          moveSelection(1);
+        } else if (e.key === "ArrowUp") {
+          e.preventDefault();
+          moveSelection(-1);
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          openSelectedRow();
+        }
+      });
+
       window.onload = () => {
+        applyUrlState();
         loadDashboard();
         pollProgress();
+        updateSidebarCounts();
       };
     </script>
 
@@ -2197,6 +2860,8 @@ async function checkSitemap(baseUrl, btnEl) {
       "padding:10px 18px;border-radius:8px;font-size:12px;font-weight:700;" +
       "font-family:Vazirmatn,sans-serif;max-width:80vw;text-align:center;line-height:1.7;" +
       "box-shadow:0 12px 34px rgba(0,0,0,.65);transition:opacity .25s;opacity:1;" +
+      // toast فقط پیام است؛ نباید کلیک‌های زیرش را بگیرد (چه دیده شود چه محو شده باشد)
+      "pointer-events:none;" +
       "border:1px solid " +
       (err ? "#7f1d1d" : "#27272a") +
       ";background:" +
@@ -2777,6 +3442,40 @@ async function checkSitemap(baseUrl, btnEl) {
     }
   }
 
+  /* ------------------------------------------- تسک ۲۲: نگه‌داشتن گزینه‌ها بین رفرش‌ها */
+  var OPT_KEY = "qa_link_lab_opts";
+  var OPT_IDS = ["ll-opt-dedupe", "ll-opt-bare", "ll-opt-utm", "ll-opt-sort"];
+
+  function saveOpts() {
+    try {
+      var o = {};
+      OPT_IDS.forEach(function (id) {
+        var el = $(id);
+        if (el) o[id] = !!el.checked;
+      });
+      localStorage.setItem(OPT_KEY, JSON.stringify(o));
+    } catch (e) {}
+  }
+
+  function restoreOpts() {
+    var raw = null;
+    try {
+      raw = JSON.parse(localStorage.getItem(OPT_KEY) || "null");
+    } catch (e) {}
+    if (!raw) return;
+    OPT_IDS.forEach(function (id) {
+      var el = $(id);
+      if (el && typeof raw[id] === "boolean") el.checked = raw[id];
+    });
+  }
+
+  function bindOpts() {
+    OPT_IDS.forEach(function (id) {
+      var el = $(id);
+      if (el) el.addEventListener("change", saveOpts);
+    });
+  }
+
   /* ------------------------------------------------------------------ راه‌اندازی */
   function init() {
     // با این پرچم، اگر کد اجرا نشود، هشدار داخل پنل نشان داده می‌شود
@@ -2785,6 +3484,8 @@ async function checkSitemap(baseUrl, btnEl) {
     if (dead) dead.classList.add("hidden");
     try {
       load();
+      restoreOpts();
+      bindOpts();
       var ta = $("ll-input");
       if (ta) {
         // کشیدن و رها کردن فایل متنی روی کادر
