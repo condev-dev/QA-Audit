@@ -4,7 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QA Master | Enterprise</title>
-    <link id="app-favicon" rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%2310b981'/%3E%3C/svg%3E" />
+    <link
+      id="app-favicon"
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%2310b981'/%3E%3C/svg%3E"
+    />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -27,15 +32,8 @@
               },
             },
             fontFamily: {
-              sans: ["Vazirmatn", "system-ui", "sans-serif"],
-              mono: [
-                "ui-monospace",
-                "SFMono-Regular",
-                "Menlo",
-                "Monaco",
-                "Consolas",
-                "monospace",
-              ],
+              sans: ["Vazirmatn"],
+              mono: ["Vazirmatn"],
             },
           },
         },
@@ -114,9 +112,15 @@
         background-color: transparent;
         border: 1px solid rgba(212, 212, 216, 0.55);
       }
-      .row-err { background-color: rgba(239, 68, 68, 0.06); }
-      .row-warn { background-color: rgba(245, 158, 11, 0.06); }
-      .row-skip { background-color: rgba(161, 161, 170, 0.04); }
+      .row-err {
+        background-color: rgba(239, 68, 68, 0.06);
+      }
+      .row-warn {
+        background-color: rgba(245, 158, 11, 0.06);
+      }
+      .row-skip {
+        background-color: rgba(161, 161, 170, 0.04);
+      }
       .kbd-selected {
         outline: 1px solid rgba(250, 250, 250, 0.45) !important;
         background-color: #18181b !important;
@@ -306,7 +310,10 @@
             ></path>
           </svg>
           <span class="flex-1">سلامت سرور (Health)</span>
-          <span id="nav-count-health" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
+          <span
+            id="nav-count-health"
+            class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
+          ></span>
         </button>
         <button
           id="nav-title"
@@ -327,7 +334,10 @@
             ></path>
           </svg>
           <span class="flex-1">عنوان سایت (Title)</span>
-          <span id="nav-count-title" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
+          <span
+            id="nav-count-title"
+            class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
+          ></span>
         </button>
         <button
           id="nav-description"
@@ -348,7 +358,10 @@
             ></path>
           </svg>
           <span class="flex-1">متای توضیحات</span>
-          <span id="nav-count-description" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
+          <span
+            id="nav-count-description"
+            class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
+          ></span>
         </button>
         <button
           id="nav-og_image"
@@ -369,7 +382,10 @@
             ></path>
           </svg>
           <span class="flex-1">تصویر اشتراک گذاری</span>
-          <span id="nav-count-og_image" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
+          <span
+            id="nav-count-og_image"
+            class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
+          ></span>
         </button>
         <button
           id="nav-source_encoding"
@@ -390,7 +406,10 @@
             ></path>
           </svg>
           <span class="flex-1">اسکن سورس کد</span>
-          <span id="nav-count-source_encoding" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
+          <span
+            id="nav-count-source_encoding"
+            class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
+          ></span>
         </button>
         <button
           id="nav-favicon"
@@ -411,7 +430,10 @@
             ></path>
           </svg>
           <span class="flex-1">بررسی آیکون (Favicon)</span>
-          <span id="nav-count-favicon" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
+          <span
+            id="nav-count-favicon"
+            class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
+          ></span>
         </button>
 
         <button
@@ -419,9 +441,24 @@
           onclick="switchTab('canonical')"
           class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
         >
-          <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+            ></path>
+          </svg>
           <span class="flex-1">لینک کانونی (Canonical)</span>
-          <span id="nav-count-canonical" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
+          <span
+            id="nav-count-canonical"
+            class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
+          ></span>
         </button>
 
         <button
@@ -429,9 +466,24 @@
           onclick="switchTab('ssl')"
           class="nav-btn w-full flex items-center gap-3 px-3 py-2 text-right rounded-md text-sm transition-colors text-brand-muted hover:text-white hover:bg-white/5 border border-transparent"
         >
-          <svg class="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+          <svg
+            class="w-4 h-4 opacity-70"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            ></path>
+          </svg>
           <span class="flex-1">وضعیت SSL</span>
-          <span id="nav-count-ssl" class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"></span>
+          <span
+            id="nav-count-ssl"
+            class="nav-count-badge hidden text-[10px] font-mono font-bold px-1.5 py-0.5 rounded"
+          ></span>
         </button>
 
         <div
@@ -596,7 +648,10 @@
                   >در حال اسکن</span
                 >
                 <span id="scan-count" class="font-mono text-zinc-400"></span>
-                <span id="scan-eta" class="hidden font-mono text-[11px] text-zinc-400 bg-zinc-800/70 border border-zinc-700 px-2 py-0.5 rounded"></span>
+                <span
+                  id="scan-eta"
+                  class="hidden font-mono text-[11px] text-zinc-400 bg-zinc-800/70 border border-zinc-700 px-2 py-0.5 rounded"
+                ></span>
                 <bdi
                   id="scan-url"
                   dir="ltr"
@@ -619,7 +674,10 @@
               ></div>
             </div>
             <div id="scan-msg" class="text-[11px] text-zinc-400 mt-2"></div>
-            <div id="scan-counts" class="hidden mt-2 text-[11px] font-mono flex items-center gap-3 text-zinc-300 flex-wrap"></div>
+            <div
+              id="scan-counts"
+              class="hidden mt-2 text-[11px] font-mono flex items-center gap-3 text-zinc-300 flex-wrap"
+            ></div>
           </div>
 
           <div class="flex items-center justify-between gap-4 mb-6">
@@ -655,7 +713,10 @@
                 class="filter-btn px-4 py-2 bg-white/10 text-white flex items-center gap-1.5"
               >
                 <span>همه سایت ها</span>
-                <span id="cnt-all" class="text-[10px] font-mono opacity-80"></span>
+                <span
+                  id="cnt-all"
+                  class="text-[10px] font-mono opacity-80"
+                ></span>
               </button>
               <button
                 onclick="setFilter('errors')"
@@ -663,7 +724,10 @@
                 class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border flex items-center gap-1.5"
               >
                 <span>خطادار ها</span>
-                <span id="cnt-errors" class="text-[10px] font-mono opacity-80"></span>
+                <span
+                  id="cnt-errors"
+                  class="text-[10px] font-mono opacity-80"
+                ></span>
               </button>
               <button
                 onclick="setFilter('warns')"
@@ -671,7 +735,10 @@
                 class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border flex items-center gap-1.5"
               >
                 <span>بررسی دستی</span>
-                <span id="cnt-warns" class="text-[10px] font-mono opacity-80"></span>
+                <span
+                  id="cnt-warns"
+                  class="text-[10px] font-mono opacity-80"
+                ></span>
               </button>
               <button
                 onclick="setFilter('todo')"
@@ -679,7 +746,10 @@
                 class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border flex items-center gap-1.5"
               >
                 <span>بررسی نشده ها</span>
-                <span id="cnt-todo" class="text-[10px] font-mono opacity-80"></span>
+                <span
+                  id="cnt-todo"
+                  class="text-[10px] font-mono opacity-80"
+                ></span>
               </button>
               <button
                 onclick="setFilter('done')"
@@ -687,7 +757,10 @@
                 class="filter-btn px-4 py-2 text-zinc-400 hover:text-white hover:bg-white/5 border-r border-brand-border flex items-center gap-1.5"
               >
                 <span>انجام شده ها</span>
-                <span id="cnt-done" class="text-[10px] font-mono opacity-80"></span>
+                <span
+                  id="cnt-done"
+                  class="text-[10px] font-mono opacity-80"
+                ></span>
               </button>
             </div>
           </div>
@@ -704,7 +777,10 @@
                 title="مرتب سازی بر اساس وضعیت"
               >
                 <span>وضعیت</span>
-                <span id="sort-indicator-overall" class="text-[10px] text-zinc-500"></span>
+                <span
+                  id="sort-indicator-overall"
+                  class="text-[10px] text-zinc-500"
+                ></span>
               </div>
               <div
                 onclick="toggleSort('alpha')"
@@ -712,9 +788,14 @@
                 title="مرتب سازی الفبایی دامنه"
               >
                 <span>آدرس دامنه</span>
-                <span id="sort-indicator-alpha" class="text-[10px] text-zinc-500"></span>
+                <span
+                  id="sort-indicator-alpha"
+                  class="text-[10px] text-zinc-500"
+                ></span>
               </div>
-              <div class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500">
+              <div
+                class="flex justify-between items-center px-2 tracking-widest font-mono text-zinc-500"
+              >
                 <span title="سلامت سرور (Health)">H</span>
                 <span title="عنوان (Title)">T</span>
                 <span title="متای توضیحات (Description)">D</span>
@@ -857,9 +938,15 @@
           id="view-favicon"
           class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
         ></div>
-<div id="view-canonical" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
+        <div
+          id="view-canonical"
+          class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        ></div>
 
-<div id="view-ssl" class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"></div>
+        <div
+          id="view-ssl"
+          class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
+        ></div>
         <!-- بخش «استخراج لینک از متن» (ابزارهای کمکی) -->
         <div
           id="view-links"
@@ -925,7 +1012,9 @@
             id="ll-dead"
             class="hidden mb-4 border border-red-900/60 bg-red-950/30 text-red-300 text-[11px] font-bold rounded-md px-4 py-3 leading-relaxed"
           >
-            توجه: کد این بخش اجرا نشده است؛ یعنی فایل index.html کامل کپی نشده یا نسخه‌ی قدیمی در کش مرورگر مانده است. با Ctrl+F5 صفحه را رفرش کنید و مطمئن شوید همین فایل داخل پوشه templates قرار دارد.
+            توجه: کد این بخش اجرا نشده است؛ یعنی فایل index.html کامل کپی نشده
+            یا نسخه‌ی قدیمی در کش مرورگر مانده است. با Ctrl+F5 صفحه را رفرش کنید
+            و مطمئن شوید همین فایل داخل پوشه templates قرار دارد.
           </div>
           <script>
             (function () {
@@ -1124,24 +1213,34 @@
       class="fixed top-0 left-0 h-full w-[420px] bg-brand-bg shadow-[20px_0_40px_rgba(0,0,0,0.8)] z-50 drawer-closed transition-transform duration-200 border-r border-brand-border flex flex-col text-right"
     >
       <div
-        class="px-6 py-5 border-b border-brand-border flex justify-between items-center bg-brand-panel" style="flex-direction: column-reverse;"
+        class="px-6 py-5 border-b border-brand-border flex justify-between items-center bg-brand-panel"
+        style="flex-direction: column-reverse"
       >
-        <div class="flex items-center gap-1.5 flex-1 overflow-hidden mt-4" style="width: 100%;" dir="ltr">
+        <div
+          class="flex items-center gap-1.5 flex-1 overflow-hidden mt-4"
+          style="width: 100%"
+          dir="ltr"
+        >
           <bdi
             class="text-sm font-mono font-bold text-white truncate text-left"
             id="drawer-title"
             >domain.com</bdi
           >
         </div>
-        <div class="flex items-center gap-2 shrink-0" style="width: 100%; justify-content: space-between;" >
-          <div class="flex items-center bg-zinc-900 border border-brand-border rounded-md overflow-hidden">
+        <div
+          class="flex items-center gap-2 shrink-0"
+          style="width: 100%; justify-content: space-between"
+        >
+          <div
+            class="flex items-center bg-zinc-900 border border-brand-border rounded-md overflow-hidden"
+          >
             <button
               id="drawer-btn-prev"
               onclick="drawerPrev()"
               class="btn-subtle px-2.5 py-1 text-xs text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
               title="سایت قبلی در این فیلتر (←)"
             >
-              ← قبلی
+            قبلی
             </button>
             <span class="w-[1px] h-4 bg-brand-border"></span>
             <button
@@ -1150,7 +1249,7 @@
               class="btn-subtle px-2.5 py-1 text-xs text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
               title="سایت بعدی در این فیلتر (→)"
             >
-              بعدی →
+              بعدی
             </button>
           </div>
           <span
@@ -1200,8 +1299,6 @@
       ></div>
 
       <div class="p-5 border-t border-brand-border bg-brand-panel flex gap-3">
-
-
         <button
           id="drawer-btn-copy"
           class="btn-subtle px-4 py-2.5 rounded-md flex items-center justify-center border border-brand-border transition-colors hover:text-white"
@@ -1221,7 +1318,7 @@
             ></path>
           </svg>
         </button>
-                <!-- دکمه ایندکس گوگل -->
+        <!-- دکمه ایندکس گوگل -->
         <button
           id="drawer-btn-google"
           class="btn-subtle px-4 py-2.5 rounded-md flex items-center justify-center border border-brand-border transition-colors hover:text-white"
@@ -1247,7 +1344,19 @@
           class="btn-subtle px-4 py-2.5 rounded-md flex items-center justify-center border border-brand-border transition-colors hover:text-white"
           title="بررسی سایت مپ در robots.txt"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7"></path></svg>
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L16 4m0 13V4m0 0L9 7"
+            ></path>
+          </svg>
         </button>
         <!-- دکمه فایل Robots.txt -->
         <button
@@ -1255,8 +1364,18 @@
           class="btn-subtle px-4 py-2.5 rounded-md flex items-center justify-center border border-brand-border transition-colors hover:text-white"
           title="باز کردن فایل robots.txt"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            ></path>
           </svg>
         </button>
         <!-- دکمه تب‌ها که باگ داشت، اصلاح شد -->
@@ -1277,7 +1396,8 @@
               d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
             ></path>
           </svg>
-تب ها        </button>
+          تب ها
+        </button>
       </div>
     </div>
 
@@ -1305,12 +1425,18 @@
           "box-shadow:0 12px 34px rgba(0,0,0,.65);transition:opacity .25s;opacity:1;" +
           // toast فقط پیام است؛ نباید کلیک‌های زیرش را بگیرد (چه دیده شود چه محو شده باشد)
           "pointer-events:none;" +
-          "border:1px solid " + (err ? "#7f1d1d" : "#27272a") +
-          ";background:" + (err ? "#450a0a" : "#09090b") +
-          ";color:" + (err ? "#fca5a5" : "#fafafa") + ";";
+          "border:1px solid " +
+          (err ? "#7f1d1d" : "#27272a") +
+          ";background:" +
+          (err ? "#450a0a" : "#09090b") +
+          ";color:" +
+          (err ? "#fca5a5" : "#fafafa") +
+          ";";
         el.textContent = msg;
         clearTimeout(el._t);
-        el._t = setTimeout(function () { el.style.opacity = "0"; }, 2600);
+        el._t = setTimeout(function () {
+          el.style.opacity = "0";
+        }, 2600);
       }
 
       // ---------- ابزار امنیتی: متن سایت‌ها هرگز به‌صورت HTML اجرا نمی‌شود ----------
@@ -1359,13 +1485,15 @@
 
       function setFavicon(color) {
         try {
-          const hex = color.startsWith("#") ? color : ({
-            ok: "#10b981",
-            err: "#ef4444",
-            warn: "#f59e0b",
-            blue: "#3b82f6",
-            idle: "#71717a"
-          }[color] || "#10b981");
+          const hex = color.startsWith("#")
+            ? color
+            : {
+                ok: "#10b981",
+                err: "#ef4444",
+                warn: "#f59e0b",
+                blue: "#3b82f6",
+                idle: "#71717a",
+              }[color] || "#10b981";
           const encoded = encodeURIComponent(hex);
           const href = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='${encoded}'/%3E%3C/svg%3E`;
           let link = document.getElementById("app-favicon");
@@ -1377,7 +1505,7 @@
             document.head.appendChild(link);
           }
           link.href = href;
-        } catch(e) {}
+        } catch (e) {}
       }
 
       function generateToolHeader(title, desc, toolId) {
@@ -1456,7 +1584,7 @@
       document.getElementById("view-ssl").innerHTML = generateToolHeader(
         "وضعیت امنیتی (SSL)",
         "بررسی معتبر بودن گواهینامه و تعداد روزهای باقیمانده انقضا",
-        "ssl"
+        "ssl",
       );
 
       window.fullDashboardData = [];
@@ -1550,7 +1678,11 @@
             params.delete("q");
           }
           const qs = params.toString();
-          history.replaceState({}, "", qs ? "?" + qs : window.location.pathname);
+          history.replaceState(
+            {},
+            "",
+            qs ? "?" + qs : window.location.pathname,
+          );
         } catch (e) {}
       }
 
@@ -1579,7 +1711,10 @@
         if (tab && document.getElementById("view-" + tab)) switchTab(tab);
         // setFilter در حالت داشبورد URL را کامل می‌کند؛ برای تب‌های دیگر هم
         // اگر filter نامعتبر بود، state باید به حالت all پیش‌فرض بماند.
-        if (currentTab === "dashboard" && (!flt || !document.getElementById("filter-" + flt))) {
+        if (
+          currentTab === "dashboard" &&
+          (!flt || !document.getElementById("filter-" + flt))
+        ) {
           renderMainTable();
           updateUrlState();
         }
@@ -1587,22 +1722,26 @@
 
       // ---------- تسک ۱۸: فیلتر/سرچ داخل صفحه‌ی هر ابزار ----------
       function setToolFilter(toolId, flt) {
-        const st = toolFilters[toolId] || (toolFilters[toolId] = { q: "", flt: "all" });
+        const st =
+          toolFilters[toolId] || (toolFilters[toolId] = { q: "", flt: "all" });
         st.flt = flt;
         const box = document.getElementById(`view-${toolId}`);
         if (box) {
-          box.querySelectorAll(`.tool-flt-btn[id^="tool-flt-${toolId}-"]`).forEach((b) => {
-            const on = b.id === `tool-flt-${toolId}-${flt}`;
-            b.classList.toggle("bg-white/10", on);
-            b.classList.toggle("text-white", on);
-            b.classList.toggle("text-zinc-400", !on);
-          });
+          box
+            .querySelectorAll(`.tool-flt-btn[id^="tool-flt-${toolId}-"]`)
+            .forEach((b) => {
+              const on = b.id === `tool-flt-${toolId}-${flt}`;
+              b.classList.toggle("bg-white/10", on);
+              b.classList.toggle("text-white", on);
+              b.classList.toggle("text-zinc-400", !on);
+            });
         }
         loadResult(toolId);
       }
 
       function onToolFilterChange(toolId) {
-        const st = toolFilters[toolId] || (toolFilters[toolId] = { q: "", flt: "all" });
+        const st =
+          toolFilters[toolId] || (toolFilters[toolId] = { q: "", flt: "all" });
         const el = document.getElementById("tool-search-" + toolId);
         st.q = el ? el.value : "";
         loadResult(toolId);
@@ -1682,7 +1821,9 @@
       function todayKey() {
         const d = new Date();
         const p = (n) => String(n).padStart(2, "0");
-        return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+        return (
+          d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate())
+        );
       }
 
       function readDoneStore() {
@@ -1782,7 +1923,8 @@
         updateFilterCounts(c, doneCount, total);
         updateSortIndicators();
         const openTabsText = document.getElementById("btn-open-tabs-text");
-        if (openTabsText) openTabsText.textContent = `تب ها (${filteredData.length})`;
+        if (openTabsText)
+          openTabsText.textContent = `تب ها (${filteredData.length})`;
         // تسک ۱۰: لیست پیمایش Drawer از همان فیلتر فعلی ساخته می‌شود
         window.drawerList = filteredData.map((item) =>
           window.fullDashboardData.indexOf(item),
@@ -1793,7 +1935,7 @@
           return;
         }
 
-const tools = [
+        const tools = [
           "health",
           "title",
           "description",
@@ -1801,7 +1943,7 @@ const tools = [
           "source_encoding",
           "favicon",
           "canonical",
-          "ssl"
+          "ssl",
         ];
         let html = "";
         filteredData.forEach((item) => {
@@ -1887,7 +2029,12 @@ const tools = [
           el.style.background = color + "1f";
           el.style.border = "1px solid " + color + "40";
           el.title =
-            a.err + " خطا • " + a.warn + " بررسی دستی • " + a.skip + " بررسی‌نشده";
+            a.err +
+            " خطا • " +
+            a.warn +
+            " بررسی دستی • " +
+            a.skip +
+            " بررسی‌نشده";
         });
       }
 
@@ -1934,42 +2081,47 @@ const tools = [
           .catch(() => notify("خطا در دسترسی به کلیپ‌بورد", "err"));
       }
 
+      function openGoogleIndex(baseUrl) {
+        try {
+          const formatted = /^https?:\/\//i.test(baseUrl)
+            ? baseUrl
+            : "https://" + baseUrl;
+          const domain = new URL(formatted).hostname.replace(/^www\./, "");
+          window.open(
+            `https://www.google.com/search?q=site:${encodeURIComponent(domain)}`,
+            "_blank",
+          );
+        } catch (e) {}
+      }
 
-function openGoogleIndex(baseUrl) {
-    try {
-        const formatted = /^https?:\/\//i.test(baseUrl) ? baseUrl : 'https://' + baseUrl;
-        const domain = new URL(formatted).hostname.replace(/^www\./, '');
-        window.open(`https://www.google.com/search?q=site:${encodeURIComponent(domain)}`, '_blank');
-    } catch(e) {}
-}
+      async function checkSitemap(baseUrl, btnEl) {
+        const originalHtml = btnEl.innerHTML;
+        // تغییر آیکون به حالت لودینگ
+        btnEl.innerHTML =
+          '<div class="spinner !border-zinc-500 !block mx-auto"></div>';
+        btnEl.disabled = true;
 
-async function checkSitemap(baseUrl, btnEl) {
-    const originalHtml = btnEl.innerHTML;
-    // تغییر آیکون به حالت لودینگ
-    btnEl.innerHTML = '<div class="spinner !border-zinc-500 !block mx-auto"></div>';
-    btnEl.disabled = true;
-    
-    try {
-        const r = await fetch('/check_sitemap', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: baseUrl })
-        });
-        const data = await r.json();
-        
-        if (data.status === 'found' && data.sitemap) {
-            window.open(data.sitemap, '_blank');
-        } else {
-            notify('هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.', 'err');
+        try {
+          const r = await fetch("/check_sitemap", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ url: baseUrl }),
+          });
+          const data = await r.json();
+
+          if (data.status === "found" && data.sitemap) {
+            window.open(data.sitemap, "_blank");
+          } else {
+            notify("هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.", "err");
+          }
+        } catch (e) {
+          notify("هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.", "err");
+        } finally {
+          // بازگرداندن دکمه به حالت عادی
+          btnEl.innerHTML = originalHtml;
+          btnEl.disabled = false;
         }
-    } catch (e) {
-        notify('هیچ سایت مپی در فایل robots.txt این سایت یافت نشد.', 'err');
-    } finally {
-        // بازگرداندن دکمه به حالت عادی
-        btnEl.innerHTML = originalHtml;
-        btnEl.disabled = false;
-    }
-}
+      }
 
       // ---------- تسک ۱۰: پیمایش سایت بعدی/قبلی داخل Drawer ----------
       function updateDrawerNav() {
@@ -2013,11 +2165,14 @@ async function checkSitemap(baseUrl, btnEl) {
         document.getElementById("drawer-title").textContent = url;
         document.getElementById("drawer-btn-copy").onclick = () =>
           copyDomainOnly(url);
-        document.getElementById("drawer-btn-google").onclick = () => openGoogleIndex(url);
+        document.getElementById("drawer-btn-google").onclick = () =>
+          openGoogleIndex(url);
         document.getElementById("drawer-btn-sitemap").onclick = () =>
           checkSitemap(url, document.getElementById("drawer-btn-sitemap"));
         document.getElementById("drawer-btn-robots").onclick = () => {
-          const formattedUrl = /^https?:\/\//i.test(url) ? url : "https://" + url;
+          const formattedUrl = /^https?:\/\//i.test(url)
+            ? url
+            : "https://" + url;
           const robotsUrl = formattedUrl.replace(/\/$/, "") + "/robots.txt";
           window.open(robotsUrl, "_blank");
         };
@@ -2103,16 +2258,18 @@ async function checkSitemap(baseUrl, btnEl) {
             d.source_encoding.status,
             d.source_encoding.text,
             "M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4",
-          )+ createCardHtml(
+          ) +
+          createCardHtml(
             "لینک کانونی (Canonical)",
             d.canonical.status,
             d.canonical.text,
             "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1",
-          ) + createCardHtml(
+          ) +
+          createCardHtml(
             "وضعیت امنیتی (SSL)",
             d.ssl.status,
             d.ssl.text,
-            "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+            "M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z",
           );
 
         updateDrawerNav();
@@ -2176,6 +2333,7 @@ async function checkSitemap(baseUrl, btnEl) {
             setDoneList(doneUrls);
           }
           renderMainTable();
+          drawerNext();
         } catch (e) {
           notify("فرمت لینک نامعتبر است", "err");
         }
@@ -2446,14 +2604,16 @@ async function checkSitemap(baseUrl, btnEl) {
           .trim()
           .match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
         if (!m) return 0;
-        return new Date(
-          Number(m[1]),
-          Number(m[2]) - 1,
-          Number(m[3]),
-          Number(m[4]),
-          Number(m[5]),
-          Number(m[6]),
-        ).getTime() / 1000;
+        return (
+          new Date(
+            Number(m[1]),
+            Number(m[2]) - 1,
+            Number(m[3]),
+            Number(m[4]),
+            Number(m[5]),
+            Number(m[6]),
+          ).getTime() / 1000
+        );
       }
       function fmtDur(sec) {
         sec = Math.max(0, Math.round(sec || 0));
@@ -2616,24 +2776,33 @@ async function checkSitemap(baseUrl, btnEl) {
         }
 
         // ---------- تسک ۱۸: سرچ و فیلتر مستقل برای هر تب ابزار ----------
-        const fst = toolFilters[toolId] || (toolFilters[toolId] = { q: "", flt: "all" });
+        const fst =
+          toolFilters[toolId] || (toolFilters[toolId] = { q: "", flt: "all" });
         const searchEl = document.getElementById("tool-search-" + toolId);
         if (searchEl && searchEl.value !== fst.q) searchEl.value = fst.q;
-        document.querySelectorAll(`.tool-flt-btn[id^="tool-flt-${toolId}-"]`).forEach((b) => {
-          const on = b.id === `tool-flt-${toolId}-${fst.flt}`;
-          b.classList.toggle("bg-white/10", on);
-          b.classList.toggle("text-white", on);
-          b.classList.toggle("text-zinc-400", !on);
-          b.classList.toggle("bg-transparent", !on);
-        });
+        document
+          .querySelectorAll(`.tool-flt-btn[id^="tool-flt-${toolId}-"]`)
+          .forEach((b) => {
+            const on = b.id === `tool-flt-${toolId}-${fst.flt}`;
+            b.classList.toggle("bg-white/10", on);
+            b.classList.toggle("text-white", on);
+            b.classList.toggle("text-zinc-400", !on);
+            b.classList.toggle("bg-transparent", !on);
+          });
         const needle = (fst.q || "").toLowerCase().trim();
         const allRows = data.data.filter((row) => {
-          if (fst.flt !== "all" && levelOf(row["Status"]) !== fst.flt) return false;
+          if (fst.flt !== "all" && levelOf(row["Status"]) !== fst.flt)
+            return false;
           if (!needle) return true;
           let hit = false;
           Object.keys(row).forEach((k) => {
             if (hit || k.startsWith("_")) return;
-            if (String(row[k] ?? "").toLowerCase().includes(needle)) hit = true;
+            if (
+              String(row[k] ?? "")
+                .toLowerCase()
+                .includes(needle)
+            )
+              hit = true;
           });
           return hit;
         });
@@ -2666,9 +2835,7 @@ async function checkSitemap(baseUrl, btnEl) {
           return;
         }
 
-        const keys = Object.keys(allRows[0]).filter(
-          (k) => !k.startsWith("_"),
-        );
+        const keys = Object.keys(allRows[0]).filter((k) => !k.startsWith("_"));
         let html =
           '<div class="overflow-y-auto flex-1"><table class="w-full text-right text-[13px]"><thead class="bg-white/[0.02] sticky top-0 border-b border-brand-border text-zinc-500 font-bold text-[11px] tracking-wide"><tr>';
         keys.forEach(
@@ -2728,14 +2895,17 @@ async function checkSitemap(baseUrl, btnEl) {
           "#main-data-list .data-row.kbd-selected",
         );
         if (!row) return;
-        const m = (row.getAttribute("onclick") || "").match(/openDrawer\((\d+)\)/);
+        const m = (row.getAttribute("onclick") || "").match(
+          /openDrawer\((\d+)\)/,
+        );
         if (m) openDrawer(Number(m[1]));
       }
 
       document.addEventListener("keydown", function (e) {
         const t = e.target || {};
         const tag = (t.tagName || "").toLowerCase();
-        const typing = tag === "input" || tag === "textarea" || t.isContentEditable;
+        const typing =
+          tag === "input" || tag === "textarea" || t.isContentEditable;
 
         // Esc در هر شرایطی: بستن Drawer یا خروج از سرچ
         if (e.key === "Escape") {
@@ -2802,7 +2972,7 @@ async function checkSitemap(baseUrl, btnEl) {
          پوشه‌ی دیگری (مثل static) وابسته نباشد.
          ============================================================ -->
     <script>
-/* ==========================================================================
+      /* ==========================================================================
    link_lab.js  |  بخش «استخراج لینک از متن» برای پنل QA Master
    --------------------------------------------------------------------------
    مهم: همین کد، عیناً داخل خود فایل templates/index.html هم قرار دارد و
@@ -2811,448 +2981,475 @@ async function checkSitemap(baseUrl, btnEl) {
 
    از توابع سراسری خود پنل استفاده می‌کند: esc() و normKey()
    ========================================================================== */
-(function () {
-  "use strict";
+      (function () {
+        "use strict";
 
-  var LS_KEY = "qa_link_lab_items"; // نگه‌داشتن لیست بین رفرش‌ها
-  var BIG_LIST = 40; // از این تعداد به بالا، فاصله باز کردن تب‌ها بیشتر می‌شود
+        var LS_KEY = "qa_link_lab_items"; // نگه‌داشتن لیست بین رفرش‌ها
+        var BIG_LIST = 40; // از این تعداد به بالا، فاصله باز کردن تب‌ها بیشتر می‌شود
 
-  var state = { items: [], seq: 0, stats: null };
+        var state = { items: [], seq: 0, stats: null };
 
-  /* ---------------------------------------------------------------- کمکی‌ها */
-  function $(id) {
-    return document.getElementById(id);
-  }
+        /* ---------------------------------------------------------------- کمکی‌ها */
+        function $(id) {
+          return document.getElementById(id);
+        }
 
-  function escSafe(v) {
-    return typeof esc === "function" ? esc(v) : String(v == null ? "" : v);
-  }
+        function escSafe(v) {
+          return typeof esc === "function"
+            ? esc(v)
+            : String(v == null ? "" : v);
+        }
 
-  function keyOf(u) {
-    try {
-      return typeof normKey === "function" ? normKey(u) : String(u).toLowerCase();
-    } catch (e) {
-      return String(u).toLowerCase();
-    }
-  }
-
-  function isOptOn(id, fallback) {
-    var el = $(id);
-    return el ? !!el.checked : !!fallback;
-  }
-
-  function countChar(s, c) {
-    var n = 0;
-    for (var i = 0; i < s.length; i++) if (s.charAt(i) === c) n++;
-    return n;
-  }
-
-  function toast(msg, kind) {
-    var el = $("ll-toast");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "ll-toast";
-      document.body.appendChild(el);
-    }
-    var err = kind === "err";
-    el.style.cssText =
-      "position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:9999;" +
-      "padding:10px 18px;border-radius:8px;font-size:12px;font-weight:700;" +
-      "font-family:Vazirmatn,sans-serif;max-width:80vw;text-align:center;line-height:1.7;" +
-      "box-shadow:0 12px 34px rgba(0,0,0,.65);transition:opacity .25s;opacity:1;" +
-      // toast فقط پیام است؛ نباید کلیک‌های زیرش را بگیرد (چه دیده شود چه محو شده باشد)
-      "pointer-events:none;" +
-      "border:1px solid " +
-      (err ? "#7f1d1d" : "#27272a") +
-      ";background:" +
-      (err ? "#450a0a" : "#09090b") +
-      ";color:" +
-      (err ? "#fca5a5" : "#fafafa") +
-      ";";
-    el.textContent = msg;
-    clearTimeout(el._t);
-    el._t = setTimeout(function () {
-      el.style.opacity = "0";
-    }, 2600);
-  }
-
-  // کپی با فالبک برای مرورگرهای قدیمی‌تر
-  function copyText(text, okMsg) {
-    var done = function () {
-      if (okMsg) toast(okMsg);
-    };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard
-        .writeText(text)
-        .then(done)
-        .catch(function () {
-          legacyCopy(text) ? done() : toast("کپی نشد؛ دسترسی کلیپ‌بورد را بدهید.", "err");
-        });
-    } else {
-      legacyCopy(text) ? done() : toast("کپی نشد؛ دسترسی کلیپ‌بورد را بدهید.", "err");
-    }
-  }
-
-  function legacyCopy(text) {
-    try {
-      var ta = document.createElement("textarea");
-      ta.value = text;
-      ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
-      document.body.appendChild(ta);
-      ta.select();
-      var ok = document.execCommand("copy");
-      ta.remove();
-      return ok;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  /* ------------------------------------------------------- موتور استخراج لینک */
-  var TLD_SRC =
-    "(?:ir|com|net|org|io|co|de|ru|uk|fr|nl|se|info|biz|xyz|me|dev|app|ai|site|online|shop|store|" +
-    "blog|club|top|tv|cc|us|ca|au|it|es|tr|in|cn|jp|kr|br|pl|be|ch|at|dk|no|fi|cz|gr|pt|ro|hu|" +
-    "ie|nz|za|ae|sa|eg|pk|id|my|sg|th|vn|ph|hk|tw|il|gov|edu|pro|live|news|media|agency|design|" +
-    "work|space|tech|website|host|press|world|today|life)";
-
-  var TRACK_KEYS = [
-    /^utm_/i,
-    /^fbclid$/i,
-    /^gclid$/i,
-    /^dclid$/i,
-    /^msclkid$/i,
-    /^yclid$/i,
-    /^igshid$/i,
-    /^_ga$/i,
-    /^_gl$/i,
-    /^mc_cid$/i,
-    /^mc_eid$/i,
-    /^ref_src$/i,
-  ];
-
-  // پیدا کردن همه نامزدهای لینک داخل متن قاطی
-  function findCandidates(text, o) {
-    var out = [];
-    var work = String(text || "");
-
-    // ۱) لینک‌های کامل (http/https یا شروع‌شده با www.)
-    // کاراکترهایی مثل « » ‹ › که گاهی در کپی از نتایج گوگل به آدرس می‌چسبند، جزو آدرس نیستند
-    var re1 = /(?:https?:\/\/|www\.)[^\s<>"'`\u200c\u200e\u200f\\^{}|\[\]«»‹›]+/gi;
-    work = work.replace(re1, function (m) {
-      out.push({ url: m, guessed: false });
-      return " ";
-    });
-
-    // ۲) دامنه‌های بدون پروتکل مثل example.com/page (اختیاری)
-    if (o && o.bare) {
-      var re2 = new RegExp(
-        "(^|[^0-9A-Za-z@._\\-\\/])((?:[0-9A-Za-z][0-9A-Za-z\\-]{0,62}\\.)+" +
-          TLD_SRC +
-          "(?!\\.[0-9A-Za-z]))((?:\\/[^\\s<>\"'`\\u200c«»‹›\\[\\]]*)?)",
-        "gi",
-      );
-      work = work.replace(re2, function (m, pre, host, path) {
-        out.push({ url: host + (path || ""), guessed: true });
-        return pre + " ";
-      });
-    }
-    return out;
-  }
-
-  function isValidHost(h) {
-    if (!h) return false;
-    if (h === "localhost") return true;
-    if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return true; // IPv4
-    if (h.indexOf(":") !== -1) return true; // IPv6
-    return /^([a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/i.test(h);
-  }
-
-  function stripTrackers(p) {
-    try {
-      var keys = [];
-      p.searchParams.forEach(function (v, k) {
-        for (var i = 0; i < TRACK_KEYS.length; i++) {
-          if (TRACK_KEYS[i].test(k)) {
-            keys.push(k);
-            break;
+        function keyOf(u) {
+          try {
+            return typeof normKey === "function"
+              ? normKey(u)
+              : String(u).toLowerCase();
+          } catch (e) {
+            return String(u).toLowerCase();
           }
         }
-      });
-      keys.forEach(function (k) {
-        p.searchParams.delete(k);
-      });
-    } catch (e) {}
-    return p;
-  }
 
-  // باز کردن لینک‌های ریدایرکت رایج (گوگل / فیسبوک)
-  function unwrapRedirect(p) {
-    try {
-      var h = p.hostname.toLowerCase();
-      if (/(^|\.)google\.[a-z.]+$/.test(h) && /^\/url\/?$/.test(p.pathname)) {
-        var q = p.searchParams.get("q") || p.searchParams.get("url");
-        if (q && /^https?:\/\//i.test(q)) return new URL(q);
-      }
-      if (h === "l.facebook.com" || h === "lm.facebook.com") {
-        var u = p.searchParams.get("u");
-        if (u && /^https?:\/\//i.test(u)) return new URL(u);
-      }
-    } catch (e) {}
-    return p;
-  }
-
-  // تمیز کردن یک نامزد و تبدیل آن به لینک نهایی (یا null اگر معتبر نباشد)
-  function cleanUrl(input, o) {
-    var s = String(input == null ? "" : input).trim();
-    if (!s) return null;
-
-    s = s
-      .replace(/&amp;/gi, "&")
-      .replace(/&#0?38;/g, "&")
-      .replace(/&quot;/gi, '"')
-      .replace(/&#0?39;/g, "'")
-      .replace(/&apos;/gi, "'")
-      .replace(/&lt;/gi, "<")
-      .replace(/&gt;/gi, ">");
-
-    s = s.replace(/^[<\[({«"'`\s\u200e\u200f]+/, "");
-    var guard = 0;
-    while (guard++ < 30) {
-      var before = s;
-      s = s.replace(/[>"'\]}»›‹`\s\u200e\u200f\u200c]+$/, "");
-      if (/[.,;:!?؟،؛…]$/.test(s)) s = s.slice(0, -1);
-      if (s.slice(-1) === ")" && countChar(s, ")") > countChar(s, "(")) s = s.slice(0, -1);
-      if (s.slice(-1) === "]" && countChar(s, "]") > countChar(s, "[")) s = s.slice(0, -1);
-      if (s.slice(-1) === "}" && countChar(s, "}") > countChar(s, "{")) s = s.slice(0, -1);
-      if (s === before) break;
-    }
-    if (!s) return null;
-
-    if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(s)) s = "https://" + s.replace(/^\/\//, "");
-    if (!/^https?:\/\//i.test(s)) return null;
-
-    var p;
-    try {
-      p = new URL(s);
-    } catch (e) {
-      return null;
-    }
-    if (!p.hostname) return null;
-    var h = p.hostname.replace(/\.$/, "").toLowerCase();
-    if (!isValidHost(h)) return null;
-
-    p = unwrapRedirect(p);
-    if (o && o.utm) p = stripTrackers(p);
-
-    var out = p.href;
-    // اسلش انتهایی حذف می‌شود تا با کلید یکسان‌سازی خود پنل (normKey) هم‌خوان باشد
-    if (!p.search && !p.hash) out = out.replace(/\/$/, "");
-    return out;
-  }
-
-  /* ------------------------------------------------------------ ذخیره/بازیابی */
-  function save() {
-    try {
-      localStorage.setItem(
-        LS_KEY,
-        JSON.stringify(
-          state.items.map(function (it) {
-            return it.url;
-          }),
-        ),
-      );
-    } catch (e) {}
-  }
-
-  function load() {
-    try {
-      var raw = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
-      if (!Array.isArray(raw)) return;
-      state.items = raw
-        .filter(function (u) {
-          return typeof u === "string" && u;
-        })
-        .map(function (u) {
-          return { id: ++state.seq, url: u, key: keyOf(u), guessed: false };
-        });
-    } catch (e) {}
-  }
-
-  /* ------------------------------------------------------------- اکشن‌های اصلی */
-  function extract() {
-    var inp = $("ll-input");
-    var text = inp ? inp.value : "";
-    if (!text || !text.trim()) {
-      toast("اول متن یا صفحه را داخل کادر پیست کنید.", "err");
-      return;
-    }
-    var o = {
-      dedupe: isOptOn("ll-opt-dedupe", true),
-      bare: isOptOn("ll-opt-bare", false),
-      utm: isOptOn("ll-opt-utm", false),
-      sort: isOptOn("ll-opt-sort", false),
-    };
-
-    var raw = findCandidates(text, o);
-    var out = [];
-    var seen = Object.create(null);
-    var dup = 0;
-    var bad = 0;
-
-    raw.forEach(function (c) {
-      var u = cleanUrl(c.url, o);
-      if (!u) {
-        bad++;
-        return;
-      }
-      var k = keyOf(u);
-      if (o.dedupe) {
-        if (seen[k]) {
-          dup++;
-          return;
+        function isOptOn(id, fallback) {
+          var el = $(id);
+          return el ? !!el.checked : !!fallback;
         }
-        seen[k] = 1;
-      }
-      out.push({ id: ++state.seq, url: u, key: k, guessed: !!c.guessed });
-    });
 
-    // اگر لینکی پیدا نشد، لیست قبلی دست‌نخورده می‌ماند تا اشتباهی پاک نشود
-    if (!out.length) {
-      toast("در این متن لینکی پیدا نشد؛ لیست قبلی دست‌نخورده ماند.", "err");
-      return;
-    }
+        function countChar(s, c) {
+          var n = 0;
+          for (var i = 0; i < s.length; i++) if (s.charAt(i) === c) n++;
+          return n;
+        }
 
-    if (o.sort) {
-      out.sort(function (a, b) {
-        return a.url.localeCompare(b.url);
-      });
-    }
+        function toast(msg, kind) {
+          var el = $("ll-toast");
+          if (!el) {
+            el = document.createElement("div");
+            el.id = "ll-toast";
+            document.body.appendChild(el);
+          }
+          var err = kind === "err";
+          el.style.cssText =
+            "position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:9999;" +
+            "padding:10px 18px;border-radius:8px;font-size:12px;font-weight:700;" +
+            "font-family:Vazirmatn,sans-serif;max-width:80vw;text-align:center;line-height:1.7;" +
+            "box-shadow:0 12px 34px rgba(0,0,0,.65);transition:opacity .25s;opacity:1;" +
+            // toast فقط پیام است؛ نباید کلیک‌های زیرش را بگیرد (چه دیده شود چه محو شده باشد)
+            "pointer-events:none;" +
+            "border:1px solid " +
+            (err ? "#7f1d1d" : "#27272a") +
+            ";background:" +
+            (err ? "#450a0a" : "#09090b") +
+            ";color:" +
+            (err ? "#fca5a5" : "#fafafa") +
+            ";";
+          el.textContent = msg;
+          clearTimeout(el._t);
+          el._t = setTimeout(function () {
+            el.style.opacity = "0";
+          }, 2600);
+        }
 
-    state.items = out;
-    state.stats = {
-      total: raw.length,
-      dup: dup,
-      bad: bad,
-      guessed: out.filter(function (i) {
-        return i.guessed;
-      }).length,
-      hasUtm: o.utm,
-    };
+        // کپی با فالبک برای مرورگرهای قدیمی‌تر
+        function copyText(text, okMsg) {
+          var done = function () {
+            if (okMsg) toast(okMsg);
+          };
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard
+              .writeText(text)
+              .then(done)
+              .catch(function () {
+                legacyCopy(text)
+                  ? done()
+                  : toast("کپی نشد؛ دسترسی کلیپ‌بورد را بدهید.", "err");
+              });
+          } else {
+            legacyCopy(text)
+              ? done()
+              : toast("کپی نشد؛ دسترسی کلیپ‌بورد را بدهید.", "err");
+          }
+        }
 
-    save();
-    render();
-    toast(out.length + " لینک تمیز و یکتا آماده شد.");
-  }
+        function legacyCopy(text) {
+          try {
+            var ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
+            document.body.appendChild(ta);
+            ta.select();
+            var ok = document.execCommand("copy");
+            ta.remove();
+            return ok;
+          } catch (e) {
+            return false;
+          }
+        }
 
-  async function pasteAndExtract() {
-    var t = "";
-    try {
-      t = await navigator.clipboard.readText();
-    } catch (e) {
-      toast("خواندن کلیپ‌بورد ممکن نشد؛ با Ctrl+V پیست کنید.", "err");
-      return;
-    }
-    if (!t || !t.trim()) {
-      toast("کلیپ‌بورد خالی است؛ چیزی جایگزین نشد.", "err");
-      return;
-    }
-    // طبق درخواست: هرچه از قبل هست پاک می‌شود و فقط لینک‌های همین کلیپ‌بورد می‌مانند
-    state.items = [];
-    state.stats = null;
-    save();
-    render();
-    var inp = $("ll-input");
-    if (inp) {
-      inp.value = t;
-      inp.scrollTop = 0;
-    }
-    extract();
-  }
+        /* ------------------------------------------------------- موتور استخراج لینک */
+        var TLD_SRC =
+          "(?:ir|com|net|org|io|co|de|ru|uk|fr|nl|se|info|biz|xyz|me|dev|app|ai|site|online|shop|store|" +
+          "blog|club|top|tv|cc|us|ca|au|it|es|tr|in|cn|jp|kr|br|pl|be|ch|at|dk|no|fi|cz|gr|pt|ro|hu|" +
+          "ie|nz|za|ae|sa|eg|pk|id|my|sg|th|vn|ph|hk|tw|il|gov|edu|pro|live|news|media|agency|design|" +
+          "work|space|tech|website|host|press|world|today|life)";
 
-  function inputKey(e) {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      extract();
-    }
-  }
+        var TRACK_KEYS = [
+          /^utm_/i,
+          /^fbclid$/i,
+          /^gclid$/i,
+          /^dclid$/i,
+          /^msclkid$/i,
+          /^yclid$/i,
+          /^igshid$/i,
+          /^_ga$/i,
+          /^_gl$/i,
+          /^mc_cid$/i,
+          /^mc_eid$/i,
+          /^ref_src$/i,
+        ];
 
-  function clearInput() {
-    var i = $("ll-input");
-    if (i) {
-      i.value = "";
-      i.focus();
-    }
-  }
+        // پیدا کردن همه نامزدهای لینک داخل متن قاطی
+        function findCandidates(text, o) {
+          var out = [];
+          var work = String(text || "");
 
-  function handleFile(input) {
-    var f = input.files && input.files[0];
-    if (!f) return;
-    var fr = new FileReader();
-    fr.onload = function () {
-      var i = $("ll-input");
-      if (i) i.value = String(fr.result || "");
-      extract();
-    };
-    fr.readAsText(f, "utf-8");
-    input.value = "";
-  }
+          // ۱) لینک‌های کامل (http/https یا شروع‌شده با www.)
+          // کاراکترهایی مثل « » ‹ › که گاهی در کپی از نتایج گوگل به آدرس می‌چسبند، جزو آدرس نیستند
+          var re1 =
+            /(?:https?:\/\/|www\.)[^\s<>"'`\u200c\u200e\u200f\\^{}|\[\]«»‹›]+/gi;
+          work = work.replace(re1, function (m) {
+            out.push({ url: m, guessed: false });
+            return " ";
+          });
 
-  /* -------------------------------------------------------------- لیست و نمایش */
-  function findById(id) {
-    var n = Number(id);
-    for (var i = 0; i < state.items.length; i++) if (state.items[i].id === n) return state.items[i];
-    return null;
-  }
+          // ۲) دامنه‌های بدون پروتکل مثل example.com/page (اختیاری)
+          if (o && o.bare) {
+            var re2 = new RegExp(
+              "(^|[^0-9A-Za-z@._\\-\\/])((?:[0-9A-Za-z][0-9A-Za-z\\-]{0,62}\\.)+" +
+                TLD_SRC +
+                "(?!\\.[0-9A-Za-z]))((?:\\/[^\\s<>\"'`\\u200c«»‹›\\[\\]]*)?)",
+              "gi",
+            );
+            work = work.replace(re2, function (m, pre, host, path) {
+              out.push({ url: host + (path || ""), guessed: true });
+              return pre + " ";
+            });
+          }
+          return out;
+        }
 
-  function statsText() {
-    var s = state.stats;
-    if (!s || !state.items.length) return "";
-    var parts = [];
-    if (s.total) parts.push("از " + s.total + " مورد پیدا‌شده");
-    if (s.dup) parts.push(s.dup + " تکراری حذف شد");
-    if (s.bad) parts.push(s.bad + " نامعتبر رد شد");
-    if (s.guessed) parts.push(s.guessed + " بدون پروتکل");
-    return parts.length ? " — " + parts.join(" • ") : "";
-  }
+        function isValidHost(h) {
+          if (!h) return false;
+          if (h === "localhost") return true;
+          if (/^\d{1,3}(\.\d{1,3}){3}$/.test(h)) return true; // IPv4
+          if (h.indexOf(":") !== -1) return true; // IPv6
+          return /^([a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/i.test(h);
+        }
 
-  function render() {
-    var listEl = $("ll-list");
-    if (!listEl) return;
+        function stripTrackers(p) {
+          try {
+            var keys = [];
+            p.searchParams.forEach(function (v, k) {
+              for (var i = 0; i < TRACK_KEYS.length; i++) {
+                if (TRACK_KEYS[i].test(k)) {
+                  keys.push(k);
+                  break;
+                }
+              }
+            });
+            keys.forEach(function (k) {
+              p.searchParams.delete(k);
+            });
+          } catch (e) {}
+          return p;
+        }
 
-    var items = state.items;
-    var q = ($("ll-search") ? $("ll-search").value : "").trim().toLowerCase();
-    var shown = !q
-      ? items
-      : items.filter(function (it) {
-          return it.url.toLowerCase().indexOf(q) !== -1;
-        });
+        // باز کردن لینک‌های ریدایرکت رایج (گوگل / فیسبوک)
+        function unwrapRedirect(p) {
+          try {
+            var h = p.hostname.toLowerCase();
+            if (
+              /(^|\.)google\.[a-z.]+$/.test(h) &&
+              /^\/url\/?$/.test(p.pathname)
+            ) {
+              var q = p.searchParams.get("q") || p.searchParams.get("url");
+              if (q && /^https?:\/\//i.test(q)) return new URL(q);
+            }
+            if (h === "l.facebook.com" || h === "lm.facebook.com") {
+              var u = p.searchParams.get("u");
+              if (u && /^https?:\/\//i.test(u)) return new URL(u);
+            }
+          } catch (e) {}
+          return p;
+        }
 
-    if ($("ll-count")) $("ll-count").textContent = items.length;
-    if ($("ll-stats")) $("ll-stats").textContent = statsText();
+        // تمیز کردن یک نامزد و تبدیل آن به لینک نهایی (یا null اگر معتبر نباشد)
+        function cleanUrl(input, o) {
+          var s = String(input == null ? "" : input).trim();
+          if (!s) return null;
 
-    if (!items.length) {
-      listEl.innerHTML =
-        '<div class="p-8 text-center text-zinc-500 text-sm font-medium">هنوز لینکی استخراج نشده است.</div>';
-      return;
-    }
-    if (!shown.length) {
-      listEl.innerHTML =
-        '<div class="p-8 text-center text-zinc-500 text-sm font-medium">هیچ لینکی با این فیلتر پیدا نشد.</div>';
-      return;
-    }
+          s = s
+            .replace(/&amp;/gi, "&")
+            .replace(/&#0?38;/g, "&")
+            .replace(/&quot;/gi, '"')
+            .replace(/&#0?39;/g, "'")
+            .replace(/&apos;/gi, "'")
+            .replace(/&lt;/gi, "<")
+            .replace(/&gt;/gi, ">");
 
-    var order = Object.create(null);
-    items.forEach(function (it, i) {
-      order[it.id] = i + 1;
-    });
+          s = s.replace(/^[<\[({«"'`\s\u200e\u200f]+/, "");
+          var guard = 0;
+          while (guard++ < 30) {
+            var before = s;
+            s = s.replace(/[>"'\]}»›‹`\s\u200e\u200f\u200c]+$/, "");
+            if (/[.,;:!?؟،؛…]$/.test(s)) s = s.slice(0, -1);
+            if (s.slice(-1) === ")" && countChar(s, ")") > countChar(s, "("))
+              s = s.slice(0, -1);
+            if (s.slice(-1) === "]" && countChar(s, "]") > countChar(s, "["))
+              s = s.slice(0, -1);
+            if (s.slice(-1) === "}" && countChar(s, "}") > countChar(s, "{"))
+              s = s.slice(0, -1);
+            if (s === before) break;
+          }
+          if (!s) return null;
 
-    var html = "";
-    shown.forEach(function (it) {
-      var n = order[it.id];
-      var badge = it.guessed
-        ? '<span class="text-[9px] text-zinc-500 border border-zinc-700 rounded px-1.5 py-0.5 shrink-0">بدون پروتکل</span>'
-        : "";
-      html += `
+          if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(s))
+            s = "https://" + s.replace(/^\/\//, "");
+          if (!/^https?:\/\//i.test(s)) return null;
+
+          var p;
+          try {
+            p = new URL(s);
+          } catch (e) {
+            return null;
+          }
+          if (!p.hostname) return null;
+          var h = p.hostname.replace(/\.$/, "").toLowerCase();
+          if (!isValidHost(h)) return null;
+
+          p = unwrapRedirect(p);
+          if (o && o.utm) p = stripTrackers(p);
+
+          var out = p.href;
+          // اسلش انتهایی حذف می‌شود تا با کلید یکسان‌سازی خود پنل (normKey) هم‌خوان باشد
+          if (!p.search && !p.hash) out = out.replace(/\/$/, "");
+          return out;
+        }
+
+        /* ------------------------------------------------------------ ذخیره/بازیابی */
+        function save() {
+          try {
+            localStorage.setItem(
+              LS_KEY,
+              JSON.stringify(
+                state.items.map(function (it) {
+                  return it.url;
+                }),
+              ),
+            );
+          } catch (e) {}
+        }
+
+        function load() {
+          try {
+            var raw = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
+            if (!Array.isArray(raw)) return;
+            state.items = raw
+              .filter(function (u) {
+                return typeof u === "string" && u;
+              })
+              .map(function (u) {
+                return {
+                  id: ++state.seq,
+                  url: u,
+                  key: keyOf(u),
+                  guessed: false,
+                };
+              });
+          } catch (e) {}
+        }
+
+        /* ------------------------------------------------------------- اکشن‌های اصلی */
+        function extract() {
+          var inp = $("ll-input");
+          var text = inp ? inp.value : "";
+          if (!text || !text.trim()) {
+            toast("اول متن یا صفحه را داخل کادر پیست کنید.", "err");
+            return;
+          }
+          var o = {
+            dedupe: isOptOn("ll-opt-dedupe", true),
+            bare: isOptOn("ll-opt-bare", false),
+            utm: isOptOn("ll-opt-utm", false),
+            sort: isOptOn("ll-opt-sort", false),
+          };
+
+          var raw = findCandidates(text, o);
+          var out = [];
+          var seen = Object.create(null);
+          var dup = 0;
+          var bad = 0;
+
+          raw.forEach(function (c) {
+            var u = cleanUrl(c.url, o);
+            if (!u) {
+              bad++;
+              return;
+            }
+            var k = keyOf(u);
+            if (o.dedupe) {
+              if (seen[k]) {
+                dup++;
+                return;
+              }
+              seen[k] = 1;
+            }
+            out.push({ id: ++state.seq, url: u, key: k, guessed: !!c.guessed });
+          });
+
+          // اگر لینکی پیدا نشد، لیست قبلی دست‌نخورده می‌ماند تا اشتباهی پاک نشود
+          if (!out.length) {
+            toast(
+              "در این متن لینکی پیدا نشد؛ لیست قبلی دست‌نخورده ماند.",
+              "err",
+            );
+            return;
+          }
+
+          if (o.sort) {
+            out.sort(function (a, b) {
+              return a.url.localeCompare(b.url);
+            });
+          }
+
+          state.items = out;
+          state.stats = {
+            total: raw.length,
+            dup: dup,
+            bad: bad,
+            guessed: out.filter(function (i) {
+              return i.guessed;
+            }).length,
+            hasUtm: o.utm,
+          };
+
+          save();
+          render();
+          toast(out.length + " لینک تمیز و یکتا آماده شد.");
+        }
+
+        async function pasteAndExtract() {
+          var t = "";
+          try {
+            t = await navigator.clipboard.readText();
+          } catch (e) {
+            toast("خواندن کلیپ‌بورد ممکن نشد؛ با Ctrl+V پیست کنید.", "err");
+            return;
+          }
+          if (!t || !t.trim()) {
+            toast("کلیپ‌بورد خالی است؛ چیزی جایگزین نشد.", "err");
+            return;
+          }
+          // طبق درخواست: هرچه از قبل هست پاک می‌شود و فقط لینک‌های همین کلیپ‌بورد می‌مانند
+          state.items = [];
+          state.stats = null;
+          save();
+          render();
+          var inp = $("ll-input");
+          if (inp) {
+            inp.value = t;
+            inp.scrollTop = 0;
+          }
+          extract();
+        }
+
+        function inputKey(e) {
+          if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+            e.preventDefault();
+            extract();
+          }
+        }
+
+        function clearInput() {
+          var i = $("ll-input");
+          if (i) {
+            i.value = "";
+            i.focus();
+          }
+        }
+
+        function handleFile(input) {
+          var f = input.files && input.files[0];
+          if (!f) return;
+          var fr = new FileReader();
+          fr.onload = function () {
+            var i = $("ll-input");
+            if (i) i.value = String(fr.result || "");
+            extract();
+          };
+          fr.readAsText(f, "utf-8");
+          input.value = "";
+        }
+
+        /* -------------------------------------------------------------- لیست و نمایش */
+        function findById(id) {
+          var n = Number(id);
+          for (var i = 0; i < state.items.length; i++)
+            if (state.items[i].id === n) return state.items[i];
+          return null;
+        }
+
+        function statsText() {
+          var s = state.stats;
+          if (!s || !state.items.length) return "";
+          var parts = [];
+          if (s.total) parts.push("از " + s.total + " مورد پیدا‌شده");
+          if (s.dup) parts.push(s.dup + " تکراری حذف شد");
+          if (s.bad) parts.push(s.bad + " نامعتبر رد شد");
+          if (s.guessed) parts.push(s.guessed + " بدون پروتکل");
+          return parts.length ? " — " + parts.join(" • ") : "";
+        }
+
+        function render() {
+          var listEl = $("ll-list");
+          if (!listEl) return;
+
+          var items = state.items;
+          var q = ($("ll-search") ? $("ll-search").value : "")
+            .trim()
+            .toLowerCase();
+          var shown = !q
+            ? items
+            : items.filter(function (it) {
+                return it.url.toLowerCase().indexOf(q) !== -1;
+              });
+
+          if ($("ll-count")) $("ll-count").textContent = items.length;
+          if ($("ll-stats")) $("ll-stats").textContent = statsText();
+
+          if (!items.length) {
+            listEl.innerHTML =
+              '<div class="p-8 text-center text-zinc-500 text-sm font-medium">هنوز لینکی استخراج نشده است.</div>';
+            return;
+          }
+          if (!shown.length) {
+            listEl.innerHTML =
+              '<div class="p-8 text-center text-zinc-500 text-sm font-medium">هیچ لینکی با این فیلتر پیدا نشد.</div>';
+            return;
+          }
+
+          var order = Object.create(null);
+          items.forEach(function (it, i) {
+            order[it.id] = i + 1;
+          });
+
+          var html = "";
+          shown.forEach(function (it) {
+            var n = order[it.id];
+            var badge = it.guessed
+              ? '<span class="text-[9px] text-zinc-500 border border-zinc-700 rounded px-1.5 py-0.5 shrink-0">بدون پروتکل</span>'
+              : "";
+            html += `
                     <div class="flex justify-between items-center bg-white/[0.02] hover:bg-white/5 border border-transparent hover:border-brand-border rounded-md px-4 py-2.5 transition-colors group">
                         <div class="flex items-center gap-3 flex-1 overflow-hidden min-w-0" dir="ltr">
                             <span class="text-zinc-600 font-mono text-[10px] w-6 text-right shrink-0">${n}</span>
@@ -3267,284 +3464,303 @@ async function checkSitemap(baseUrl, btnEl) {
                             <button onclick="llRemove(${it.id})" class="btn-subtle p-1.5 rounded text-zinc-500 hover:text-red-500" title="حذف از لیست"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
                         </div>
                     </div>`;
-    });
-    listEl.innerHTML = html;
-  }
-
-  /* ------------------------------------------------------------- اکشن‌های تکی */
-  function copyOne(id) {
-    var it = findById(id);
-    if (it) copyText(it.url, "لینک کپی شد.");
-  }
-
-  function copyDomain(id) {
-    var it = findById(id);
-    if (!it) return;
-    var d = it.url;
-    try {
-      d = new URL(it.url).hostname.replace(/^www\./, "");
-    } catch (e) {
-      d = it.url
-        .replace(/^(https?:\/\/)?(www\.)?/i, "")
-        .split("/")[0];
-    }
-    copyText(d, "دامنه کپی شد: " + d);
-  }
-
-  function openOne(id) {
-    var it = findById(id);
-    if (it) window.open(it.url, "_blank");
-  }
-
-  function removeOne(id) {
-    var n = Number(id);
-    state.items = state.items.filter(function (it) {
-      return it.id !== n;
-    });
-    save();
-    render();
-  }
-
-  /* ------------------------------------------------------------ اکشن‌های گروهی */
-  function urls() {
-    return state.items.map(function (it) {
-      return it.url;
-    });
-  }
-
-  function copyAll() {
-    var list = urls();
-    if (!list.length) {
-      toast("لیست خالی است.", "err");
-      return;
-    }
-    copyText(list.join("\n"), list.length + " لینک کپی شد.");
-  }
-
-  function openAll() {
-    var list = urls();
-    if (!list.length) {
-      toast("لیست خالی است.", "err");
-      return;
-    }
-    var msg = "همه " + list.length + " لینک پشت سر هم در تب‌های جدید باز شوند؟\n(پاپ‌آپ بلاکر مرورگر باید خاموش باشد)";
-    if (list.length > BIG_LIST) {
-      msg += "\n\nتعداد لینک‌ها زیاد است؛ اگر مرورگر جلوی تب‌ها را گرفت، برای همین سایت پاپ‌آپ را اجازه بدهید.";
-    }
-    if (!confirm(msg)) return;
-    var step = list.length > BIG_LIST ? 250 : 120;
-    list.forEach(function (u, i) {
-      setTimeout(function () {
-        try {
-          window.open(u, "_blank");
-        } catch (e) {}
-      }, i * step);
-    });
-    toast("در حال باز کردن " + list.length + " لینک ...");
-  }
-
-  function clearList() {
-    if (!state.items.length) return;
-    if (!confirm("کل لیست استخراج‌شده حذف شود؟")) return;
-    state.items = [];
-    state.stats = null;
-    save();
-    render();
-    toast("لیست پاک شد.");
-  }
-
-  function downloadTxt() {
-    var list = urls();
-    if (!list.length) {
-      toast("لیست خالی است.", "err");
-      return;
-    }
-    try {
-      var d = new Date();
-      var p = function (n) {
-        return String(n).padStart(2, "0");
-      };
-      var name =
-        "links_" +
-        d.getFullYear() +
-        p(d.getMonth() + 1) +
-        p(d.getDate()) +
-        "_" +
-        p(d.getHours()) +
-        p(d.getMinutes()) +
-        ".txt";
-      var blob = new Blob([list.join("\n") + "\n"], { type: "text/plain;charset=utf-8" });
-      var a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = name;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(function () {
-        URL.revokeObjectURL(a.href);
-      }, 4000);
-      toast("فایل " + name + " ساخته شد.");
-    } catch (e) {
-      toast("ساخت فایل ممکن نشد.", "err");
-    }
-  }
-
-  // افزودن لینک‌ها به همان فایل لیست دامنه‌ها (urls.txt)
-  async function sendToSettings() {
-    var list = urls();
-    if (!list.length) {
-      toast("لیست خالی است.", "err");
-      return;
-    }
-    if (!confirm(list.length + " لینک به فایل لیست دامنه‌ها (urls.txt) اضافه شود؟\nلینک‌های تکراری اضافه نمی‌شوند.")) return;
-    try {
-      var current = [];
-      try {
-        var r = await fetch("/api/urls/raw");
-        if (r.ok) current = await r.json();
-      } catch (e) {}
-      if (!Array.isArray(current)) current = [];
-
-      var seen = Object.create(null);
-      var merged = [];
-      current.forEach(function (u) {
-        var k = keyOf(u);
-        if (!seen[k]) {
-          seen[k] = 1;
-          merged.push(u);
-        }
-      });
-      var added = 0;
-      list.forEach(function (u) {
-        var k = keyOf(u);
-        if (!seen[k]) {
-          seen[k] = 1;
-          merged.push(u);
-          added++;
-        }
-      });
-
-      if (!added) {
-        toast("همه این لینک‌ها از قبل در لیست دامنه‌ها بودند.");
-        return;
-      }
-      var res = await fetch("/api/urls/save", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ urls: merged }),
-      });
-      if (!res.ok) throw new Error();
-      toast(added + " لینک به لیست دامنه‌ها اضافه شد.");
-      if (typeof loadSettingsUrls === "function") loadSettingsUrls();
-      if (typeof loadDashboard === "function") loadDashboard();
-    } catch (e) {
-      toast("ذخیره در فایل لیست دامنه‌ها انجام نشد.", "err");
-    }
-  }
-
-  /* ------------------------------------------- تسک ۲۲: نگه‌داشتن گزینه‌ها بین رفرش‌ها */
-  var OPT_KEY = "qa_link_lab_opts";
-  var OPT_IDS = ["ll-opt-dedupe", "ll-opt-bare", "ll-opt-utm", "ll-opt-sort"];
-
-  function saveOpts() {
-    try {
-      var o = {};
-      OPT_IDS.forEach(function (id) {
-        var el = $(id);
-        if (el) o[id] = !!el.checked;
-      });
-      localStorage.setItem(OPT_KEY, JSON.stringify(o));
-    } catch (e) {}
-  }
-
-  function restoreOpts() {
-    var raw = null;
-    try {
-      raw = JSON.parse(localStorage.getItem(OPT_KEY) || "null");
-    } catch (e) {}
-    if (!raw) return;
-    OPT_IDS.forEach(function (id) {
-      var el = $(id);
-      if (el && typeof raw[id] === "boolean") el.checked = raw[id];
-    });
-  }
-
-  function bindOpts() {
-    OPT_IDS.forEach(function (id) {
-      var el = $(id);
-      if (el) el.addEventListener("change", saveOpts);
-    });
-  }
-
-  /* ------------------------------------------------------------------ راه‌اندازی */
-  function init() {
-    // با این پرچم، اگر کد اجرا نشود، هشدار داخل پنل نشان داده می‌شود
-    window.__llReady = true;
-    var dead = $("ll-dead");
-    if (dead) dead.classList.add("hidden");
-    try {
-      load();
-      restoreOpts();
-      bindOpts();
-      var ta = $("ll-input");
-      if (ta) {
-        // کشیدن و رها کردن فایل متنی روی کادر
-        ["dragenter", "dragover"].forEach(function (ev) {
-          ta.addEventListener(ev, function (e) {
-            e.preventDefault();
-            ta.classList.add("drag-over");
           });
-        });
-        ["dragleave", "drop"].forEach(function (ev) {
-          ta.addEventListener(ev, function (e) {
-            e.preventDefault();
-            ta.classList.remove("drag-over");
+          listEl.innerHTML = html;
+        }
+
+        /* ------------------------------------------------------------- اکشن‌های تکی */
+        function copyOne(id) {
+          var it = findById(id);
+          if (it) copyText(it.url, "لینک کپی شد.");
+        }
+
+        function copyDomain(id) {
+          var it = findById(id);
+          if (!it) return;
+          var d = it.url;
+          try {
+            d = new URL(it.url).hostname.replace(/^www\./, "");
+          } catch (e) {
+            d = it.url.replace(/^(https?:\/\/)?(www\.)?/i, "").split("/")[0];
+          }
+          copyText(d, "دامنه کپی شد: " + d);
+        }
+
+        function openOne(id) {
+          var it = findById(id);
+          if (it) window.open(it.url, "_blank");
+        }
+
+        function removeOne(id) {
+          var n = Number(id);
+          state.items = state.items.filter(function (it) {
+            return it.id !== n;
           });
-        });
-        ta.addEventListener("drop", function (e) {
-          var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-          if (!f) return;
-          var fr = new FileReader();
-          fr.onload = function () {
-            ta.value = String(fr.result || "");
-            extract();
-          };
-          fr.readAsText(f, "utf-8");
-        });
-      }
-      render();
-    } catch (e) {
-      if (window.console) console.error("link lab init error:", e);
-      var listEl = $("ll-list");
-      if (listEl)
-        listEl.innerHTML =
-          '<div class="p-8 text-center text-status-err text-sm font-bold">خطا در اجرای این بخش: ' +
-          escSafe(e && e.message ? e.message : e) +
-          "</div>";
-    }
-  }
+          save();
+          render();
+        }
 
-  // در دسترس گذاشتن برای onclick های داخل HTML
-  window.llExtract = extract;
-  window.llPasteAndExtract = pasteAndExtract;
-  window.llInputKey = inputKey;
-  window.llClearInput = clearInput;
-  window.llHandleFile = handleFile;
-  window.llRender = render;
-  window.llCopyOne = copyOne;
-  window.llCopyDomain = copyDomain;
-  window.llOpenOne = openOne;
-  window.llRemove = removeOne;
-  window.llCopyAll = copyAll;
-  window.llOpenAll = openAll;
-  window.llClearList = clearList;
-  window.llDownload = downloadTxt;
-  window.llSendToSettings = sendToSettings;
-  window.llToast = toast;
+        /* ------------------------------------------------------------ اکشن‌های گروهی */
+        function urls() {
+          return state.items.map(function (it) {
+            return it.url;
+          });
+        }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
-})();
+        function copyAll() {
+          var list = urls();
+          if (!list.length) {
+            toast("لیست خالی است.", "err");
+            return;
+          }
+          copyText(list.join("\n"), list.length + " لینک کپی شد.");
+        }
+
+        function openAll() {
+          var list = urls();
+          if (!list.length) {
+            toast("لیست خالی است.", "err");
+            return;
+          }
+          var msg =
+            "همه " +
+            list.length +
+            " لینک پشت سر هم در تب‌های جدید باز شوند؟\n(پاپ‌آپ بلاکر مرورگر باید خاموش باشد)";
+          if (list.length > BIG_LIST) {
+            msg +=
+              "\n\nتعداد لینک‌ها زیاد است؛ اگر مرورگر جلوی تب‌ها را گرفت، برای همین سایت پاپ‌آپ را اجازه بدهید.";
+          }
+          if (!confirm(msg)) return;
+          var step = list.length > BIG_LIST ? 250 : 120;
+          list.forEach(function (u, i) {
+            setTimeout(function () {
+              try {
+                window.open(u, "_blank");
+              } catch (e) {}
+            }, i * step);
+          });
+          toast("در حال باز کردن " + list.length + " لینک ...");
+        }
+
+        function clearList() {
+          if (!state.items.length) return;
+          if (!confirm("کل لیست استخراج‌شده حذف شود؟")) return;
+          state.items = [];
+          state.stats = null;
+          save();
+          render();
+          toast("لیست پاک شد.");
+        }
+
+        function downloadTxt() {
+          var list = urls();
+          if (!list.length) {
+            toast("لیست خالی است.", "err");
+            return;
+          }
+          try {
+            var d = new Date();
+            var p = function (n) {
+              return String(n).padStart(2, "0");
+            };
+            var name =
+              "links_" +
+              d.getFullYear() +
+              p(d.getMonth() + 1) +
+              p(d.getDate()) +
+              "_" +
+              p(d.getHours()) +
+              p(d.getMinutes()) +
+              ".txt";
+            var blob = new Blob([list.join("\n") + "\n"], {
+              type: "text/plain;charset=utf-8",
+            });
+            var a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(function () {
+              URL.revokeObjectURL(a.href);
+            }, 4000);
+            toast("فایل " + name + " ساخته شد.");
+          } catch (e) {
+            toast("ساخت فایل ممکن نشد.", "err");
+          }
+        }
+
+        // افزودن لینک‌ها به همان فایل لیست دامنه‌ها (urls.txt)
+        async function sendToSettings() {
+          var list = urls();
+          if (!list.length) {
+            toast("لیست خالی است.", "err");
+            return;
+          }
+          if (
+            !confirm(
+              list.length +
+                " لینک به فایل لیست دامنه‌ها (urls.txt) اضافه شود؟\nلینک‌های تکراری اضافه نمی‌شوند.",
+            )
+          )
+            return;
+          try {
+            var current = [];
+            try {
+              var r = await fetch("/api/urls/raw");
+              if (r.ok) current = await r.json();
+            } catch (e) {}
+            if (!Array.isArray(current)) current = [];
+
+            var seen = Object.create(null);
+            var merged = [];
+            current.forEach(function (u) {
+              var k = keyOf(u);
+              if (!seen[k]) {
+                seen[k] = 1;
+                merged.push(u);
+              }
+            });
+            var added = 0;
+            list.forEach(function (u) {
+              var k = keyOf(u);
+              if (!seen[k]) {
+                seen[k] = 1;
+                merged.push(u);
+                added++;
+              }
+            });
+
+            if (!added) {
+              toast("همه این لینک‌ها از قبل در لیست دامنه‌ها بودند.");
+              return;
+            }
+            var res = await fetch("/api/urls/save", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ urls: merged }),
+            });
+            if (!res.ok) throw new Error();
+            toast(added + " لینک به لیست دامنه‌ها اضافه شد.");
+            if (typeof loadSettingsUrls === "function") loadSettingsUrls();
+            if (typeof loadDashboard === "function") loadDashboard();
+          } catch (e) {
+            toast("ذخیره در فایل لیست دامنه‌ها انجام نشد.", "err");
+          }
+        }
+
+        /* ------------------------------------------- تسک ۲۲: نگه‌داشتن گزینه‌ها بین رفرش‌ها */
+        var OPT_KEY = "qa_link_lab_opts";
+        var OPT_IDS = [
+          "ll-opt-dedupe",
+          "ll-opt-bare",
+          "ll-opt-utm",
+          "ll-opt-sort",
+        ];
+
+        function saveOpts() {
+          try {
+            var o = {};
+            OPT_IDS.forEach(function (id) {
+              var el = $(id);
+              if (el) o[id] = !!el.checked;
+            });
+            localStorage.setItem(OPT_KEY, JSON.stringify(o));
+          } catch (e) {}
+        }
+
+        function restoreOpts() {
+          var raw = null;
+          try {
+            raw = JSON.parse(localStorage.getItem(OPT_KEY) || "null");
+          } catch (e) {}
+          if (!raw) return;
+          OPT_IDS.forEach(function (id) {
+            var el = $(id);
+            if (el && typeof raw[id] === "boolean") el.checked = raw[id];
+          });
+        }
+
+        function bindOpts() {
+          OPT_IDS.forEach(function (id) {
+            var el = $(id);
+            if (el) el.addEventListener("change", saveOpts);
+          });
+        }
+
+        /* ------------------------------------------------------------------ راه‌اندازی */
+        function init() {
+          // با این پرچم، اگر کد اجرا نشود، هشدار داخل پنل نشان داده می‌شود
+          window.__llReady = true;
+          var dead = $("ll-dead");
+          if (dead) dead.classList.add("hidden");
+          try {
+            load();
+            restoreOpts();
+            bindOpts();
+            var ta = $("ll-input");
+            if (ta) {
+              // کشیدن و رها کردن فایل متنی روی کادر
+              ["dragenter", "dragover"].forEach(function (ev) {
+                ta.addEventListener(ev, function (e) {
+                  e.preventDefault();
+                  ta.classList.add("drag-over");
+                });
+              });
+              ["dragleave", "drop"].forEach(function (ev) {
+                ta.addEventListener(ev, function (e) {
+                  e.preventDefault();
+                  ta.classList.remove("drag-over");
+                });
+              });
+              ta.addEventListener("drop", function (e) {
+                var f =
+                  e.dataTransfer &&
+                  e.dataTransfer.files &&
+                  e.dataTransfer.files[0];
+                if (!f) return;
+                var fr = new FileReader();
+                fr.onload = function () {
+                  ta.value = String(fr.result || "");
+                  extract();
+                };
+                fr.readAsText(f, "utf-8");
+              });
+            }
+            render();
+          } catch (e) {
+            if (window.console) console.error("link lab init error:", e);
+            var listEl = $("ll-list");
+            if (listEl)
+              listEl.innerHTML =
+                '<div class="p-8 text-center text-status-err text-sm font-bold">خطا در اجرای این بخش: ' +
+                escSafe(e && e.message ? e.message : e) +
+                "</div>";
+          }
+        }
+
+        // در دسترس گذاشتن برای onclick های داخل HTML
+        window.llExtract = extract;
+        window.llPasteAndExtract = pasteAndExtract;
+        window.llInputKey = inputKey;
+        window.llClearInput = clearInput;
+        window.llHandleFile = handleFile;
+        window.llRender = render;
+        window.llCopyOne = copyOne;
+        window.llCopyDomain = copyDomain;
+        window.llOpenOne = openOne;
+        window.llRemove = removeOne;
+        window.llCopyAll = copyAll;
+        window.llOpenAll = openAll;
+        window.llClearList = clearList;
+        window.llDownload = downloadTxt;
+        window.llSendToSettings = sendToSettings;
+        window.llToast = toast;
+
+        if (document.readyState === "loading")
+          document.addEventListener("DOMContentLoaded", init);
+        else init();
+      })();
     </script>
   </body>
 </html>
