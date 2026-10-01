@@ -3,13 +3,50 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=1400, user-scalable=yes" />
-    <title>QA Master | Enterprise</title>
-    <link
-      id="app-favicon"
-      rel="icon"
-      type="image/svg+xml"
-      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%2310b981'/%3E%3C/svg%3E"
-    />
+    <!-- روی موبایل/تبلت viewport واقعی فعال می‌شود؛ دسکتاپ دست‌نخورده می‌ماند -->
+    <script>
+      (function () {
+        // تشخیص دستگاه لمسی/کوچک؛ روی دسکتاپ هیچ تغییری اعمال نمی‌شود
+        function isTouchish() {
+          try {
+            var touch = (navigator.maxTouchPoints || 0) > 0;
+            var coarse =
+              window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
+            var hoverNone =
+              window.matchMedia && window.matchMedia("(hover: none)").matches;
+            var narrow =
+              Math.min(screen.width || 9999, screen.height || 9999) <= 1024;
+            var smallDevice =
+              window.matchMedia &&
+              window
+                .matchMedia("(pointer: coarse) and (max-device-width: 1024px)")
+                .matches;
+            return touch || coarse || hoverNone || narrow || smallDevice;
+          } catch (e) {
+            return false;
+          }
+        }
+        function applyShell() {
+          try {
+            if (!isTouchish()) return;
+            var meta = document.querySelector('meta[name="viewport"]');
+            if (meta)
+              meta.setAttribute(
+                "content",
+                "width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover",
+              );
+            document.documentElement.setAttribute("data-shell", "touch");
+          } catch (e) {}
+        }
+        applyShell();
+        window.addEventListener("orientationchange", function () {
+          setTimeout(applyShell, 120);
+        });
+        window.addEventListener("resize", applyShell);
+      })();
+    </script>
+    <title data-mgx-overview="title">داشبورد ریسپانسیو موبایل</title>
+    <link data-mgx-overview="icon" rel="icon" media="(prefers-color-scheme: light)" href="https://public-frontend-1300249583.cos.ap-nanjing.myqcloud.com/commonfile/defautl_logo_light.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -942,11 +979,869 @@
         outline: 2px solid #38bdf8;
         outline-offset: 2px;
       }
+      /* =====================================================================
+         Responsive layer — موبایل و تبلت (زیر ۱۰۲۴px)
+         ظاهر دسکتاپ دست‌نخورده است؛ همه‌ی قواعد داخل media query قرار دارند.
+         ===================================================================== */
+      .m-topbar,
+      .m-nav-backdrop,
+      .m-bottomnav,
+      .m-only {
+        display: none;
+      }
+
+      @media (max-width: 1023px), (pointer: coarse) and (max-device-width: 1024px) {
+        .m-only {
+          display: flex !important;
+        }
+        .dash-actions {
+          flex-wrap: wrap;
+          width: 100%;
+        }
+        .dash-actions > button {
+          flex: 1 1 auto;
+          justify-content: center;
+        }
+        #btn-run-all {
+          flex-basis: 100%;
+          width: 100% !important;
+        }
+        #view-dashboard,
+        #view-settings,
+        #view-links {
+          padding-left: 14px !important;
+          padding-right: 14px !important;
+        }
+        .filter-bar > div:last-child {
+          padding-left: 2px;
+        }
+        /* ---------- توپ‌بار ---------- */
+        .m-topbar {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          position: fixed;
+          top: 0;
+          right: 0;
+          left: 0;
+          height: calc(56px + env(safe-area-inset-top));
+          padding: env(safe-area-inset-top) 12px 0;
+          background: rgba(0, 0, 0, 0.88);
+          backdrop-filter: blur(12px);
+          border-bottom: 1px solid #27272a;
+          z-index: 30;
+        }
+        .m-topbar__title {
+          flex: 1;
+          min-width: 0;
+          font-size: 13.5px;
+          font-weight: 800;
+          color: #fafafa;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .m-icon-btn {
+          appearance: none;
+          flex-shrink: 0;
+          width: 38px;
+          height: 38px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 10px;
+          background: #0b0b0e;
+          border: 1px solid #27272a;
+          color: #e4e4e7;
+        }
+        .m-icon-btn:active {
+          background: #18181b;
+        }
+        .m-icon-btn:disabled {
+          opacity: 0.35;
+        }
+        .m-icon-btn svg {
+          width: 18px;
+          height: 18px;
+        }
+
+        /* ---------- سایدبار → کشوی سمت راست ---------- */
+        aside {
+          position: fixed !important;
+          top: 0 !important;
+          right: 0 !important;
+          height: 100dvh !important;
+          width: min(84vw, 300px) !important;
+          max-width: 300px;
+          transform: translateX(105%);
+          transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 45 !important;
+          border-left: 1px solid #27272a;
+          box-shadow: -24px 0 48px rgba(0, 0, 0, 0.7);
+          overflow-y: auto;
+        }
+        body.m-nav-open aside {
+          transform: translateX(0);
+        }
+        aside > div:first-child {
+          padding-top: env(safe-area-inset-top);
+        }
+        aside .nav-btn {
+          padding-top: 11px;
+          padding-bottom: 11px;
+          font-size: 14px;
+        }
+        .m-nav-backdrop {
+          display: block;
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.6);
+          backdrop-filter: blur(2px);
+          z-index: 35;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.2s ease;
+        }
+        body.m-nav-open .m-nav-backdrop {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        /* ---------- ناحیه‌ی محتوا ---------- */
+        html,
+        body {
+          height: 100dvh !important;
+        }
+        main {
+          width: 100% !important;
+        }
+        #views-container {
+          padding-top: calc(56px + env(safe-area-inset-top));
+          padding-bottom: calc(64px + env(safe-area-inset-bottom));
+        }
+        .view-panel {
+          padding: 14px 14px 18px !important;
+        }
+        .view-panel > .flex {
+          flex-wrap: wrap;
+          gap: 12px;
+        }
+        .wb-panel-header {
+          margin-bottom: 16px;
+          padding-bottom: 14px;
+          gap: 12px;
+        }
+
+        /* ---------- نوار پایین ---------- */
+        .m-bottomnav {
+          display: flex;
+          position: fixed;
+          bottom: 0;
+          right: 0;
+          left: 0;
+          height: calc(60px + env(safe-area-inset-bottom));
+          padding-bottom: env(safe-area-inset-bottom);
+          background: rgba(0, 0, 0, 0.94);
+          backdrop-filter: blur(12px);
+          border-top: 1px solid #27272a;
+          z-index: 30;
+        }
+        .m-bottomnav__btn {
+          appearance: none;
+          flex: 1;
+          background: transparent;
+          border: 0;
+          color: #71717a;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 3px;
+          font-family: "Vazirmatn", sans-serif;
+          font-size: 10px;
+          font-weight: 700;
+          position: relative;
+        }
+        .m-bottomnav__btn svg {
+          width: 19px;
+          height: 19px;
+        }
+        .m-bottomnav__btn.is-active {
+          color: #fafafa;
+        }
+        .m-bottomnav__btn.is-active::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          width: 26px;
+          height: 2px;
+          border-radius: 0 0 3px 3px;
+          background: #10b981;
+        }
+
+        /* ---------- داشبورد ---------- */
+        .d-only {
+          display: none !important;
+        }
+        .stat-legend {
+          flex-wrap: wrap;
+          gap: 10px 16px !important;
+          font-size: 11.5px !important;
+          margin-top: 10px !important;
+        }
+        #btn-run-all {
+          width: 100% !important;
+        }
+        .filter-bar,
+        .tool-bar {
+          flex-direction: column;
+          align-items: stretch !important;
+          gap: 10px !important;
+        }
+        .filter-bar > .relative,
+        .tool-bar > .relative {
+          width: 100%;
+        }
+        .filter-bar > div:last-child {
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .filter-bar > div:last-child::-webkit-scrollbar {
+          height: 0;
+        }
+        .table-grid {
+          grid-template-columns: 22px minmax(0, 1fr) 116px !important;
+          gap: 10px !important;
+          padding-left: 12px !important;
+          padding-right: 12px !important;
+        }
+        .tbl-hide-mobile {
+          display: none !important;
+        }
+        #main-data-list .data-row {
+          padding-top: 12px;
+          padding-bottom: 12px;
+        }
+
+        /* ---------- جدول‌های نتایج ابزارها ----------
+           در موبایل جدول به کارت تبدیل می‌شود (Responsive layer II پایین‌تر)،
+           پس دیگر به اسکرول افقی و عرض حداقلی ثابت نیازی نیست. */
+        .results-container div[class*="overflow-y-auto"] {
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
+        }
+        .results-container table {
+          min-width: 0;
+        }
+        .og-split {
+          flex-direction: column !important;
+        }
+        .og-split > * {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        .og-split div[class*="grid-cols-2"] {
+          grid-template-columns: 1fr !important;
+        }
+
+        /* ---------- کشوی جزئیات، مودال‌ها و کارنامه ---------- */
+        #site-drawer {
+          width: min(92vw, 420px) !important;
+        }
+        #site-drawer > div:first-child .flex {
+          flex-wrap: wrap;
+        }
+        .wb-score-num {
+          font-size: 46px;
+        }
+        .wb-report-preview {
+          max-height: 48vh;
+        }
+        .wb-daypick__btn {
+          min-width: 52px;
+        }
+        #ll-search {
+          width: 100% !important;
+        }
+        textarea.min-h-\[120px\] {
+          min-height: 96px;
+        }
+
+        /* ============================================================
+           لایه‌ی تجربه‌ی موبایل — بهبود خوانایی، لمس و جلوگیری از سرریز
+           فقط زیر ۱۰۲۴px یا دستگاه‌های لمسی کوچک اجرا می‌شود.
+           ============================================================ */
+
+        /* ۱) بازخورد لمسی فوری؛ روی صفحه‌های لمسی hover وجود ندارد */
+        .data-row:active,
+        #ll-list > div:active,
+        #settings-url-list > div:active {
+          background-color: #18181b !important;
+        }
+        .btn-primary:active,
+        .btn-subtle:active {
+          transform: scale(0.97);
+        }
+
+        /* ۲) ورودی زیر ۱۶px در iOS باعث زوم خودکار و پرش صفحه می‌شود */
+        input,
+        textarea,
+        select {
+          font-size: 16px !important;
+        }
+        input::placeholder,
+        textarea::placeholder {
+          font-size: 13px;
+        }
+
+        /* ۳) عنوان پنل‌ها جمع‌وجورتر تا محتوای اصلی زودتر دیده شود */
+        .view-panel h2 {
+          font-size: 20px !important;
+          line-height: 1.6;
+        }
+
+        /* ۴) نوار پیشرفت اسکن: در عرض کم چندخطی می‌شود و سرریز نمی‌کند */
+        #scan-progress .flex {
+          flex-wrap: wrap;
+          row-gap: 8px;
+        }
+        #scan-url {
+          max-width: 100%;
+        }
+        #btn-stop {
+          margin-inline-start: auto;
+        }
+
+        /* ۵) ناحیه‌های اسکرول‌شونده: اسکرول نرم و بدون کشیده‌شدن کل صفحه */
+        #views-container,
+        aside,
+        #main-data-list,
+        #settings-url-list,
+        #ll-list,
+        #site-drawer,
+        #drawer-content,
+        .wb-report-preview,
+        .results-container div[class*="overflow-y-auto"] {
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+        }
+
+        /* ۶) دکمه‌های فیلتر: هدف لمس بزرگ‌تر و اسکرول افقی تمیزتر */
+        .filter-bar > div:last-child,
+        .tool-bar > div:last-child {
+          scrollbar-width: none;
+          padding-bottom: 4px;
+        }
+        .filter-bar > div:last-child::-webkit-scrollbar,
+        .tool-bar > div:last-child::-webkit-scrollbar {
+          height: 0;
+        }
+        .filter-bar > div:last-child button,
+        .tool-bar > div:last-child button {
+          min-height: 38px;
+        }
+
+        /* ۷) کشوی جزئیات: پیمایش قبلی/بعدی و دکمه‌های پایین راحت‌تر لمس می‌شوند */
+        #drawer-btn-prev,
+        #drawer-btn-next {
+          padding: 7px 12px;
+          font-size: 12px;
+        }
+        #site-drawer .p-5 {
+          padding-left: 12px;
+          padding-right: 12px;
+          padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        }
+        #site-drawer .p-5 > .btn-subtle {
+          padding-left: 10px;
+          padding-right: 10px;
+        }
+
+        /* ۸) مودال گزارش هفتگی: روی موبایل مانند شیت پایین صفحه باز می‌شود */
+        #wb-report-modal {
+          top: auto !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          transform: none !important;
+          width: 100% !important;
+          max-height: 86dvh !important;
+          border-radius: 16px 16px 0 0;
+        }
+        #wb-report-modal .px-5.py-4.border-t {
+          padding-bottom: calc(16px + env(safe-area-inset-bottom));
+        }
+        .wb-report-preview {
+          max-height: 42dvh;
+        }
+
+        /* ۹) کارت‌ها و فاصله‌های پنل وبلاگ فشرده‌تر */
+        .wb-card {
+          padding: 16px !important;
+        }
+        #wb-list {
+          gap: 14px;
+        }
+
+        /* ۱۰) پیام شناور بالای نوار پایین و داخل محدوده‌ی ایمن */
+        #ll-toast {
+          bottom: calc(74px + env(safe-area-inset-bottom)) !important;
+          max-width: 90vw !important;
+        }
+
+        /* ۱۱) وقتی منو بسته است، دکمه‌ی بستن جای عنوان را نگیرد */
+        body:not(.m-nav-open) #m-btn-close-nav {
+          display: none;
+        }
+
+        /* ۱۲) خوانایی آمار داشبورد: چیدمان دوستونه به‌جای ردیف افقی فشرده */
+        .stat-legend {
+          display: grid !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          align-items: center;
+          gap: 8px 10px !important;
+          font-size: 11px !important;
+          margin-top: 12px !important;
+          padding: 10px 12px;
+          border: 1px solid #27272a;
+          border-radius: 12px;
+          background: rgba(255, 255, 255, 0.02);
+        }
+        .stat-legend > div {
+          min-width: 0;
+        }
+        .stat-legend > div:last-child {
+          grid-column: 1 / -1;
+          padding-top: 8px;
+          border-top: 1px dashed #27272a;
+        }
+
+        /* ۱۳) ردیف‌های داشبورد در موبایل دوخطی می‌شوند:
+           خط اول وضعیت + دامنه، خط دوم ماتریس کامل ۸ بررسی با هدف لمس بزرگ‌تر.
+           فقط ردیف‌های داده هدف هستند تا سرستون جدول دست‌نخورده بماند. */
+        #main-data-list .data-row {
+          grid-template-columns: 20px minmax(0, 1fr) !important;
+          grid-template-areas:
+            "dot url"
+            "mx  mx" !important;
+          gap: 8px 10px !important;
+        }
+        #main-data-list .data-row > *:nth-child(1) {
+          grid-area: dot;
+        }
+        #main-data-list .data-row > *:nth-child(2) {
+          grid-area: url;
+        }
+        #main-data-list .data-row > *:nth-child(3) {
+          grid-area: mx;
+          padding: 6px 2px 0;
+          border-top: 1px dashed rgba(39, 39, 42, 0.9);
+        }
+        #main-data-list .data-row > *:nth-child(4) {
+          display: none;
+        }
+        #main-data-list .data-row .status-wrapper {
+          width: 22px;
+          height: 22px;
+        }
+        #main-data-list .data-row .status-dot {
+          width: 9px;
+          height: 9px;
+        }
+
+        /* ۱۴) بازخورد لمسی پایدار: حالت «بررسی شده» در موبایل به hover وابسته نباشد */
+        #main-data-list .data-row.opacity-30 {
+          opacity: 0.45 !important;
+        }
+        #main-data-list .data-row.grayscale {
+          filter: grayscale(1) !important;
+        }
+
+        /* ۱۵) لمس نرم‌تر: حذف هایلایت آبی پیش‌فرض مرورگرهای موبایل */
+        a,
+        button,
+        .data-row,
+        .status-dot,
+        .filter-btn,
+        .nav-btn {
+          -webkit-tap-highlight-color: transparent;
+        }
+
+        /* ۱۶) جلوگیری از سرریز افقی و کشیده‌شدن کل صفحه */
+        #views-container {
+          overflow-x: hidden;
+        }
+        img,
+        svg,
+        textarea,
+        input {
+          max-width: 100%;
+        }
+        #settings-url-list > div,
+        #ll-list > div {
+          max-width: 100%;
+        }
+
+        /* ۱۷) کشوی جزئیات: دکمه‌های پایین با ارتفاع لمس راحت و فاصله از نوار خانه */
+        #site-drawer > div:last-child {
+          gap: 8px;
+          padding-bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+        }
+        #site-drawer > div:last-child > button {
+          height: 44px;
+        }
+        #drawer-content {
+          padding: 14px 12px;
+        }
+
+        /* ۱۸) گروه دکمه‌های فیلتر: در موبایل به گرید دوستونه‌ی بدون سرریز تبدیل می‌شود
+           تا هر ۵ فیلتر با برچسب و شمارنده‌ی کامل، بدون اسکرول افقی، دیده شوند */
+        .filter-bar > div:last-child,
+        .tool-bar > div:last-child {
+          display: grid !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 8px !important;
+          width: 100%;
+          overflow: visible !important;
+          background: transparent !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+        }
+        .filter-bar > div:last-child .filter-btn,
+        .tool-bar > div:last-child .tool-flt-btn {
+          display: flex !important;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          min-height: 42px;
+          padding: 8px 10px !important;
+          border: 1px solid #27272a !important;
+          border-radius: 10px;
+          background: #0b0b0e !important;
+          color: #a1a1aa;
+          font-size: 12px;
+          font-weight: 700;
+          white-space: nowrap;
+        }
+        .filter-bar > div:last-child .filter-btn:first-child,
+        .tool-bar > div:last-child .tool-flt-btn:first-child {
+          grid-column: 1 / -1;
+        }
+        .filter-bar > div:last-child .filter-btn.text-white,
+        .tool-bar > div:last-child .tool-flt-btn.text-white {
+          background: rgba(255, 255, 255, 0.1) !important;
+          border-color: #52525b !important;
+          color: #fafafa;
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+        }
+
+        /* ۱۹) هدر داشبورد و آمار وضعیت: در موبایل روی هم چیده می‌شوند تا
+           آمار کل عرض صفحه را بگیرد و کنار دکمه‌های عملیات فشرده نشود */
+        #view-dashboard > div:first-child {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 14px !important;
+        }
+        #view-dashboard > div:first-child > div:first-child {
+          width: 100%;
+          min-width: 0;
+        }
+        .stat-legend {
+          width: 100% !important;
+          grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          gap: 10px 12px !important;
+          font-size: 12px !important;
+          padding: 12px !important;
+        }
+        .stat-legend > div {
+          justify-content: flex-start;
+          min-width: 0;
+          line-height: 1.5;
+        }
+        .stat-legend > div:last-child {
+          justify-content: flex-start;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .table-grid {
+          grid-template-columns: 18px minmax(0, 1fr) 102px !important;
+          gap: 8px !important;
+        }
+        #main-data-list .data-row {
+          grid-template-columns: 18px minmax(0, 1fr) !important;
+          gap: 6px 8px !important;
+        }
+        .view-panel {
+          padding-left: 10px !important;
+          padding-right: 10px !important;
+        }
+        .wb-score-num {
+          font-size: 40px;
+        }
+      }
+
+      /* =====================================================================
+         Responsive layer II — بازنویسی تجربه‌ی موبایل (زیر ۱۰۲۴px / دستگاه لمسی کوچک)
+         هدف‌ها:
+           ۱) جدول‌ها و ردیف‌ها در موبایل «کارتی» می‌شوند و اسکرول افقی حذف می‌شود
+           ۲) اسکرول‌های تودرتو حذف و اسکرول به کل صفحه منتقل می‌شود
+           ۳) لیست‌های لینک/دامنه و سرصفحه‌ها در عرض کم بدون فشردگی می‌مانند
+         ظاهر دسکتاپ (≥۱۰۲۴px) هیچ تغییری نمی‌کند؛ همه‌ی قواعد داخل media query است.
+         ===================================================================== */
+      @media (max-width: 1023px), (pointer: coarse) and (max-device-width: 1024px) {
+        /* ---------- ۱) ارتفاع و محدوده‌ی ایمن ---------- */
+        main {
+          height: 100dvh !important;
+        }
+        #views-container {
+          padding-bottom: calc(84px + env(safe-area-inset-bottom)) !important;
+        }
+        html,
+        body,
+        #views-container,
+        .view-panel {
+          max-width: 100vw;
+          overflow-x: hidden;
+        }
+
+        /* ---------- ۲) پنل‌ها تک‌صفحه‌ای می‌شوند، نه اسکرول تودرتو ---------- */
+        .view-panel {
+          height: auto !important;
+          min-height: 100%;
+        }
+        .view-panel > .flex-1,
+        .view-panel .results-container {
+          flex: 0 0 auto !important;
+          min-height: 0 !important;
+        }
+        .view-panel .results-container {
+          overflow: visible !important;
+        }
+        #main-data-list,
+        #settings-url-list,
+        #ll-list,
+        .results-container div[class*="overflow-y-auto"],
+        .results-container .og-split > div,
+        .results-container .og-split > div > div[class*="overflow-y-auto"] {
+          overflow-y: visible !important;
+          flex: 0 0 auto !important;
+          max-height: none !important;
+        }
+
+        /* ---------- ۳) سرستون داشبورد، هم‌شکل با ردیف‌های دوخطی ----------
+           سرستون هم مثل ردیف‌ها دوخطی می‌شود تا برچسب H T D O S F C L
+           دقیقاً بالای ماتریس همان ردیف قرار بگیرد. */
+        #view-dashboard .table-grid:not(.data-row) {
+          grid-template-columns: 20px minmax(0, 1fr) !important;
+          gap: 8px 10px !important;
+        }
+        #view-dashboard .table-grid:not(.data-row) > *:nth-child(3) {
+          grid-column: 1 / -1;
+          padding: 6px 2px 0 !important;
+          border-top: 1px dashed rgba(39, 39, 42, 0.9);
+        }
+
+        /* ---------- ۴) ردیف‌های داشبورد: خوانا و لمس‌پذیر ----------
+           چیدمان دوخطی و سرستون‌ها در «Responsive layer» بالاتر تعریف شده و
+           دست‌نخورده می‌ماند؛ اینجا فقط فاصله و اندازه‌ی هدف لمس تنظیم می‌شود. */
+        #main-data-list .data-row {
+          padding: 14px 12px !important;
+        }
+        #main-data-list .data-row .status-wrapper {
+          width: 24px;
+          height: 24px;
+        }
+        #main-data-list .data-row .status-dot {
+          width: 10px;
+          height: 10px;
+        }
+        #main-data-list .data-empty {
+          padding: 40px 16px !important;
+        }
+
+        /* ---------- ۵) جدول نتایج ابزارها → کارت (بدون اسکرول افقی) ---------- */
+        .results-container table {
+          display: block;
+          width: 100% !important;
+          min-width: 0 !important;
+        }
+        .results-container thead {
+          display: none !important;
+        }
+        .results-container tbody {
+          display: block;
+          background: transparent !important;
+        }
+        .results-container tbody tr {
+          display: block;
+          margin: 0 10px 10px;
+          background: #09090b;
+          border: 1px solid #27272a;
+          border-radius: 12px;
+          overflow: hidden;
+        }
+        .results-container tbody tr.row-err {
+          border-color: rgba(239, 68, 68, 0.32);
+        }
+        .results-container tbody tr.row-warn {
+          border-color: rgba(245, 158, 11, 0.3);
+        }
+        .results-container tbody tr.row-skip {
+          border-color: rgba(161, 161, 170, 0.22);
+        }
+        .results-container tbody td {
+          display: block;
+          width: auto !important;
+          padding: 10px 12px !important;
+          border-bottom: 1px dashed rgba(39, 39, 42, 0.75);
+          text-align: right;
+        }
+        .results-container tbody td:last-child {
+          border-bottom: 0;
+        }
+        .results-container tbody td::before {
+          content: attr(data-label);
+          display: block;
+          margin-bottom: 5px;
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          color: #71717a;
+        }
+        .results-container tbody td > div,
+        .results-container tbody td > bdi {
+          max-width: 100% !important;
+        }
+        .results-container tbody td bdi {
+          display: block !important;
+          width: 100%;
+          white-space: normal !important;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+        }
+        .results-container tbody td > .flex {
+          justify-content: flex-start !important;
+        }
+
+        /* ---------- ۶) لیست لینک‌ها و دامنه‌ها: آدرس بالا، دکمه‌ها پایین ---------- */
+        #ll-list > div,
+        #settings-url-list > div {
+          flex-wrap: wrap;
+          gap: 6px;
+          padding: 10px 12px;
+        }
+        #ll-list > div > div:first-child,
+        #settings-url-list > div > div:first-child {
+          flex: 1 1 100%;
+          min-width: 0;
+        }
+        #ll-list > div > div:last-child,
+        #settings-url-list > div > div:last-child {
+          justify-content: flex-end;
+          width: 100%;
+          margin-right: 0;
+        }
+        #ll-list .btn-subtle,
+        #settings-url-list .btn-subtle {
+          padding: 7px;
+        }
+        #ll-list .btn-subtle svg,
+        #settings-url-list .btn-subtle svg {
+          width: 16px;
+          height: 16px;
+        }
+
+        /* ---------- ۷) پنل وبلاگ‌ها ---------- */
+        #view-weblog .wb-panel-header {
+          align-items: flex-start;
+        }
+        .wb-daypick {
+          width: 100%;
+        }
+        .wb-daypick__btn {
+          flex: 1 1 calc(50% - 4px);
+          min-width: 0;
+        }
+        .wb-scorecard {
+          padding: 16px 16px 18px;
+        }
+        .wb-sitehead {
+          gap: 8px;
+        }
+        .wb-sitehead .mr-auto {
+          margin-right: 0 !important;
+          width: 100%;
+        }
+
+        /* ---------- ۸) مودال گزارش وبلاگ ---------- */
+        #wb-report-modal {
+          max-height: 88dvh !important;
+        }
+        .wb-report-preview {
+          max-height: 46dvh !important;
+          font-size: 12px;
+          padding: 14px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        #main-data-list .data-row {
+          padding: 12px 10px !important;
+        }
+        .results-container tbody tr {
+          margin-left: 6px;
+          margin-right: 6px;
+        }
+        .view-panel h2 {
+          font-size: 17px !important;
+        }
+      }
     </style>
-  </head>
+    <meta data-mgx-overview="description" name="description" content="داشبورد مدیریتی با نمایش بهینه و بدون مشکل مخصوص موبایل" />
+  <meta data-mgx-overview="og:title" property="og:title" content="داشبورد ریسپانسیو موبایل" />
+  <meta data-mgx-overview="og:description" property="og:description" content="داشبورد مدیریتی با نمایش بهینه و بدون مشکل مخصوص موبایل" />
+  <meta data-mgx-overview="og:image" property="og:image" content="https://public-frontend-1300249583.cos.ap-nanjing.myqcloud.com/commonfile/defautl_logo_light.png" />
+  <meta data-mgx-overview="twitter:title" name="twitter:title" content="داشبورد ریسپانسیو موبایل" />
+  <meta data-mgx-overview="twitter:description" name="twitter:description" content="داشبورد مدیریتی با نمایش بهینه و بدون مشکل مخصوص موبایل" />
+  <meta data-mgx-overview="twitter:image" name="twitter:image" content="https://public-frontend-1300249583.cos.ap-nanjing.myqcloud.com/commonfile/defautl_logo_light.png" />
+  <link data-mgx-overview="dark-icon" rel="icon" media="(prefers-color-scheme: dark)" href="https://public-frontend-1300249583.cos.ap-nanjing.myqcloud.com/commonfile/defautl_logo_dark.png" />
+</head>
   <body
     class="h-screen overflow-hidden flex relative selection:bg-white/20 selection:text-white"
   >
+    <!-- توپ‌بار موبایل -->
+    <div class="m-topbar">
+      <button
+        class="m-icon-btn"
+        id="m-btn-close-nav"
+        onclick="closeMobileNav()"
+        aria-label="بستن منو"
+      >
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div class="m-topbar__title" id="m-topbar-title">داشبورد اصلی</div>
+      <button
+        class="m-icon-btn"
+        id="m-btn-run"
+        onclick="runAllToolsConcurrently()"
+        aria-label="اجرای همه ربات ها"
+      >
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </button>
+      <button class="m-icon-btn" onclick="toggleMobileNav()" aria-label="منو">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
+    <div class="m-nav-backdrop" onclick="closeMobileNav()"></div>
+
     <aside
       class="w-[260px] bg-brand-bg border-l border-brand-border flex flex-col z-20 shrink-0"
     >
@@ -1298,7 +2193,7 @@
                 بررسی دامین ها
               </h2>
               <div
-                class="flex items-center gap-6 mt-3 text-sm text-brand-muted font-mono"
+                class="stat-legend flex items-center gap-6 mt-3 text-sm text-brand-muted font-mono"
               >
                 <div class="flex items-center gap-2">
                   <div
@@ -1327,7 +2222,7 @@
               </div>
             </div>
 
-            <div class="flex gap-3">
+            <div class="dash-actions flex gap-3">
               <button
                 id="btn-open-tabs"
                 onclick="openAllBaseUrls()"
@@ -1447,7 +2342,7 @@
             ></div>
           </div>
 
-          <div class="flex items-center justify-between gap-4 mb-6">
+          <div class="filter-bar flex items-center justify-between gap-4 mb-6">
             <div class="relative w-80">
               <svg
                 class="w-4 h-4 text-zinc-500 absolute top-2.5 right-3"
@@ -1572,7 +2467,7 @@
                 <span title="لینک کانونی (Canonical)">C</span>
                 <span title="امنیت (SSL)">L</span>
               </div>
-              <div class="text-left">عملیات</div>
+              <div class="text-left d-only">عملیات</div>
             </div>
             <div
               id="main-data-list"
@@ -2220,6 +3115,51 @@
       </div>
     </main>
 
+    <!-- نوار پایین موبایل -->
+    <nav class="m-bottomnav">
+      <button
+        class="m-bottomnav__btn is-active"
+        id="m-nav-dashboard"
+        onclick="switchTab('dashboard')"
+      >
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        </svg>
+        داشبورد
+      </button>
+      <button
+        class="m-bottomnav__btn"
+        id="m-nav-health"
+        onclick="switchTab('health')"
+      >
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+        </svg>
+        اسکن‌ها
+      </button>
+      <button
+        class="m-bottomnav__btn"
+        id="m-nav-weblog"
+        onclick="switchTab('weblog')"
+      >
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2M7 8h6M7 12h6M7 16h4" />
+        </svg>
+        وبلاگ‌ها
+      </button>
+      <button
+        class="m-bottomnav__btn"
+        id="m-nav-settings"
+        onclick="switchTab('settings')"
+      >
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        لینک‌ها
+      </button>
+    </nav>
+
     <!-- Drawer (کشوی جزئیات سایت) -->
     <div
       id="drawer-overlay"
@@ -2543,7 +3483,7 @@
                     </div>
                 </div>
                 <div class="tool-progress hidden mb-4 text-xs text-zinc-400 border border-brand-border rounded-md bg-brand-panel px-4 py-2.5"></div>
-                <div class="flex items-center justify-between gap-4 mb-4">
+                <div class="tool-bar flex items-center justify-between gap-4 mb-4">
                   <div class="relative w-80">
                     <svg class="w-4 h-4 text-zinc-500 absolute top-2.5 right-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     <input type="text" id="tool-search-${toolId}" onkeyup="onToolFilterChange('${toolId}')" placeholder="جستجو در نتایج این ابزار ..." class="w-full bg-brand-panel border border-brand-border text-white text-xs rounded-md pr-9 pl-4 py-2.5 focus:outline-none focus:border-zinc-400 transition-colors placeholder-zinc-600" />
@@ -2949,7 +3889,7 @@
         );
 
         if (filteredData.length === 0) {
-          listEl.innerHTML = `<div class="p-10 text-center text-sm text-zinc-500 font-medium">هیچ داده ای یافت نشد.</div>`;
+          listEl.innerHTML = `<div class="data-empty p-10 text-center text-sm text-zinc-500 font-medium">هیچ داده ای یافت نشد.</div>`;
           return;
         }
 
@@ -2991,7 +3931,7 @@
                             <span class="font-mono text-[13px] text-zinc-200 block truncate">${esc(key)}</span>
                         </div>
                         <div class="flex items-center justify-between px-2" dir="ltr">${matrixHtml}</div>
-                        <div class="flex justify-end pr-2">
+                        <div class="flex justify-end pr-2 d-only">
                             ${isDone ? `<span class="text-[9px] font-bold text-zinc-500 bg-white/5 border border-white/10 px-2 py-0.5 rounded">بررسی شده</span>` : ""}
                         </div>
                     </div>`;
@@ -3533,6 +4473,14 @@
         btnText.innerText = "ذخیره تغییرات در فایل";
       }
 
+      // ---------- لایه‌ی موبایل: کشوی ناوبری و هم‌گام‌سازی نوار پایین ----------
+      function toggleMobileNav() {
+        document.body.classList.toggle("m-nav-open");
+      }
+      function closeMobileNav() {
+        document.body.classList.remove("m-nav-open");
+      }
+
       let currentTab = "dashboard";
       function switchTab(tabId) {
         currentTab = tabId;
@@ -3547,6 +4495,17 @@
         const activeBtn = document.getElementById(`nav-${tabId}`);
         activeBtn.classList.remove("text-brand-muted", "border-transparent");
         activeBtn.classList.add("bg-white/10", "text-white", "border-white/5");
+        document.querySelectorAll(".m-bottomnav__btn").forEach((el) => {
+          el.classList.toggle("is-active", el.id === `m-nav-${tabId}`);
+        });
+        const mTitle = document.getElementById("m-topbar-title");
+        if (mTitle) {
+          const label = activeBtn.querySelector("span.flex-1");
+          mTitle.textContent = (
+            label ? label.textContent : activeBtn.textContent
+          ).trim();
+        }
+        closeMobileNav();
         if (tabId === "dashboard") loadDashboard();
         else if (tabId === "settings") loadSettingsUrls();
         else if (tabId === "links") { /* بخش استخراج لینک خودش initial ندارد */ }
@@ -3573,6 +4532,8 @@
           b.disabled = busy;
         });
         document.getElementById("btn-drawer-retry").disabled = busy;
+        const mRun = document.getElementById("m-btn-run");
+        if (mRun) mRun.disabled = busy;
       }
 
       async function startJob(endpoint) {
@@ -3845,7 +4806,7 @@
           // همه‌ی رندرها باید روی همان ردیف‌های فیلترشده (allRows) انجام شود
           const successes = allRows.filter((i) => levelOf(i.Status) === "ok");
           const others = allRows.filter((i) => levelOf(i.Status) !== "ok");
-          let html = `<div class="flex gap-5 h-full p-5 bg-brand-bg">
+          let html = `<div class="og-split flex gap-5 h-full p-5 bg-brand-bg">
                     <div class="w-2/3 bg-brand-panel border border-brand-border rounded-lg overflow-hidden flex flex-col">
                         <div class="bg-white/[0.02] px-5 py-3 border-b border-brand-border flex justify-between items-center text-right">
                             <h3 class="text-xs font-bold text-zinc-300">تصاویر سالم <span class="text-zinc-600 mr-2 text-[10px] bg-brand-bg px-2 py-0.5 rounded border border-brand-border">${successes.length} مورد</span></h3>
@@ -3879,7 +4840,8 @@
           html += `<tr class="data-row row-${lvl}">`;
           keys.forEach((key) => {
             const v = row[key] ?? "";
-            html += `<td class="px-5 py-3.5 align-middle">`;
+            // data-label: در موبایل هر سلول به کارت با عنوان ستون تبدیل می‌شود
+            html += `<td class="px-5 py-3.5 align-middle" data-label="${esc(key)}">`;
             if (key === "URL" || key === "Final URL" || key.endsWith("URL"))
               html += `<bdi dir="ltr" class="max-w-[260px] inline-block truncate text-zinc-300 font-mono text-[12px] text-left" title="${esc(v)}">${esc(v)}</bdi>`;
             else if (key === "Status")
