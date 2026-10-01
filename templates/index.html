@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=1400, user-scalable=yes" />
     <title>QA Master | Enterprise</title>
     <link
       id="app-favicon"
@@ -207,95 +207,211 @@
         opacity: 0.8;
       }
 
-      /* ===================== Weblog panel ===================== */
+      /* =====================================================================
+         Weblog panel — refined UI/UX
+         Design tokens & rhythm
+         ---------------------------------------------------------------------
+         - Card surface: layered #0a0a0d over #000, subtle inner ring
+         - Accent gradients: emerald (ok), amber (warn), rose (err), sky (info)
+         - Motion: spring-ish easing, translate+shadow on hover
+         - RTL: numeric values use unicode-bidi plaintext
+         ===================================================================== */
       .wb-card {
-        background: #09090b;
+        background:
+          radial-gradient(1200px 200px at 100% -50%, rgba(255,255,255,0.03), transparent 60%),
+          linear-gradient(180deg, #0b0b0e 0%, #08080a 100%);
         border: 1px solid #27272a;
-        border-radius: 10px;
+        border-radius: 14px;
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.02) inset,
+          0 8px 24px -12px rgba(0,0,0,0.6);
+        transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
       }
+      .wb-card:hover {
+        border-color: #3f3f46;
+      }
+      .wb-card--done {
+        border-color: rgba(16,185,129,0.32);
+        box-shadow:
+          0 1px 0 rgba(255,255,255,0.02) inset,
+          0 0 0 1px rgba(16,185,129,0.06),
+          0 12px 32px -18px rgba(16,185,129,0.35);
+      }
+      .wb-card--partial { border-color: rgba(245,158,11,0.30); }
+      .wb-card--error   { border-color: rgba(239,68,68,0.32);  }
+
+      /* Chips ----------------------------------------------------------- */
       .wb-chip {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 3px 8px;
+        gap: 5px;
+        padding: 4px 9px;
         border-radius: 999px;
-        font-size: 10px;
+        font-size: 10.5px;
         font-weight: 700;
         border: 1px solid transparent;
         line-height: 1;
+        letter-spacing: 0.01em;
+        transition: transform 0.15s ease;
+      }
+      .wb-chip::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: currentColor;
+        box-shadow: 0 0 8px currentColor;
+        opacity: 0.85;
       }
       .wb-chip--done {
-        background: rgba(16, 185, 129, 0.12);
+        background: linear-gradient(180deg, rgba(16,185,129,0.16), rgba(16,185,129,0.08));
         color: #34d399;
-        border-color: rgba(16, 185, 129, 0.35);
+        border-color: rgba(16,185,129,0.38);
       }
       .wb-chip--partial {
-        background: rgba(245, 158, 11, 0.12);
+        background: linear-gradient(180deg, rgba(245,158,11,0.16), rgba(245,158,11,0.08));
         color: #fbbf24;
-        border-color: rgba(245, 158, 11, 0.35);
+        border-color: rgba(245,158,11,0.38);
       }
       .wb-chip--none {
-        background: rgba(161, 161, 170, 0.08);
+        background: rgba(161,161,170,0.08);
         color: #a1a1aa;
-        border-color: rgba(161, 161, 170, 0.25);
+        border-color: rgba(161,161,170,0.25);
       }
+      .wb-chip--none::before { box-shadow: none; }
       .wb-chip--error {
-        background: rgba(239, 68, 68, 0.12);
+        background: linear-gradient(180deg, rgba(239,68,68,0.16), rgba(239,68,68,0.08));
         color: #f87171;
-        border-color: rgba(239, 68, 68, 0.35);
+        border-color: rgba(239,68,68,0.38);
       }
       .wb-chip--stale {
-        background: rgba(59, 130, 246, 0.10);
+        background: rgba(59,130,246,0.10);
         color: #93c5fd;
-        border-color: rgba(59, 130, 246, 0.28);
+        border-color: rgba(59,130,246,0.28);
       }
+      .wb-chip--stale::before { box-shadow: none; opacity: 0.6; }
       .wb-chip--loading {
-        background: rgba(255, 255, 255, 0.04);
+        background: rgba(255,255,255,0.04);
         color: #a1a1aa;
         border-color: #27272a;
       }
+      .wb-chip--loading::before {
+        animation: wb-pulse 1.2s ease-in-out infinite;
+        box-shadow: none;
+      }
+      @keyframes wb-pulse {
+        0%, 100% { opacity: 0.3; transform: scale(0.8); }
+        50%      { opacity: 1;   transform: scale(1.1); }
+      }
+
+      /* Post card ------------------------------------------------------- */
       .wb-post {
-        background: #000000;
+        background: #030304;
         border: 1px solid #27272a;
-        border-radius: 8px;
+        border-radius: 12px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        transition: border-color 0.15s, transform 0.15s;
+        transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        position: relative;
       }
       .wb-post:hover {
         border-color: #52525b;
-        transform: translateY(-1px);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px -14px rgba(0,0,0,0.8);
+      }
+      .wb-post:hover .wb-post__media img {
+        transform: scale(1.04);
       }
       .wb-post--fresh {
-        border-color: rgba(16, 185, 129, 0.45);
-        box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.15);
+        border-color: rgba(16,185,129,0.55);
+        box-shadow:
+          0 0 0 1px rgba(16,185,129,0.18),
+          0 12px 28px -18px rgba(16,185,129,0.45);
+      }
+      .wb-post--fresh::after {
+        content: "";
+        position: absolute;
+        top: 0; right: 0;
+        width: 3px;
+        height: 100%;
+        background: linear-gradient(180deg, #10b981, transparent);
+        pointer-events: none;
       }
       .wb-post__media {
         display: block;
         aspect-ratio: 16 / 9;
-        background: #18181b;
+        background: #0f0f12;
         overflow: hidden;
         position: relative;
       }
+      .wb-post__media::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.55) 100%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+      .wb-post:hover .wb-post__media::after { opacity: 1; }
       .wb-post__media img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         display: block;
+        transition: transform 0.35s ease;
       }
       .wb-post__media--empty {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #52525b;
-        font-size: 11px;
-      }
-      .wb-post__body {
-        padding: 10px 12px 12px;
-        display: flex;
         flex-direction: column;
         gap: 6px;
+        color: #52525b;
+        font-size: 10.5px;
+        background:
+          repeating-linear-gradient(
+            45deg,
+            #0f0f12,
+            #0f0f12 8px,
+            #131317 8px,
+            #131317 16px
+          );
+      }
+      .wb-post__media--empty svg { width: 22px; height: 22px; opacity: 0.5; }
+      .wb-post__badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        background: rgba(0,0,0,0.72);
+        backdrop-filter: blur(6px);
+        color: #34d399;
+        border: 1px solid rgba(16,185,129,0.5);
+      }
+      .wb-post__badge::before {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 6px #10b981;
+        animation: wb-pulse 1.6s ease-in-out infinite;
+      }
+      .wb-post__body {
+        padding: 12px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
         flex: 1;
       }
       .wb-post__date {
@@ -305,12 +421,16 @@
         letter-spacing: 0;
         direction: rtl;
         unicode-bidi: plaintext;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
       }
+      .wb-post__date svg { width: 11px; height: 11px; opacity: 0.7; }
       .wb-post__title {
-        font-size: 12.5px;
-        font-weight: 600;
-        color: #fafafa;
-        line-height: 1.55;
+        font-size: 13px;
+        font-weight: 700;
+        color: #f4f4f5;
+        line-height: 1.6;
         margin: 0;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -320,16 +440,15 @@
       .wb-post__title a {
         color: inherit;
         text-decoration: none;
+        transition: color 0.15s ease;
       }
       .wb-post__title a:hover {
         color: #ffffff;
-        text-decoration: underline;
-        text-decoration-color: #52525b;
       }
       .wb-post__ex {
-        font-size: 11px;
+        font-size: 11.5px;
         color: #71717a;
-        line-height: 1.7;
+        line-height: 1.75;
         margin: 0;
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -342,76 +461,34 @@
         height: 6px;
         border-radius: 50%;
         background: #10b981;
-        box-shadow: 0 0 6px rgba(16, 185, 129, 0.6);
+        box-shadow: 0 0 8px rgba(16,185,129,0.7);
         margin-left: 6px;
+        animation: wb-pulse 1.6s ease-in-out infinite;
       }
+
+      /* Skeleton -------------------------------------------------------- */
       .wb-sk {
         background: linear-gradient(
           90deg,
-          #18181b 25%,
-          #27272a 37%,
-          #18181b 63%
+          #131317 25%,
+          #1e1e23 37%,
+          #131317 63%
         );
         background-size: 400% 100%;
         animation: wb-sk 1.4s ease infinite;
         border-radius: 6px;
       }
       @keyframes wb-sk {
-        0% { background-position: 100% 50%; }
+        0%   { background-position: 100% 50%; }
         100% { background-position: 0 50%; }
       }
-      .wb-metric {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid #27272a;
-        border-radius: 8px;
-        padding: 12px 14px;
-      }
-      .wb-metric__label {
-        font-size: 10px;
-        font-weight: 700;
-        color: #71717a;
-        letter-spacing: 0.05em;
-        margin-bottom: 6px;
-      }
-      .wb-metric__value {
-        font-size: 15px;
-        font-weight: 700;
-        color: #fafafa;
-        font-family: "Vazirmatn";
-        direction: rtl;
-        unicode-bidi: plaintext;
-      }
-      .wb-metric__sub {
-        font-size: 10.5px;
-        color: #a1a1aa;
-        margin-top: 4px;
-      }
-      .wb-countdown--warn .wb-metric__value {
-        color: #fbbf24;
-      }
-      .wb-countdown--over .wb-metric__value {
-        color: #f87171;
-      }
-      .wb-countdown--ok .wb-metric__value {
-        color: #34d399;
-      }
-      .wb-progress {
-        height: 6px;
-        background: #18181b;
-        border-radius: 3px;
-        overflow: hidden;
-        margin-top: 10px;
-      }
-      .wb-progress__fill {
-        height: 100%;
-        background: linear-gradient(90deg, #10b981, #34d399);
-        transition: width 0.4s ease;
-      }
+
+      /* Report preview -------------------------------------------------- */
       .wb-report-preview {
         background: #000000;
         border: 1px solid #27272a;
-        border-radius: 8px;
-        padding: 16px 18px;
+        border-radius: 10px;
+        padding: 18px 20px;
         font-family: "Vazirmatn";
         font-size: 12.5px;
         line-height: 2;
@@ -424,66 +501,162 @@
         text-align: right;
       }
 
-      /* ---- کارت خلاصه‌ی هفته (بازطراحی) ---- */
+      /* Scorecard (کارنامه) -------------------------------------------- */
       .wb-scorecard {
-        background: linear-gradient(180deg, #0b0b0e 0%, #09090b 100%);
+        background:
+          radial-gradient(700px 200px at 100% -30%, rgba(255,255,255,0.06), transparent 60%),
+          linear-gradient(180deg, #0d0d11 0%, #08080a 100%);
         border: 1px solid #27272a;
-        border-radius: 12px;
-        padding: 18px 20px;
+        border-radius: 16px;
+        padding: 20px 22px;
         position: relative;
         overflow: hidden;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease;
       }
       .wb-scorecard::before {
         content: "";
         position: absolute;
         inset: 0;
-        background: radial-gradient(600px 120px at 90% -20%, rgba(255,255,255,0.05), transparent 60%);
+        background: radial-gradient(500px 140px at 10% 120%, rgba(59,130,246,0.06), transparent 60%);
         pointer-events: none;
       }
-      .wb-scorecard--done  { border-color: rgba(16,185,129,0.35);  }
-      .wb-scorecard--warn  { border-color: rgba(245,158,11,0.35);  }
-      .wb-scorecard--error { border-color: rgba(239,68,68,0.35);   }
+      .wb-scorecard--done  {
+        border-color: rgba(16,185,129,0.4);
+        box-shadow: 0 0 0 1px rgba(16,185,129,0.08), 0 20px 40px -24px rgba(16,185,129,0.4);
+      }
+      .wb-scorecard--warn  {
+        border-color: rgba(245,158,11,0.4);
+        box-shadow: 0 0 0 1px rgba(245,158,11,0.08), 0 20px 40px -24px rgba(245,158,11,0.35);
+      }
+      .wb-scorecard--error {
+        border-color: rgba(239,68,68,0.4);
+        box-shadow: 0 0 0 1px rgba(239,68,68,0.08), 0 20px 40px -24px rgba(239,68,68,0.35);
+      }
 
       .wb-score-num {
         font-family: "Vazirmatn", monospace;
-        font-size: 56px;
-        font-weight: 700;
+        font-size: 64px;
+        font-weight: 800;
         line-height: 1;
         color: #fafafa;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.03em;
+        background: linear-gradient(180deg, #ffffff 0%, #a1a1aa 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
       }
-      .wb-score-num--done { color: #34d399; }
-      .wb-score-num--warn { color: #fbbf24; }
-      .wb-score-num--err  { color: #f87171; }
+      .wb-score-num--done {
+        background: linear-gradient(180deg, #6ee7b7 0%, #10b981 100%);
+        -webkit-background-clip: text; background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .wb-score-num--warn {
+        background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 100%);
+        -webkit-background-clip: text; background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .wb-score-num--err  {
+        background: linear-gradient(180deg, #fca5a5 0%, #ef4444 100%);
+        -webkit-background-clip: text; background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
-      /* ---- کارت‌های متریک شماره‌ای (بازطراحی) ---- */
+      /* Progress -------------------------------------------------------- */
+      .wb-progress {
+        height: 8px;
+        background: #131317;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-top: 14px;
+        position: relative;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+      }
+      .wb-progress__fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #34d399 60%, #6ee7b7);
+        transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 999px;
+        box-shadow: 0 0 12px rgba(16,185,129,0.5);
+        position: relative;
+      }
+      .wb-progress__fill::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+        animation: wb-shine 2.2s linear infinite;
+      }
+      @keyframes wb-shine {
+        0%   { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+      .wb-scorecard--warn  .wb-progress__fill { background: linear-gradient(90deg, #f59e0b, #fbbf24); box-shadow: 0 0 12px rgba(245,158,11,0.45); }
+      .wb-scorecard--error .wb-progress__fill { background: linear-gradient(90deg, #ef4444, #f87171); box-shadow: 0 0 12px rgba(239,68,68,0.45); }
+      .wb-progress__ticks {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 20%;
+        pointer-events: none;
+      }
+      .wb-progress__ticks span {
+        width: 1px;
+        background: rgba(255,255,255,0.15);
+      }
+
+      /* Stat cards ------------------------------------------------------ */
       .wb-stat {
-        background: #09090b;
+        background:
+          radial-gradient(400px 120px at 100% -30%, rgba(255,255,255,0.025), transparent 60%),
+          linear-gradient(180deg, #0b0b0e 0%, #08080a 100%);
         border: 1px solid #27272a;
-        border-radius: 12px;
+        border-radius: 14px;
         padding: 14px 16px;
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
         position: relative;
-        transition: border-color 0.15s;
+        transition: border-color 0.2s ease, transform 0.2s ease;
+        overflow: hidden;
       }
-      .wb-stat:hover { border-color: #3f3f46; }
+      .wb-stat::before {
+        content: "";
+        position: absolute;
+        top: 0; right: 0; bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, currentColor, transparent);
+        opacity: 0.35;
+        color: #3f3f46;
+      }
+      .wb-stat:hover {
+        border-color: #3f3f46;
+        transform: translateY(-1px);
+      }
       .wb-stat__head {
         display: flex;
         align-items: center;
         gap: 8px;
         color: #71717a;
         font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 0.08em;
+        font-weight: 800;
+        letter-spacing: 0.1em;
         text-transform: uppercase;
       }
-      .wb-stat__head svg { width: 12px; height: 12px; opacity: 0.7; }
+      .wb-stat__head svg {
+        width: 14px;
+        height: 14px;
+        opacity: 0.9;
+        padding: 2px;
+        background: rgba(255,255,255,0.03);
+        border: 1px solid #27272a;
+        border-radius: 6px;
+        box-sizing: content-box;
+      }
       .wb-stat__value {
         font-family: "Vazirmatn";
-        font-size: 16px;
-        font-weight: 700;
+        font-size: 17px;
+        font-weight: 800;
         color: #fafafa;
         line-height: 1.2;
         direction: rtl;
@@ -492,79 +665,94 @@
       .wb-stat__sub {
         font-size: 10.5px;
         color: #a1a1aa;
-        line-height: 1.4;
+        line-height: 1.5;
       }
+      .wb-stat--accent-emerald { color: #10b981; }
       .wb-stat--accent-emerald .wb-stat__head { color: #10b981; }
+      .wb-stat--accent-emerald .wb-stat__head svg { color: #10b981; border-color: rgba(16,185,129,0.25); background: rgba(16,185,129,0.08); }
+      .wb-stat--accent-amber   { color: #f59e0b; }
       .wb-stat--accent-amber   .wb-stat__head { color: #f59e0b; }
+      .wb-stat--accent-amber   .wb-stat__head svg { color: #f59e0b; border-color: rgba(245,158,11,0.25); background: rgba(245,158,11,0.08); }
+      .wb-stat--accent-rose    { color: #f43f5e; }
       .wb-stat--accent-rose    .wb-stat__head { color: #f43f5e; }
+      .wb-stat--accent-rose    .wb-stat__head svg { color: #f43f5e; border-color: rgba(244,63,94,0.25); background: rgba(244,63,94,0.08); }
+      .wb-stat--accent-sky     { color: #38bdf8; }
       .wb-stat--accent-sky     .wb-stat__head { color: #38bdf8; }
+      .wb-stat--accent-sky     .wb-stat__head svg { color: #38bdf8; border-color: rgba(56,189,248,0.25); background: rgba(56,189,248,0.08); }
 
       .wb-stat--countdown.is-warn .wb-stat__value { color: #fbbf24; }
       .wb-stat--countdown.is-over .wb-stat__value { color: #f87171; }
       .wb-stat--countdown.is-ok   .wb-stat__value { color: #34d399; }
 
-      /* ---- انتخاب‌گر شروع هفته ---- */
+      /* Day picker (segmented) ----------------------------------------- */
       .wb-daypick {
         display: flex;
-        gap: 6px;
+        gap: 4px;
         flex-wrap: wrap;
+        padding: 3px;
+        background: #060608;
+        border: 1px solid #1f1f23;
+        border-radius: 10px;
       }
       .wb-daypick__btn {
         appearance: none;
-        background: #09090b;
-        border: 1px solid #27272a;
-        color: #d4d4d8;
-        border-radius: 8px;
-        padding: 8px 10px;
+        background: transparent;
+        border: 1px solid transparent;
+        color: #a1a1aa;
+        border-radius: 7px;
+        padding: 6px 10px;
         font-size: 11px;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
         display: flex;
         flex-direction: column;
         align-items: center;
-        min-width: 62px;
-        line-height: 1.35;
-        transition: all 0.15s;
+        min-width: 58px;
+        line-height: 1.3;
+        transition: all 0.15s ease;
       }
-      .wb-daypick__btn:hover {
-        border-color: #52525b;
-        color: #fff;
+      .wb-daypick__btn:hover:not(.is-active) {
+        color: #f4f4f5;
+        background: rgba(255,255,255,0.03);
       }
       .wb-daypick__btn small {
-        font-size: 9.5px;
-        color: #71717a;
+        font-size: 9px;
+        color: #52525b;
         font-weight: 500;
         margin-top: 2px;
         font-family: "Vazirmatn";
         direction: rtl;
       }
       .wb-daypick__btn.is-active {
-        background: #fff;
+        background: linear-gradient(180deg, #ffffff, #e4e4e7);
         color: #09090b;
-        border-color: #fff;
+        border-color: transparent;
+        box-shadow: 0 4px 12px -4px rgba(255,255,255,0.25);
       }
       .wb-daypick__btn.is-active small { color: #52525b; }
 
-      /* ---- دکمه‌ی «باز کردن ۳ وبلاگ» ---- */
+      /* Open-all button ------------------------------------------------- */
       .wb-openall {
         appearance: none;
-        background: #18181b;
-        border: 1px solid #3f3f46;
+        background: linear-gradient(180deg, #1c1c22, #131318);
+        border: 1px solid #2e2e35;
         color: #e4e4e7;
         border-radius: 8px;
         padding: 7px 12px;
         font-size: 11px;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        transition: all 0.15s;
+        transition: all 0.15s ease;
       }
       .wb-openall:hover:not(:disabled) {
-        background: #fff;
+        background: linear-gradient(180deg, #ffffff, #e4e4e7);
         color: #09090b;
-        border-color: #fff;
+        border-color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px -4px rgba(255,255,255,0.2);
       }
       .wb-openall:disabled {
         opacity: 0.4;
@@ -572,26 +760,187 @@
       }
       .wb-openall svg { width: 12px; height: 12px; }
 
-      /* دکمه‌ی کپی سریع روی کارنامه (بدون مودال) */
+      /* Quick-copy on scorecard ---------------------------------------- */
       .wb-quickcopy {
         appearance: none;
-        background: transparent;
+        background: rgba(255,255,255,0.02);
         border: 1px solid #27272a;
         color: #d4d4d8;
         border-radius: 8px;
-        padding: 7px 12px;
-        font-size: 11px;
-        font-weight: 600;
+        padding: 8px 14px;
+        font-size: 11.5px;
+        font-weight: 700;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
-        gap: 6px;
-        transition: all 0.15s;
+        gap: 7px;
+        transition: all 0.15s ease;
       }
       .wb-quickcopy:hover {
-        border-color: #52525b;
-        color: #fff;
-        background: rgba(255,255,255,0.03);
+        border-color: rgba(16,185,129,0.5);
+        color: #34d399;
+        background: rgba(16,185,129,0.06);
+      }
+
+      /* Site card head ------------------------------------------------- */
+      .wb-sitehead {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .wb-favicon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #1a1a1f, #0d0d10);
+        border: 1px solid #27272a;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 800;
+        color: #a1a1aa;
+        font-family: "Vazirmatn";
+        flex-shrink: 0;
+        overflow: hidden;
+        position: relative;
+      }
+      .wb-favicon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .wb-favicon--done   { border-color: rgba(16,185,129,0.4); color: #34d399; }
+      .wb-favicon--partial{ border-color: rgba(245,158,11,0.4); color: #fbbf24; }
+      .wb-favicon--error  { border-color: rgba(239,68,68,0.4);  color: #f87171; }
+      .wb-mini-progress {
+        height: 4px;
+        width: 80px;
+        background: #131317;
+        border-radius: 999px;
+        overflow: hidden;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .wb-mini-progress__fill {
+        height: 100%;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 999px;
+      }
+      .wb-mini-progress__fill--done    { background: linear-gradient(90deg, #10b981, #34d399); }
+      .wb-mini-progress__fill--partial { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+      .wb-mini-progress__fill--none    { background: #3f3f46; }
+      .wb-mini-progress__fill--error   { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+      /* Empty / error site states -------------------------------------- */
+      .wb-empty-state {
+        border: 1px dashed #27272a;
+        background: rgba(255,255,255,0.015);
+        color: #a1a1aa;
+        border-radius: 10px;
+        padding: 18px;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .wb-empty-state svg { width: 24px; height: 24px; opacity: 0.4; }
+      .wb-error-state {
+        border: 1px solid rgba(239,68,68,0.35);
+        background: linear-gradient(180deg, rgba(239,68,68,0.08), rgba(239,68,68,0.02));
+        color: #fecaca;
+        border-radius: 10px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .wb-error-state__left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 12px;
+      }
+      .wb-error-state__left svg {
+        width: 18px; height: 18px;
+        color: #f87171;
+        flex-shrink: 0;
+      }
+      .wb-retry-btn {
+        appearance: none;
+        background: rgba(239,68,68,0.12);
+        border: 1px solid rgba(239,68,68,0.35);
+        color: #fecaca;
+        border-radius: 7px;
+        padding: 6px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .wb-retry-btn:hover {
+        background: rgba(239,68,68,0.2);
+        color: #ffffff;
+      }
+
+      /* Panel header ---------------------------------------------------- */
+      .wb-panel-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 24px;
+        padding-bottom: 22px;
+        border-bottom: 1px solid #27272a;
+        position: relative;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .wb-panel-header::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: -1px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(16,185,129,0.4), transparent);
+      }
+      .wb-title-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(16,185,129,0.04));
+        border: 1px solid rgba(16,185,129,0.28);
+        color: #34d399;
+        flex-shrink: 0;
+      }
+      .wb-title-badge svg { width: 20px; height: 20px; }
+
+      /* Fade / stagger on load ----------------------------------------- */
+      @keyframes wb-slide-in {
+        from { opacity: 0; transform: translateY(8px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      #wb-list > .wb-card {
+        animation: wb-slide-in 0.35s ease both;
+      }
+      #wb-list > .wb-card:nth-child(1) { animation-delay: 0.02s; }
+      #wb-list > .wb-card:nth-child(2) { animation-delay: 0.08s; }
+      #wb-list > .wb-card:nth-child(3) { animation-delay: 0.14s; }
+      #wb-list > .wb-card:nth-child(4) { animation-delay: 0.2s; }
+      #wb-list > .wb-card:nth-child(5) { animation-delay: 0.26s; }
+
+      /* Focus rings for accessibility ---------------------------------- */
+      .wb-openall:focus-visible,
+      .wb-quickcopy:focus-visible,
+      .wb-daypick__btn:focus-visible,
+      .wb-retry-btn:focus-visible {
+        outline: 2px solid #38bdf8;
+        outline-offset: 2px;
       }
     </style>
   </head>
@@ -1626,18 +1975,24 @@
           class="view-panel flex flex-col h-full hidden fade-in px-8 py-8 max-w-[1400px] mx-auto w-full"
         >
           <!-- سرصفحه -->
-          <div
-            class="flex items-end justify-between mb-6 pb-6 border-b border-brand-border"
-          >
-            <div>
-              <h2 class="text-2xl font-bold text-white tracking-tight">
-                وضعیت وبلاگ‌ها
-              </h2>
-              <p class="text-xs text-brand-muted mt-2">
-                هر هفته ۵ وبلاگ چک می‌شود و برای هر کدام باید ۳ مقاله‌ی جدید منتشر شده باشد. متن گزارش کارفرما هم از همین‌جا کپی می‌شود.
-              </p>
+          <div class="wb-panel-header">
+            <div class="flex items-start gap-3 min-w-0">
+              <div class="wb-title-badge" aria-hidden="true">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2M7 8h6M7 12h6M7 16h4"/>
+                </svg>
+              </div>
+              <div class="min-w-0">
+                <h2 class="text-2xl font-bold text-white tracking-tight flex items-center gap-2 flex-wrap">
+                  <span>وضعیت وبلاگ‌ها</span>
+                  <span class="text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-2 py-0.5 rounded-full">هفتگی</span>
+                </h2>
+                <p class="text-xs text-brand-muted mt-2 leading-relaxed max-w-2xl">
+                  هر هفته ۵ وبلاگ چک می‌شود و برای هر کدام باید ۳ مقاله‌ی جدید منتشر شده باشد. متن گزارش کارفرما هم از همین‌جا کپی می‌شود.
+                </p>
+              </div>
             </div>
-            <div class="flex gap-2 items-center">
+            <div class="flex gap-2 items-center flex-wrap">
               <span
                 id="wb-offline"
                 class="wb-chip wb-chip--error hidden"
@@ -1647,7 +2002,7 @@
               <button
                 id="wb-btn-refresh"
                 onclick="wbRefresh()"
-                class="btn-subtle px-4 py-2 rounded-md text-xs font-medium border border-brand-border flex items-center gap-2"
+                class="btn-subtle px-4 py-2 rounded-lg text-xs font-semibold border border-brand-border flex items-center gap-2 hover:border-zinc-500 transition-all"
                 title="دوباره از هر ۵ سایت مقاله بگیر"
               >
                 <svg
@@ -1668,7 +2023,7 @@
               <button
                 id="wb-btn-report"
                 onclick="wbOpenReport()"
-                class="btn-primary px-5 py-2 rounded-md text-xs flex items-center gap-2"
+                class="btn-primary px-5 py-2 rounded-lg text-xs font-bold flex items-center gap-2 shadow-lg shadow-white/5"
               >
                 <svg
                   class="w-4 h-4"
@@ -1689,12 +2044,15 @@
           </div>
 
           <!-- خط بالای پنل: کارت خلاصه + متریک‌ها -->
-          <div class="grid grid-cols-12 gap-4 mb-6">
+          <div class="grid grid-cols-12 gap-4 mb-4">
             <!-- خلاصه‌ی کارنامه -->
-            <div id="wb-scorecard" class="wb-scorecard col-span-12 lg:col-span-5">
+            <div id="wb-scorecard" class="wb-scorecard col-span-12 lg:col-span-7">
               <div class="flex items-center justify-between mb-4 relative z-10">
-                <div class="text-[11px] font-bold text-zinc-400 tracking-widest">
-                  کارنامه‌ی این هفته
+                <div class="flex items-center gap-2 text-[11px] font-bold text-zinc-400 tracking-[0.15em] uppercase">
+                  <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <span>کارنامه‌ی این هفته</span>
                 </div>
                 <span
                   id="wb-week-chip"
@@ -1705,15 +2063,18 @@
               <div class="flex items-baseline gap-3 relative z-10">
                 <span id="wb-done" class="wb-score-num">–</span>
                 <div class="flex items-baseline gap-1 text-zinc-500">
-                  <span class="text-2xl font-mono">/</span>
-                  <span class="text-2xl font-mono text-zinc-400">۵</span>
+                  <span class="text-3xl font-mono">/</span>
+                  <span class="text-3xl font-mono text-zinc-400">۵</span>
                 </div>
                 <span class="text-xs text-zinc-500 mr-2 mb-1">وبلاگ کامل</span>
               </div>
               <div class="wb-progress">
                 <div id="wb-progress-fill" class="wb-progress__fill" style="width: 0%"></div>
+                <div class="wb-progress__ticks" aria-hidden="true">
+                  <span></span><span></span><span></span><span></span>
+                </div>
               </div>
-              <p id="wb-caption" class="text-xs text-brand-muted mt-3 relative z-10">
+              <p id="wb-caption" class="text-xs text-brand-muted mt-3 relative z-10 leading-relaxed">
                 دارم هر ۵ وبلاگ رو ورق می‌زنم…
               </p>
               <div id="wb-quickcopy-wrap" class="mt-4 relative z-10 hidden">
@@ -1732,7 +2093,7 @@
             </div>
 
             <!-- شروع هفته + انتخاب‌گر ۴روزه -->
-            <div class="wb-stat wb-stat--accent-sky col-span-12 sm:col-span-6 lg:col-span-3">
+            <div class="wb-stat wb-stat--accent-sky col-span-12 sm:col-span-6 lg:col-span-5">
               <div class="wb-stat__head">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -1743,9 +2104,12 @@
               <div id="wb-week-start-sub" class="wb-stat__sub">—</div>
               <div class="wb-daypick mt-2" id="wb-daypick" role="group" aria-label="انتخاب شروع هفته"></div>
             </div>
+          </div>
 
+          <!-- ردیف دوم: سه کارت متریک هم‌اندازه -->
+          <div class="grid grid-cols-12 gap-4 mb-6">
             <!-- تاریخ گزارش بعدی -->
-            <div id="wb-countdown-box" class="wb-stat wb-stat--countdown wb-stat--accent-amber col-span-12 sm:col-span-6 lg:col-span-2">
+            <div id="wb-countdown-box" class="wb-stat wb-stat--countdown wb-stat--accent-amber col-span-12 sm:col-span-6 lg:col-span-4">
               <div class="wb-stat__head">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -1757,7 +2121,7 @@
             </div>
 
             <!-- آخرین گزارش -->
-            <div class="wb-stat col-span-12 sm:col-span-6 lg:col-span-1">
+            <div class="wb-stat wb-stat--accent-rose col-span-12 sm:col-span-6 lg:col-span-4">
               <div class="wb-stat__head">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -1769,7 +2133,7 @@
             </div>
 
             <!-- تازه‌های هفته -->
-            <div class="wb-stat wb-stat--accent-emerald col-span-12 sm:col-span-6 lg:col-span-1">
+            <div class="wb-stat wb-stat--accent-emerald col-span-12 sm:col-span-6 lg:col-span-4">
               <div class="wb-stat__head">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
@@ -1783,8 +2147,12 @@
 
           <!-- لیست وبلاگ‌ها -->
           <div id="wb-list" class="grid grid-cols-1 gap-5" aria-live="polite" aria-busy="true">
-            <div class="wb-card p-5 text-xs text-brand-muted">
-              دارم لیست وبلاگ‌ها را باز می‌کنم…
+            <div class="wb-card p-6 flex items-center gap-3 text-xs text-brand-muted">
+              <svg class="w-4 h-4 animate-spin text-emerald-400" fill="none" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
+                <path fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+              <span>دارم لیست وبلاگ‌ها را باز می‌کنم…</span>
             </div>
           </div>
         </div>
@@ -4874,10 +5242,12 @@
         function skeletonCard(site) {
           const wrap = document.createElement("div");
           wrap.className = "wb-card p-5";
+          const initial = (site.key || site.domain[0] || "?").toString().toUpperCase();
           wrap.innerHTML =
-            `<div class="flex items-center justify-between mb-3">
-              <bdi dir="ltr" class="text-sm font-mono font-bold text-white">${site.domain}</bdi>
-              <span class="wb-chip wb-chip--loading">در حال دریافت…</span>
+            `<div class="wb-sitehead mb-4">
+              <span class="wb-favicon" aria-hidden="true">${initial}</span>
+              <bdi dir="ltr" class="text-sm font-mono font-bold text-white truncate">${site.domain}</bdi>
+              <span class="wb-chip wb-chip--loading mr-auto">در حال دریافت…</span>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               ${Array.from({length:3}).map(()=>
@@ -4908,7 +5278,11 @@
 
           const setEmpty = () => {
             media.classList.add("wb-post__media--empty");
-            media.innerHTML = "<span>بدون عکس</span>";
+            media.innerHTML =
+              `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"/>
+              </svg>
+              <span>بدون عکس</span>`;
           };
 
           if (post.image) {
@@ -4924,19 +5298,28 @@
             setEmpty();
           }
 
+          // Badge «تازه» روی عکس
+          if (fresh) {
+            const badge = document.createElement("span");
+            badge.className = "wb-post__badge";
+            badge.textContent = "تازه";
+            badge.title = "این هفته منتشر شده";
+            media.appendChild(badge);
+          }
+
           const body = document.createElement("div");
           body.className = "wb-post__body";
 
           const dateEl = document.createElement("p");
           dateEl.className = "wb-post__date";
-          dateEl.textContent = jPretty(dt);
+          dateEl.innerHTML =
+            `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>`;
+          const dateText = document.createElement("span");
+          dateText.textContent = jPretty(dt);
+          dateEl.appendChild(dateText);
           dateEl.title = exactTitle(dt);
-          if (fresh) {
-            const dot = document.createElement("span");
-            dot.className = "wb-fresh-dot";
-            dot.title = "این هفته منتشر شده";
-            dateEl.appendChild(dot);
-          }
 
           const h4 = document.createElement("h4");
           h4.className = "wb-post__title";
@@ -4969,27 +5352,39 @@
 
           const wrap = document.createElement("div");
           wrap.className = "wb-card p-5";
+          if (st === "done")    wrap.classList.add("wb-card--done");
+          else if (st === "partial") wrap.classList.add("wb-card--partial");
+          else if (st === "error")   wrap.classList.add("wb-card--error");
 
           // head
           const head = document.createElement("div");
-          head.className = "flex items-center justify-between mb-1 flex-wrap gap-2";
+          head.className = "wb-sitehead mb-2";
 
-          const left = document.createElement("div");
-          left.className = "flex items-center gap-3 min-w-0";
-          const nameWrap = document.createElement("div");
-          nameWrap.className = "flex items-center gap-2 min-w-0";
-          const dot = document.createElement("span");
-          dot.className = "status-dot";
-          dot.classList.add(
-            st === "done" ? "status-ok"
-              : st === "partial" ? "status-warn"
-              : st === "error" ? "status-err"
-              : "status-idle"
-          );
+          // Favicon (نشان‌گر رنگی وضعیت)
+          const fav = document.createElement("span");
+          fav.className = "wb-favicon";
+          if (st === "done")    fav.classList.add("wb-favicon--done");
+          else if (st === "partial") fav.classList.add("wb-favicon--partial");
+          else if (st === "error")   fav.classList.add("wb-favicon--error");
+          const initial = (site.key || site.domain[0] || "?").toString().toUpperCase();
+          fav.textContent = initial;
+          // اگر تونستیم favicon واقعی رو بذاریم، تلاش می‌کنیم و روی خطا برمی‌گردیم به حرف اول
+          try {
+            const favImg = document.createElement("img");
+            favImg.src = `https://www.google.com/s2/favicons?domain=${site.domain}&sz=64`;
+            favImg.alt = "";
+            favImg.loading = "lazy";
+            favImg.decoding = "async";
+            favImg.referrerPolicy = "no-referrer";
+            favImg.addEventListener("load", () => { fav.textContent = ""; fav.appendChild(favImg); }, { once: true });
+            favImg.addEventListener("error", () => favImg.remove(), { once: true });
+          } catch (_) {}
+
           const dname = document.createElement("bdi");
           dname.dir = "ltr";
           dname.className = "text-sm font-mono font-bold text-white truncate";
           dname.textContent = site.domain;
+
           const openA = document.createElement("a");
           openA.href = `https://${site.domain}`;
           openA.target = "_blank";
@@ -5001,11 +5396,11 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
             </svg>`;
-          nameWrap.append(dot, dname, openA);
-          left.appendChild(nameWrap);
+
+          head.append(fav, dname, openA);
 
           const right = document.createElement("div");
-          right.className = "flex items-center gap-2 flex-wrap";
+          right.className = "flex items-center gap-2 flex-wrap mr-auto";
           right.appendChild(chipFor(st, n));
 
           if (slot.fromCache && slot.fetchedAt) {
@@ -5022,12 +5417,33 @@
             right.appendChild(stale);
           }
 
-          const cnt = document.createElement("span");
-          cnt.className = "text-[11px] font-mono text-zinc-500";
-          cnt.textContent = st === "error"
-            ? "— / ۳"
-            : `${fa(Math.min(n, GOAL))} از ${fa(GOAL)} این هفته`;
-          right.appendChild(cnt);
+          // Mini progress + شمارنده
+          if (st !== "error") {
+            const progWrap = document.createElement("div");
+            progWrap.className = "flex items-center gap-2";
+            const bar = document.createElement("span");
+            bar.className = "wb-mini-progress";
+            const barFill = document.createElement("span");
+            barFill.className = "wb-mini-progress__fill";
+            if (st === "done") barFill.classList.add("wb-mini-progress__fill--done");
+            else if (st === "partial") barFill.classList.add("wb-mini-progress__fill--partial");
+            else barFill.classList.add("wb-mini-progress__fill--none");
+            const pct = Math.max(0, Math.min(100, (Math.min(n, GOAL) / GOAL) * 100));
+            barFill.style.width = pct + "%";
+            bar.appendChild(barFill);
+
+            const cnt = document.createElement("span");
+            cnt.className = "text-[11px] font-mono text-zinc-400 tabular-nums";
+            cnt.textContent = `${fa(Math.min(n, GOAL))}/${fa(GOAL)}`;
+            cnt.title = `${fa(Math.min(n, GOAL))} از ${fa(GOAL)} مقاله‌ی این هفته`;
+            progWrap.append(bar, cnt);
+            right.appendChild(progWrap);
+          } else {
+            const cnt = document.createElement("span");
+            cnt.className = "text-[11px] font-mono text-zinc-500";
+            cnt.textContent = "— / ۳";
+            right.appendChild(cnt);
+          }
 
           // دکمه‌ی «باز کردن ۳ وبلاگ در تب جدید»
           const openAll = document.createElement("button");
@@ -5048,12 +5464,12 @@
           }
           right.appendChild(openAll);
 
-          head.append(left, right);
+          head.appendChild(right);
           wrap.appendChild(head);
 
           // sub / آخرین مطلب
           const sub = document.createElement("p");
-          sub.className = "text-[11px] text-brand-muted mt-1 mb-4";
+          sub.className = "text-[11px] text-brand-muted mt-1 mb-4 pr-1";
           if (st === "error") {
             sub.textContent = slot.error === "timeout"
               ? "طولانی شد و نگرفتمش. دکمه‌ی «دوباره بگیر» بالا رو بزن."
@@ -5077,26 +5493,35 @@
           // پست‌ها
           if (st === "error") {
             const notice = document.createElement("div");
-            notice.className =
-              "border border-red-900/50 bg-red-950/20 text-red-300 text-[11px] rounded-md px-3 py-3 flex items-center justify-between gap-3";
-            const p = document.createElement("span");
-            p.textContent = "دریافت مقاله‌ها ناموفق بود.";
+            notice.className = "wb-error-state";
+            notice.innerHTML =
+              `<div class="wb-error-state__left">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <span>دریافت مقاله‌ها ناموفق بود.</span>
+              </div>`;
             const retry = document.createElement("button");
             retry.type = "button";
-            retry.className =
-              "btn-subtle px-3 py-1.5 rounded-md text-[11px] border border-red-900/50";
-            retry.textContent = "یه بار دیگه بگیر";
+            retry.className = "wb-retry-btn";
+            retry.innerHTML =
+              `<svg style="display:inline-block;vertical-align:-2px;margin-left:4px" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>یه بار دیگه بگیر`;
             retry.addEventListener("click", () => loadAll());
-            notice.append(p, retry);
+            notice.appendChild(retry);
             wrap.appendChild(notice);
             return wrap;
           }
 
           if (!slot.posts.length) {
             const notice = document.createElement("div");
-            notice.className =
-              "border border-brand-border bg-white/[0.02] text-[11px] text-zinc-400 rounded-md px-3 py-3";
-            notice.textContent = "دفترش خالیه؛ هنوز هیچ مقاله‌ای منتشر نشده.";
+            notice.className = "wb-empty-state";
+            notice.innerHTML =
+              `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>
+              </svg>
+              <span>دفترش خالیه؛ هنوز هیچ مقاله‌ای منتشر نشده.</span>`;
             wrap.appendChild(notice);
             return wrap;
           }

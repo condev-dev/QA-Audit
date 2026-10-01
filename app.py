@@ -13,7 +13,8 @@ import zipfile
 import subprocess
 import threading
 from datetime import datetime
-from flask import Flask, render_template, jsonify, request
+from functools import wraps
+from flask import Flask, render_template, jsonify, request, Response
 
 import qa_core as qc
 
@@ -23,7 +24,74 @@ URLS_FILE = qc.URLS_FILE
 ARCHIVE_DIR = os.path.join(BASE_DIR, 'archives')
 LOG_FILE = os.path.join(REPORTS_DIR, '_last_run.log')
 
+# ---------------------------------------------------------------- احراز هویت ساده
+# برای دسترسی از بیرون (Cloudflare Tunnel) لازمه. از متغیرهای محیطی خونده می‌شود.
+# اگر تنظیم نشده باشند، auth غیرفعال است (حالت لوکال قبلی).
+QA_USER = os.environ.get('QA_USER', '')
+QA_PASS = os.environ.get('QA_PASS', '')
+AUTH_ENABLED = bool(QA_USER and QA_PASS)
+
+
+def _check_auth(u, p):
+    return u == QA_USER and p == QA_PASS
+
+
+def _auth_required():
+    return Response('ورود لازم است.\n', 401,
+                    {'WWW-Authenticate': 'Basic realm="QA Audit"'})
+
+
+def require_auth(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not AUTH_ENABLED:
+            return f(*args, **kwargs)
+        a = request.authorization
+        if not a or not _check_auth(a.username, a.password):
+            return _auth_required()
+        return f(*args, **kwargs)
+    return wrapper
+
+
 app = Flask(__name__, template_folder=os.path.join(BASE_DIR, 'templates'))
+
+
+# ---------------------------------------------------------------- gzip + close
+# بدون این دو تا، localtunnel روی موبایل گاهی پاسخ /urls (۹۳KB) رو ناقص برمیگردونه
+# و جدول اصلی خالی میمونه. gzip پاسخ رو خیلی کوچیک میکنه و Connection: close
+# باگ keep-alive سمت تونل رو هم خنثی میکنه. روی لوکال بیضرره.
+import gzip as _gzip
+import io as _io
+
+@app.after_request
+def _tunnel_safe(resp):
+    try:
+        resp.headers['Connection'] = 'close'
+        if (resp.status_code < 300 and resp.direct_passthrough is False
+                and not resp.headers.get('Content-Encoding')
+                and (resp.mimetype or '').split(';')[0] in (
+                    'application/json', 'text/html', 'text/plain',
+                    'text/css', 'application/javascript', 'text/javascript')):
+            data = resp.get_data()
+            if data and len(data) > 1024 and 'gzip' in request.headers.get('Accept-Encoding', ''):
+                buf = _io.BytesIO()
+                with _gzip.GzipFile(fileobj=buf, mode='wb', compresslevel=6) as g:
+                    g.write(data)
+                resp.set_data(buf.getvalue())
+                resp.headers['Content-Encoding'] = 'gzip'
+                resp.headers['Content-Length'] = str(len(resp.get_data()))
+                resp.headers['Vary'] = 'Accept-Encoding'
+    except Exception:
+        pass
+    return resp
+
+
+@app.before_request
+def _global_auth():
+    if AUTH_ENABLED:
+        a = request.authorization
+        if not a or not _check_auth(a.username, a.password):
+            return _auth_required()
 
 TOOLS = {
     'health': {'script': 'check_health.py', 'output': 'health_report.csv', 'name': 'سلامت سرور'},
@@ -350,4 +418,8 @@ def get_results(tool_id):
 
 if __name__ == '__main__':
     # debug=False: در حالت debug سرور دوبار بالا می‌آید و اسکن‌ها ممکن است دوبار اجرا شوند
-    app.run(debug=False, host='127.0.0.1', port=5000, threaded=True)
+    # host پیش‌فرض 127.0.0.1 (فقط لوکال). برای Cloudflare Tunnel:
+    #   $env:QA_HOST='0.0.0.0'; $env:QA_USER='name'; $env:QA_PASS='secret'; python app.py
+    host = os.environ.get('QA_HOST', '127.0.0.1')
+    port = int(os.environ.get('QA_PORT', '5000'))
+    app.run(debug=False, host=host, port=port, threaded=True)
