@@ -7,7 +7,9 @@ check_description.py - بررسی <meta name="description">
 قانون‌ها:
   - صفحه غیرواقعی (چالش/محدودیت/ریدایرکت مشکوک/خطا) → «بررسی نشد: ...» (هرگز سالم الکی نمی‌شود)
   - تگ ناموجود یا خالی → خطا
-  - کمتر از ۱۰ کاراکتر، کاراکتر خراب، متن به‌هم‌ریخته، کلمات تستی، بدون حرف فارسی → خطا
+  - کمتر از ۱۰ کاراکتر، کاراکتر خراب، متن به‌هم‌ریخته → خطا
+  - بدون حرف فارسی → «نیاز به بررسی دستی» (هم‌خوان با title؛ قبلاً خطا بود و باعث
+    ناسازگاری با تایتل روی سایت‌های عربی/انگلیسی می‌شد)
   - اگر چند تگ description با متن متفاوت باشد → «نیاز به بررسی دستی»
 """
 import sys
@@ -18,7 +20,8 @@ TOOL_ID = 'description'
 CSV_NAME = 'description_report.csv'
 FIELDS = ['URL', 'Description Text', 'Status']
 
-MIN_LEN = 10
+# از qa_core یکدست خوانده می‌شود؛ متغیر محلی فقط برای سازگاری عقب‌رو.
+MIN_LEN = qc.DESC_MIN_LEN
 
 
 def analyze(ctx, snap):
@@ -33,15 +36,15 @@ def analyze(ctx, snap):
         return {'Description Text': '-', 'Status': 'خطا: تگ description خالی است'}
     # Description متن طبیعی‌تری است؛ کلمات «تست»، «سایت» یا «خانه» در آن
     # به‌تنهایی ایراد نیستند و نباید با فهرست ممنوعه Title رد شوند.
+    # persian_level='warn' تا هم‌خوان با تایتل عمل کند (قبلاً err بود).
     status = check_title.validate(first, what='توضیحات', min_len=MIN_LEN,
-                                  check_bad_words=False, check_exact=False)
+                                  check_bad_words=False, check_exact=False,
+                                  persian_level='warn')
     distinct = {d for d in descs if d}
     if status == 'سالم' and len(distinct) > 1:
         return {'Description Text': first,
                 'Status': f'نیاز به بررسی دستی: {len(distinct)} تگ description متفاوت در صفحه'}
-    note = qc.redirect_note(snap)
-    if status == 'سالم' and note:
-        status = 'سالم' + note
+    # redirect_note در qc.run_analyze به صورت یکدست روی همه چک‌ها اعمال می‌شود.
     return {'Description Text': first, 'Status': status}
 
 

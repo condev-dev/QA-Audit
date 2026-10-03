@@ -22,7 +22,9 @@ TOOL_ID = 'title'
 CSV_NAME = 'title_report.csv'
 FIELDS = ['URL', 'Title Text', 'Status']
 
-MIN_LEN = 3
+# این‌ها از qa_core استفاده می‌شوند تا یکدست با بقیه چک‌ها باشد.
+# برای سازگاری عقب‌رو، MIN_LEN و REQUIRE_PERSIAN نگه داشته شده‌اند.
+MIN_LEN = qc.TITLE_MIN_LEN
 REQUIRE_PERSIAN = True
 
 BAD_WORDS_EN = ['test', 'testing', 'untitled', 'lorem ipsum', 'just another wordpress site',
@@ -34,15 +36,23 @@ BAD_WORDS_FA = ['تست', 'آزمایشی', 'دسته بندی نشده', 'دس�
 FA_LETTER = '\u0600-\u06FF'
 
 
-def validate(text, what='تایتل', min_len=MIN_LEN, require_persian=REQUIRE_PERSIAN,
-             check_bad_words=True, check_exact=True):
-    """اعتبارسنجی Title؛ پارامترها اجازه می‌دهند Description قوانین جدا داشته باشد."""
+def validate(text, what='تایتل', min_len=None, require_persian=REQUIRE_PERSIAN,
+             check_bad_words=True, check_exact=True, persian_level='warn'):
+    """اعتبارسنجی Title؛ پارامترها اجازه می‌دهند Description قوانین جدا داشته باشد.
+
+    persian_level='warn' → نداشتن حرف فارسی «نیاز به بررسی دستی» می‌شود (پیش‌فرض).
+    persian_level='err'  → خطای قطعی. در این پروژه هیچ چکی از این استفاده نمی‌کند؛
+                           نگه داشته شده تا در آینده قابل تنظیم باشد.
+    min_len=None → از qc.TITLE_MIN_LEN استفاده می‌شود.
+    """
+    if min_len is None:
+        min_len = qc.TITLE_MIN_LEN
     t = qc.clean_text(text)
     if not t:
         return f'خطا: {what} خالی/ناموجود'
     if '\ufffd' in t:
         return 'خطا: کاراکتر خراب (�) در متن'
-    if qc.mojibake_count(t) >= 2:
+    if qc.mojibake_count(t) >= qc.MOJIBAKE_MIN_STRICT:
         return 'خطا: متن به‌هم‌ریخته (مشکل انکودینگ)'
     if len(t) < min_len:
         return f'خطا: {what} بسیار کوتاه ({len(t)} کاراکتر)'
@@ -59,6 +69,8 @@ def validate(text, what='تایتل', min_len=MIN_LEN, require_persian=REQUIRE_P
             if re.search(rf'(?<![{FA_LETTER}]){re.escape(wn)}(?![{FA_LETTER}])', n):
                 return f'خطا: کلمه ممنوعه ({w})'
     if require_persian and not qc.has_persian(t):
+        if persian_level == 'err':
+            return f'خطا: {what} حروف فارسی ندارد'
         # نارنجی (نیاز به بررسی دستی) نه قرمز؛ چون ممکن است فقط برند لاتین باشد
         return f'نیاز به بررسی دستی: {what} حروف فارسی ندارد («{t[:60]}»)'
     return 'سالم'
@@ -70,9 +82,7 @@ def analyze(ctx, snap):
     if gate:
         return {'Title Text': title or '-', 'Status': gate}
     status = validate(title)
-    note = qc.redirect_note(snap)
-    if status == 'سالم' and note:
-        status = 'سالم' + note
+    # redirect_note در qc.run_analyze به صورت یکدست روی همه چک‌ها اعمال می‌شود.
     return {'Title Text': title or '-', 'Status': status}
 
 

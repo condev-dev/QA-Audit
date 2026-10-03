@@ -58,6 +58,18 @@ NAV_TIMEOUT_MS = int(os.environ.get('QA_NAV_TIMEOUT_MS') or NAV_TIMEOUT_MS)
 CHALLENGE_WAIT_S = int(os.environ.get('QA_CHALLENGE_WAIT_S') or CHALLENGE_WAIT_S)
 # سقف زمان دانلود تصویرهای هر سایت (og/آیکون) تا یک سایت خراب، کل اسکن را کند نکند
 ASSET_BUDGET_S = float(os.environ.get('QA_ASSET_BUDGET_S') or 30)
+
+# ----------------------------------------------------------------- آستانه‌های یکدست چک‌ها
+# این‌ها در یک جا جمع شده‌اند تا هر چک از همین مقادیر استفاده کند و پیام‌ها هم‌خوان بمانند.
+# قبلاً هر چک آستانه‌ی خودش را داشت (title.MIN_LEN، description.MIN_LEN، source.MOJIBAKE_MIN و ...)
+# و همین باعث می‌شد روی یک متن یکی خطا بدهد و یکی سالم؛ این حالت دیگر پیش نمی‌آید.
+TITLE_MIN_LEN       = 3     # کمتر از این = خطای کوتاه بودن تایتل
+DESC_MIN_LEN        = 10    # کمتر از این = خطای کوتاه بودن توضیحات
+MOJIBAKE_MIN_STRICT = 2     # روی متن‌های کوتاه (تایتل، توضیحات)
+MOJIBAKE_MIN_PAGE   = 3     # روی کل متن قابل‌مشاهده‌ی صفحه (source_encoding)
+SSL_DAYS_WARN       = 7     # اگر <= این عدد باقی مانده بود، نیاز به بررسی دستی
+ASSET_MAX_TRY       = 6     # OG: حداکثر تعداد تصویر برای تلاش
+FAVICON_MAX_TRY     = 10    # Favicon: معمولاً چند لینک متعارف تعریف می‌شود
 CONNECTIVITY_URLS = [
     'https://www.google.com/generate_204',
     'https://www.cloudflare.com/cdn-cgi/trace',
@@ -356,19 +368,30 @@ _COLLECT_JS = r"""
     .map(l => ({rel: (l.getAttribute('rel') || '').toLowerCase().trim(), href: abs(l.getAttribute('href'))}));
   const mr = document.querySelector('meta[http-equiv="refresh" i]');
   const b = document.body;
+  // تعداد h1 (برای تشخیص صفحه‌های بدون عنوان اصلی که مشکل SEO دارند)
+  const h1_count = qa('h1').length;
+  // تعداد لینک‌های مخلوط (مثلا http://img روی صفحه https). این علامت SEO/UX بدی است
+  // و مرورگرها گاهی asset را بلاک می‌کنند. فقط روی صفحه‌های https اهمیت دارد.
+  let mixed_count = 0;
+  if (location.protocol === 'https:') {
+    mixed_count = qa('img[src^="http:"], script[src^="http:"], link[rel="stylesheet"][href^="http:"], iframe[src^="http:"]').length;
+  }
   return {
     descs: descs, og: og1.concat(og2).map(abs), icons: icons,
     canon: canon.map(abs), ogurl: ogurl.map(abs), ogtags: ogtags,
     refresh: mr ? (mr.getAttribute('content') || '') : '',
     text: b ? (b.innerText || '') : '',
     elements: b ? b.getElementsByTagName('*').length : 0,
-    charset: document.characterSet || ''
+    charset: document.characterSet || '',
+    h1_count: h1_count,
+    mixed_count: mixed_count
   };
 }
 """
 
 _EMPTY_INFO = {'title': '', 'html': '', 'descs': [], 'og': [], 'icons': [], 'refresh': '',
-               'canon': [], 'ogurl': [], 'ogtags': 0, 'text': '', 'elements': 0, 'charset': ''}
+               'canon': [], 'ogurl': [], 'ogtags': 0, 'text': '', 'elements': 0, 'charset': '',
+               'h1_count': 0, 'mixed_count': 0}
 
 
 def _collect(page):
@@ -453,7 +476,10 @@ def _new_snap(url):
     s.update({'url': url, 'loaded': False, 'final_url': '', 'status': None, 'content_type': '',
               'raw': None, 'load_s': None, 'attempts': 1, 'error_kind': None, 'error_code': '',
               'error_msg': '', 'slow': False, 'filter': False, 'challenge': False,
-              'block_msg': '', 'page_error': '', 'foreign': ''})
+              'block_msg': '', 'page_error': '', 'foreign': '',
+              # اطلاعات گواهی SSL از پاسخ navigation اصلی. check_ssl از همین‌ها می‌خواند
+              # تا نیازی به باز کردن دوباره‌ی صفحه با Playwright مجزا نباشد.
+              'ssl_valid_to': None, 'ssl_subject': '', 'ssl_issuer': '', 'ssl_protocol': ''})
     return s
 
 
@@ -508,6 +534,18 @@ def _load_once(ctx, url):
             snap['status'] = r.status
             try:
                 snap['content_type'] = r.headers.get('content-type', '') or ''
+            except Exception:
+                pass
+            # اطلاعات گواهی SSL — روی پاسخ navigation اصلی. اگر HTTP بود None می‌شود
+            # و check_ssl همان را «بدون SSL» گزارش می‌کند.
+            try:
+                sec_fn = getattr(r, 'security_details', None)
+                sec = sec_fn() if callable(sec_fn) else sec_fn
+                if sec:
+                    snap['ssl_valid_to'] = sec.get('validTo') or sec.get('valid_to')
+                    snap['ssl_subject'] = sec.get('subjectName') or ''
+                    snap['ssl_issuer'] = sec.get('issuer') or ''
+                    snap['ssl_protocol'] = sec.get('protocol') or ''
             except Exception:
                 pass
             try:
@@ -606,6 +644,15 @@ def _detect(snap):
     elif not text_raw and (snap.get('elements') or 0) < 5:
         snap['page_error'] = 'صفحه سفید (بدنه خالی)'
 
+    # هشدارهای سطح پایین صفحه (نه خطا، فقط اطلاع‌رسانی روی سلامت).
+    # این‌ها فقط زمانی اعمال می‌شوند که صفحه واقعاً باز شده و خطای بزرگ‌تری ندارد.
+    snap['page_warns'] = []
+    if not snap.get('page_error') and not snap.get('block_msg') and not snap.get('foreign'):
+        # بررسی تعداد تگ h1 طبق درخواست کاربر غیرفعال شد (هیچ هشدار/خطایی بابت h1 ثبت نشود).
+        mixed = snap.get('mixed_count') or 0
+        if mixed > 0 and (snap.get('final_url') or '').lower().startswith('https://'):
+            snap['page_warns'].append(f'{mixed} منبع HTTP (mixed content) روی صفحه HTTPS')
+
 
 def page_verdict(snap):
     fin = snap.get('final_url') or snap['url']
@@ -686,6 +733,12 @@ def page_verdict(snap):
         return V('warn', f'نیاز به بررسی دستی: ریدایرکت به دامنه دیگر ({fh})', fin)
     if fin.lower().startswith('http://'):
         return V('warn', 'نیاز به بررسی دستی: سایت به http بدون SSL منتقل شد', fin)
+    # صفحه از نظر لود و احراز اصالت سالم است؛ اگر هشدار سطح پایین داشت (مثلاً
+    # mixed content)، به صورت «نیاز به بررسی دستی» گزارش می‌شود — content_ok هنوز
+    # True می‌ماند تا چک‌های محتوایی (تایتل/توضیحات/...) بتوانند روی همین صفحه کار کنند.
+    warns = snap.get('page_warns') or []
+    if warns:
+        return V('warn', 'نیاز به بررسی دستی: ' + ' + '.join(warns), fin, content_ok=True)
     return V('ok', 'سالم', '', True)
 
 
@@ -892,6 +945,14 @@ def run_analyze(module, ctx, snap):
     except Exception as e:
         traceback.print_exc()
         row['Status'] = f'بررسی نشد: خطای داخلی اسکریپت ({type(e).__name__})'
+    # اعمال یکدست redirect_note روی هر چکی که Status سالم برگردانده و خودش این را
+    # قبلاً اضافه نکرده. این باعث می‌شود همه چک‌ها (نه فقط title/description)
+    # به کاربر بگویند «این داده از دامنه‌ی ریدایرکت‌شده‌ی X آمده».
+    note = redirect_note(snap)
+    if note:
+        st = (row.get('Status') or '')
+        if st.startswith('سالم') and '[از ' not in st:
+            row['Status'] = st + note
     row = {k: safe_csv(v) for k, v in row.items()}
     row['URL'] = snap['url']
     return row

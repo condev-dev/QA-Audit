@@ -6,7 +6,7 @@ import qa_core as qc
 TOOL_ID = 'og_image'
 CSV_NAME = 'og_image_report.csv'
 FIELDS = ['URL', 'Image URL', 'Status']
-MAX_TRY = 6
+MAX_TRY = qc.ASSET_MAX_TRY
 
 def _candidates(snap):
     out, seen = [], set()
@@ -26,7 +26,7 @@ def analyze(ctx, snap):
         return {'Image URL': img, 'Status': gate}
         
     if not cands:
-        return {'Image URL': '-', 'Status': 'خطا: صفحه تگ og:image ندارد'}
+        return {'Image URL': '-', 'Status': 'خطا: تگ og:image وجود ندارد'}
 
     referer = snap.get('final_url') or snap['url']
     deadline = time.time() + qc.ASSET_BUDGET_S

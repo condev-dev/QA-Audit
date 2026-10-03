@@ -4149,7 +4149,7 @@
         <button
           id="drawer-btn-tabs"
           class="flex-1 btn-primary py-2.5 rounded-md flex items-center justify-center gap-2 text-xs font-bold"
-          title="باز کردن تب‌ها (سایت + robots + ایندکس گوگل)"
+          title="باز کردن تب‌ها (سایت + robots + sitemap + ایندکس گوگل)"
         >
           <svg
             class="w-4 h-4"
@@ -4251,6 +4251,65 @@
         ssl: "SSL",
         sitemap: "سایت‌مپ",
       };
+
+      // کوتاه‌سازی متن وضعیت فقط برای نمایش خلاصه‌ی زیر دامنه در جدول اصلی.
+      // داده‌های اصلی (Drawer، گزارش‌ها، CSV) دست‌نخورده باقی می‌مانند.
+      function shortenStatus(s) {
+        if (!s) return "";
+        let x = String(s);
+        // حذف پیشوندهای تکراری
+        x = x.replace(/^(خطا|نیاز به بررسی دستی|بررسی نشد|هشدار)\s*[:\-—]\s*/u, "");
+        // حذف اسم فیلدهای تکراری مثل «توضیحات»/«تایتل» از ابتدای جمله
+        x = x.replace(/^(توضیحات|تایتل|عنوان)\s+/u, "");
+        // ساده‌سازی جمله‌های پرتکرار
+        x = x
+          .replace(/\s*تگ description\s+وجود ندارد/u, "description ندارد")
+          .replace(/\s*تگ description\s+خالی است/u, "description خالی")
+          .replace(/(\d+)\s*تگ description\s+متفاوت(?:\s+در صفحه)?/u, "$1 description متفاوت")
+          .replace(/تگ og:image\s+وجود ندارد/u, "og:image ندارد")
+          .replace(/تصویر OG\s*[—\-]\s*فایل خالی است\s*\(0\s*بایت\)/u, "تصویر OG خالی (0B)")
+          .replace(/تصویر OG\s*[—\-]\s*/u, "تصویر OG: ")
+          .replace(/تگ canonical\s+وجود ندارد/u, "canonical ندارد")
+          .replace(/تگ canonical\s+وجود دارد اما href ندارد یا خالی است/u, "canonical بدون href")
+          .replace(/فرمت آدرس canonical نامعتبر است/u, "فرمت canonical نامعتبر")
+          .replace(/canonical به دامنه دیگر اشاره می‌کند/u, "canonical به دامنه دیگر")
+          .replace(/canonical به مسیر دیگر صفحه اشاره می‌کند/u, "canonical به مسیر دیگر")
+          .replace(/اتصال فاقد SSL \(پروتکل HTTP\)/u, "بدون SSL (HTTP)")
+          .replace(/گواهی SSL منقضی شده/u, "SSL منقضی شده")
+          .replace(/انقضای نزدیک گواهی SSL/u, "SSL نزدیک انقضا")
+          .replace(/اطلاعات گواهی SSL دریافت نشد/u, "گواهی SSL دریافت نشد")
+          .replace(/فایل robots\.txt وجود ندارد/u, "robots.txt ندارد")
+          .replace(/فایل robots\.txt خالی است/u, "robots.txt خالی")
+          .replace(/در robots\.txt خط Sitemap تعریف نشده/u, "robots بدون Sitemap")
+          .replace(/robots\.txt باز نمی‌شود/u, "robots.txt باز نشد")
+          .replace(/robots\.txt باز نشد \(خطای شبکه\/تایم‌اوت\)/u, "robots.txt تایم‌اوت")
+          .replace(/دسترسی به robots\.txt محدود است/u, "robots.txt محدود")
+          .replace(/خطای سرور در دریافت robots\.txt/u, "خطای سرور robots")
+          .replace(/به‌جای robots\.txt یک صفحه HTML برگشت/u, "robots پاسخ HTML داد")
+          .replace(/لینک sitemap در robots وجود ندارد/u, "robots بدون لینک sitemap")
+          .replace(/لینک sitemap باز نمی‌شود/u, "sitemap باز نشد")
+          .replace(/لینک sitemap باز نشد \(خطای شبکه\/تایم‌اوت\)/u, "sitemap تایم‌اوت")
+          .replace(/دسترسی به sitemap محدود است/u, "sitemap محدود")
+          .replace(/به‌جای sitemap یک صفحه HTML برگشت/u, "sitemap پاسخ HTML داد")
+          .replace(/محتوای sitemap معتبر XML نیست/u, "sitemap XML نامعتبر")
+          .replace(/آدرس سایت نامعتبر است/u, "آدرس نامعتبر")
+          .replace(/کاراکتر خراب \(�\) در متن/u, "کاراکتر خراب (�)")
+          .replace(/کاراکتر خراب \(�\) در سورس\s*[—\-]\s*(\d+)\s*مورد/u, "کاراکتر خراب (�) ×$1")
+          .replace(/متن به‌هم‌ریخته \(mojibake\)\s*[—\-]\s*(\d+)\s*مورد/u, "mojibake ×$1")
+          .replace(/متن به‌هم‌ریخته\s*\(مشکل انکودینگ\)/u, "mojibake")
+          .replace(/بایت نامعتبر UTF-8 در سورس خام\s*[—\-]\s*(\d+)\s*مورد/u, "UTF-8 نامعتبر ×$1")
+          .replace(/سورس خام دریافت نشد؛ فقط DOM بررسی شد/u, "سورس خام نیامد (فقط DOM)")
+          .replace(/فوآیکون تعریف نشده و favicon\.ico هم نیست/u, "فوآیکون نیست")
+          .replace(/فوآیکون\s*[—\-]\s*/u, "فوآیکون: ")
+          .replace(/خالی\/ناموجود/u, "خالی/ناموجود")
+          .replace(/بسیار کوتاه\s*\((\d+)\s*کاراکتر\)/u, "خیلی کوتاه ($1)")
+          .replace(/پیش‌فرض\/نامناسب/u, "پیش‌فرض/نامناسب")
+          .replace(/کلمه ممنوعه/u, "کلمه ممنوعه")
+          .replace(/حروف فارسی ندارد\s*\(«[^»]*»\)/u, "بدون حروف فارسی")
+          .replace(/حروف فارسی ندارد/u, "بدون حروف فارسی");
+        // پاک‌سازی فاصله‌های اضافی
+        return x.replace(/\s{2,}/g, " ").trim();
+      }
 
       function setFavicon(color) {
         try {
@@ -4737,11 +4796,34 @@
           const isDone = doneUrls.includes(key);
           const originalIndex = window.fullDashboardData.indexOf(item);
           const d = item.details;
+          // اگر سلامت صفحه مشکل داشته یا skip شده، چک‌های محتوایی عملاً «بررسی نشد»ن.
+          // قبلاً اگر CSV یکی از این چک‌ها (مثلا SSL قدیمی) مستقل نتیجه می‌داد،
+          // ردیف ۸ تا نقطه قرمز می‌شد و چشمی گیج‌کننده بود. حالا به صورت یکدست
+          // نقطه‌ها رو خاکستری توخالی (skip) نشان می‌دهیم تا چشم بفهمد «این‌ها
+          // به‌خاطر مشکل سلامت صفحه بررسی نشده‌اند، نه خطای مستقل خودشان».
+          const healthLvl = d && d.health ? d.health.level : "idle";
+          const gatedByHealth = healthLvl === "err" || healthLvl === "skip";
           const matrixHtml = tools
-            .map(
-              (t) =>
-                `<div class="status-wrapper" title="${esc(TOOL_NAMES[t] + ": " + (d[t]?.status || ""))}"><div class="status-dot ${getDotClass(d[t]?.status)}"></div></div>`,
-            )
+            .map((t) => {
+              const toolLvl = d && d[t] ? d[t].level : "idle";
+              const toolStatus = d && d[t] ? d[t].status || "" : "";
+              // اعمال gating: فقط برای چک‌های محتوایی غیر از health و ssl.
+              // (ssl الان خودش از gate تبعیت می‌کند و اگر صفحه خراب باشد skip می‌دهد.)
+              let dotClass = getDotClass(toolStatus);
+              let dotTitle = TOOL_NAMES[t] + ": " + toolStatus;
+              if (
+                gatedByHealth &&
+                t !== "health" &&
+                toolLvl !== "err" &&
+                toolLvl !== "warn"
+              ) {
+                dotClass = "status-skip";
+                dotTitle =
+                  TOOL_NAMES[t] +
+                  ": بررسی نشد (به‌خاطر مشکل سلامت صفحه)";
+              }
+              return `<div class="status-wrapper" title="${esc(dotTitle)}"><div class="status-dot ${dotClass}"></div></div>`;
+            })
             .join("");
           const globalDot =
             {
@@ -4752,11 +4834,38 @@
               idle: "bg-zinc-700",
             }[item.overall] || "bg-zinc-700";
 
+          // خلاصه‌ی اولین ایراد مستقل برای نمایش زیر دامنه. این باعث می‌شود
+          // بدون باز کردن drawer بفهمی چی مشکل این سایت است.
+          // ترتیب اولویت‌ها: اول health (مهم‌ترین)، بعد چک‌های مستقل که با gating
+          // خاکستری نشده‌اند.
+          let summaryText = "";
+          let summaryColor = "";
+          if (gatedByHealth && d && d.health) {
+            summaryText = shortenStatus(d.health.status || "");
+            summaryColor =
+              healthLvl === "err" ? "text-status-err" : "text-zinc-400";
+          } else {
+            for (const t of tools) {
+              const lvl = d && d[t] ? d[t].level : "idle";
+              if (lvl === "err" || lvl === "warn") {
+                summaryText = shortenStatus(d[t].status || "");
+                summaryColor =
+                  lvl === "err" ? "text-status-err" : "text-status-warn";
+                summaryText = (lvl === "err" ? "⚠ " : "⚠ ") + summaryText;
+                break;
+              }
+            }
+          }
+          const summaryHtml = summaryText
+            ? `<span class="block truncate text-[11px] mt-0.5 ${summaryColor}" dir="rtl" title="${esc(summaryText)}">${esc(summaryText)}</span>`
+            : "";
+
           html += `
                     <div class="table-grid px-6 py-3.5 data-row cursor-pointer ${isDone ? "opacity-30 grayscale hover:opacity-100 hover:grayscale-0" : ""}" onclick="openDrawer(${originalIndex})">
                         <div class="flex justify-center"><div class="w-2 h-2 rounded-full ${globalDot}"></div></div>
                         <div class="overflow-hidden w-full text-left pl-2" dir="ltr">
                             <span class="font-mono text-[13px] text-zinc-200 block truncate">${esc(key)}</span>
+                            ${summaryHtml}
                         </div>
                         <div class="flex items-center justify-between px-2" dir="ltr">${matrixHtml}</div>
                         <div class="flex justify-end pr-2 d-only">
@@ -4795,9 +4904,15 @@
           const a = agg[id];
           let value = 0;
           let color = "";
+          // اولویت پیش‌فرض: err > warn > skip. ولی اگر تعداد زیادی skip داشته
+          // باشیم (مثلا VPN ناپایدار بوده و اکثر سایت‌ها بررسی نشده‌اند)، skip
+          // را به‌جای warn نمایش بده تا کاربر متوجه بشود که مشکل اصلی اینجاست.
           if (a.err) {
             value = a.err;
             color = "#ef4444";
+          } else if (a.skip >= 10 && a.skip > a.warn) {
+            value = a.skip;
+            color = "#a1a1aa";
           } else if (a.warn) {
             value = a.warn;
             color = "#f59e0b";
@@ -4838,13 +4953,21 @@
       }
 
       // text = متن ساده (escape می‌شود) ، html = محتوای ساخته‌شده توسط خود پنل
-      function createCardHtml(title, status, text, iconPath, html) {
+      // openUrl (اختیاری) = اگر پاس داده شود، دکمه‌ی کوچک «باز کن» در header کارت
+      // قرار می‌گیرد تا کاربر بدون کپی/پیست مستقیماً آن URL را در تب جدید باز کند.
+      function createCardHtml(title, status, text, iconPath, html, openUrl) {
         const lvl = levelOf(status);
         let body = "";
         if (html)
           body = `<div class="p-4 text-[13px] text-zinc-400 font-medium leading-relaxed break-words w-full text-right">${html}</div>`;
         else if (text && text !== "-")
           body = `<div class="p-4 text-[13px] text-zinc-400 font-medium leading-relaxed break-words w-full text-right" dir="auto">${esc(text)}</div>`;
+        const openBtn =
+          openUrl && /^https?:\/\//i.test(openUrl)
+            ? `<button type="button" onclick="event.stopPropagation(); window.open('${esc(openUrl)}','_blank')" class="btn-subtle shrink-0 w-6 h-6 rounded flex items-center justify-center border border-brand-border hover:text-white" title="باز کردن این لینک در تب جدید">
+                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+               </button>`
+            : "";
         return `
                 <div class="border border-brand-border rounded-md bg-white/[0.02] overflow-hidden text-right">
                     <div class="px-4 py-2.5 border-b border-brand-border flex justify-between items-start gap-3 bg-brand-panel">
@@ -4852,7 +4975,10 @@
                             <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${iconPath}"></path></svg>
                             <span class="font-bold text-zinc-200 text-xs">${esc(title)}</span>
                         </div>
-                        <span class="text-[10px] font-bold ${textClass(lvl)} text-left leading-relaxed">${esc(status)}</span>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <span class="text-[10px] font-bold ${textClass(lvl)} text-left leading-relaxed">${esc(status)}</span>
+                            ${openBtn}
+                        </div>
                     </div>
                     ${body}
                 </div>`;
@@ -5106,6 +5232,7 @@
             null,
             "M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z",
             ogHtml,
+            ogUrl,
           ) +
           createCardHtml(
             "فوآیکون (Favicon)",
@@ -5113,6 +5240,7 @@
             null,
             "M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z",
             favHtml,
+            favUrl,
           ) +
           createCardHtml(
             "کاراکترهای سورس",
@@ -5125,6 +5253,8 @@
             d.canonical.status,
             d.canonical.text,
             "M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1",
+            null,
+            safeHttpUrl(d.canonical.text),
           ) +
           createCardHtml(
             "وضعیت امنیتی (SSL)",
@@ -5154,9 +5284,28 @@
             .classList.remove("drawer-closed");
           document.getElementById("site-drawer").classList.add("drawer-open");
         }, 10);
+
+        // دکمه Back موبایل/مرورگر: یک state به history اضافه می‌کنیم
+        // تا با Back اول فقط Drawer بسته شود، نه خروج از صفحه.
+        try {
+          if (!window.__drawerHistoryActive) {
+            window.__drawerHistoryActive = true;
+            history.pushState({ __drawer: true }, "");
+          }
+        } catch (_) {}
       }
 
       function closeDrawer() {
+        // اگر state مربوط به Drawer روی stack است، با back برگرد تا
+        // تاریخچه مرورگر هم هم‌راستا بماند. popstate خودش DOM را خواهد بست.
+        if (window.__drawerHistoryActive && !window.__drawerClosingFromPop) {
+          window.__drawerHistoryActive = false;
+          try {
+            history.back();
+            return;
+          } catch (_) {}
+        }
+        window.__drawerHistoryActive = false;
         document.getElementById("site-drawer").classList.remove("drawer-open");
         document.getElementById("site-drawer").classList.add("drawer-closed");
         document
@@ -5170,13 +5319,47 @@
         );
       }
 
+      // وقتی کاربر Back مرورگر/موبایل را می‌زند (یا swipe-back روی گوشی‌های جدید)،
+      // اگر Drawer باز است فقط آن را ببند، نه اینکه از صفحه خارج شوی.
+      window.addEventListener("popstate", function () {
+        if (isDrawerOpen()) {
+          window.__drawerClosingFromPop = true;
+          window.__drawerHistoryActive = false;
+          try {
+            closeDrawer();
+          } finally {
+            window.__drawerClosingFromPop = false;
+          }
+        }
+      });
+
       function openCheckTabs(baseUrl) {
         try {
           const formatted = /^https?:\/\//i.test(baseUrl)
             ? baseUrl
             : "https://" + baseUrl;
           const domain = new URL(formatted).hostname.replace(/^www\./, "");
+
+          // لینک sitemap را از نتیجه‌ی چک sitemap همین سایت پیدا می‌کنیم.
+          // اگر چک انجام شده و لینک معتبر داشته باشیم، همان را باز می‌کنیم؛
+          // در غیر این صورت از این مرحله رد می‌شویم (تب خالی باز نمی‌شود).
+          let sitemapUrl = "";
+          try {
+            const key = normKey(formatted);
+            const item = (window.fullDashboardData || []).find(
+              (x) => normKey(x.formatted_url) === key,
+            );
+            const raw = item && item.details && item.details.sitemap
+              ? (item.details.sitemap.text || "").trim()
+              : "";
+            if (raw && /^https?:\/\//i.test(raw)) {
+              sitemapUrl = raw;
+            }
+          } catch (e) {}
+
+          // 1) خود سایت
           window.open(formatted, "_blank");
+          // 2) robots.txt
           setTimeout(
             () =>
               window.open(
@@ -5185,13 +5368,18 @@
               ),
             150,
           );
+          // 3) sitemap (فقط اگر پیدا شده باشد)
+          if (sitemapUrl) {
+            setTimeout(() => window.open(sitemapUrl, "_blank"), 300);
+          }
+          // 4) ایندکس گوگل
           setTimeout(
             () =>
               window.open(
                 `https://www.google.com/search?q=site:${encodeURIComponent(domain)}`,
                 "_blank",
               ),
-            300,
+            sitemapUrl ? 450 : 300,
           );
 
           const key = normKey(formatted);

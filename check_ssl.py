@@ -1,85 +1,76 @@
 # -*- coding: utf-8 -*-
-import sys
+"""
+check_ssl.py - بررسی گواهی SSL
+اجرای تنها:  python check_ssl.py
+خروجی:       reports/ssl_report.csv
+
+منطق جدید (پس از یکدست‌سازی):
+  - این چک دیگر یک Playwright مجزا بالا نمی‌آورد. اطلاعات گواهی را از همان اسنپ‌شات
+    مشترکی که qa_core برای کل سایت ساخته، می‌خواند (snap['ssl_valid_to'] و ...).
+  - اگر صفحه اصلی سالم نیست (DNS/offline/filter/foreign)، content_gate خروجی
+    «بررسی نشد» می‌دهد — هم‌خوان با بقیه چک‌ها.
+  - اگر سایت http بود (یعنی اصلاً SSL ندارد) خطای قطعی.
+  - اگر گواهی تاریخ انقضا ندارد (کم‌پیش‌آمد ولی ممکن) → سالم.
+  - اگر منقضی شده → خطا.
+  - اگر <= qc.SSL_DAYS_WARN روز باقی مانده → نیاز به بررسی دستی.
+  - در غیر این صورت → سالم.
+
+**مزیت نسبت به نسخه‌ی قدیمی:**
+  1. هر سایت دیگر دو بار باز نمی‌شود (نصف ترافیک).
+  2. وقتی health=err (مثلاً گواهی خراب) این چک هم err می‌دهد، نه سالم.
+  3. وقتی سایت ریدایرکت می‌شود، SSL همان دامنه‌ی نهایی را گزارش می‌کند، نه دامنه‌ی قدیمی.
+"""
 import datetime
-import threading
+import sys
 import qa_core as qc
 
 TOOL_ID = 'ssl'
 CSV_NAME = 'ssl_report.csv'
-# سوتی اینجا بود: SSL Status رو به Status تغییر دادم
 FIELDS = ['URL', 'Status', 'Details']
 
-class SSLChecker(threading.Thread):
-    def __init__(self, url):
-        super().__init__()
-        self.url = url
-        self.result = None
-
-    def run(self):
-        import asyncio
-        asyncio.set_event_loop(asyncio.new_event_loop())
-        
-        from playwright.sync_api import sync_playwright
-        try:
-            with sync_playwright() as p:
-                browser = p.chromium.launch(headless=True)
-                try:
-                    context = browser.new_context(ignore_https_errors=True)
-                    page = context.new_page()
-                    
-                    response = page.goto(self.url, timeout=15000, wait_until='commit')
-                    
-                    if not response:
-                        self.result = {'Status': 'بررسی نشد: خطا', 'Details': 'پاسخی از سمت سرور دریافت نشد'}
-                        return
-                        
-                    sec = response.security_details() if callable(response.security_details) else response.security_details
-                    
-                    if not sec:
-                        if self.url.startswith('http://'):
-                            self.result = {'Status': 'خطا: نامعتبر (Not Secure)', 'Details': 'اتصال فاقد SSL (پروتکل HTTP)'}
-                        else:
-                            self.result = {'Status': 'بررسی نشد: خطا', 'Details': 'اطلاعات گواهینامه یافت نشد'}
-                        return
-                        
-                    valid_to = sec.get('validTo') or sec.get('valid_to')
-                    
-                    if not valid_to:
-                        self.result = {'Status': 'سالم', 'Details': 'معتبر (بدون تاریخ محدود)'}
-                        return
-                        
-                    expire_date = datetime.datetime.fromtimestamp(valid_to)
-                    days_left = (expire_date - datetime.datetime.now()).days
-                    
-                    if days_left < 0:
-                        self.result = {'Status': 'خطا: منقضی شده', 'Details': f'{abs(days_left)} روز از انقضا گذشته'}
-                    elif days_left <= 7:
-                        self.result = {'Status': 'نیاز به بررسی دستی: انقضای نزدیک', 'Details': f'تنها {days_left} روز باقی‌مانده'}
-                    else:
-                        self.result = {'Status': 'سالم', 'Details': f'{days_left} روز اعتبار'}
-                        
-                finally:
-                    browser.close()
-        except Exception as e:
-            err_msg = str(e)
-            if "ERR_CERT" in err_msg:
-                self.result = {'Status': 'خطا: نامعتبر (Not Secure)', 'Details': 'گواهینامه ناشناس یا نامعتبر است'}
-            else:
-                self.result = {'Status': 'بررسی نشد: خطا', 'Details': f'دلیل: {err_msg[:40]}'}
 
 def analyze(ctx, snap):
-    url = snap.get('url')
-    if not url:
-        return {'Status': '-', 'Details': 'آدرس نامعتبر'}
-        
-    if not url.startswith('http'):
-        url = 'https://' + url
-        
-    checker = SSLChecker(url)
-    checker.start()
-    checker.join()
-    
-    return checker.result or {'Status': 'بررسی نشد: خطا', 'Details': 'خطای ناشناخته در پردازش'}
+    gate = qc.content_gate(snap)
+    if gate:
+        return {'Status': gate, 'Details': '-'}
+
+    fin = (snap.get('final_url') or snap.get('url') or '').lower()
+    # اگر سایت http است یا به http منتقل شده، SSL ندارد.
+    if fin.startswith('http://'):
+        return {'Status': 'خطا: اتصال فاقد SSL (پروتکل HTTP)',
+                'Details': 'سایت بدون گواهی سرو می‌شود'}
+
+    valid_to = snap.get('ssl_valid_to')
+    if valid_to is None:
+        # صفحه سالم است و https است ولی security_details برنگشته. این بیشتر در
+        # نسخه‌های خیلی قدیمی Playwright یا پاسخ‌های cached رخ می‌دهد؛ به کاربر
+        # می‌گوییم که باید دستی چک کند.
+        return {'Status': 'نیاز به بررسی دستی: اطلاعات گواهی SSL دریافت نشد',
+                'Details': 'در مرورگر، قفل آدرس‌بار را دستی باز کنید'}
+
+    try:
+        expire = datetime.datetime.fromtimestamp(float(valid_to))
+    except Exception:
+        return {'Status': 'سالم', 'Details': 'معتبر (بدون تاریخ محدود)'}
+
+    days_left = (expire - datetime.datetime.now()).days
+    issuer = snap.get('ssl_issuer') or ''
+    protocol = snap.get('ssl_protocol') or ''
+    tail = ''
+    if issuer:
+        tail = f' | صادرکننده: {qc.short(issuer, 50)}'
+    if protocol:
+        tail = f'{protocol}{tail}'
+
+    if days_left < 0:
+        return {'Status': 'خطا: گواهی SSL منقضی شده',
+                'Details': f'{abs(days_left)} روز از انقضا گذشته{(" | " + tail) if tail else ""}'}
+    if days_left <= qc.SSL_DAYS_WARN:
+        return {'Status': 'نیاز به بررسی دستی: انقضای نزدیک گواهی SSL',
+                'Details': f'تنها {days_left} روز باقی مانده{(" | " + tail) if tail else ""}'}
+    return {'Status': 'سالم',
+            'Details': f'{days_left} روز اعتبار{(" | " + tail) if tail else ""}'}
+
 
 if __name__ == '__main__':
     sys.exit(qc.run_checks([sys.modules[__name__]]))

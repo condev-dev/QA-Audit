@@ -19,7 +19,8 @@ import qa_core as qc
 TOOL_ID = 'favicon'
 CSV_NAME = 'favicon_report.csv'
 FIELDS = ['URL', 'Favicon URL', 'Status']
-MAX_TRY = 10  # همه لینک‌های متعارف صفحه را بررسی کن؛ تعدادشان معمولاً کم است.
+# از آستانه مشترک core (معمولاً سایت‌ها چند لینک آیکون متفاوت دارند).
+MAX_TRY = qc.FAVICON_MAX_TRY
 
 
 def _candidates(snap):
@@ -61,6 +62,14 @@ def analyze(ctx, snap):
 
     u0, _, r0 = results[0]
     if any(lv == 'warn' for _, lv, _ in results) and not any(lv == 'err' for _, lv, _ in results):
+        return {'Favicon URL': u0, 'Status': f'نیاز به بررسی دستی: {r0}'}
+    # اگر همه تلاش‌ها فقط به‌خاطر مشکل دسترسی شبکه از سمت ما خراب شدند
+    # (refused/dns/cert/قطع ارتباط) و خود صفحه سالم باز شده بود، به‌جای «خطا»
+    # به صورت «نیاز به بررسی دستی» گزارش بده — چون معمولاً آیکون در مرورگر کاربر
+    # کاملاً سالم لود می‌شود و این فقط یک اختلال موقت شبکه/بلاک asset است.
+    net_markers = ('در دسترس نیست', 'ارتباط قطع', 'ERR_CONNECTION', 'ERR_NAME', 'ERR_CERT',
+                   'refused', 'dns', 'cert')
+    if all(any(m in (reason or '') for m in net_markers) for _, _, reason in results):
         return {'Favicon URL': u0, 'Status': f'نیاز به بررسی دستی: {r0}'}
     if not declared:
         return {'Favicon URL': u0, 'Status': f'خطا: فوآیکون تعریف نشده و favicon.ico هم نیست ({r0})'}

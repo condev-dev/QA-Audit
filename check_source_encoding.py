@@ -16,7 +16,8 @@ import qa_core as qc
 TOOL_ID = 'source_encoding'
 CSV_NAME = 'source_encoding_report.csv'
 FIELDS = ['URL', 'Status', 'Details']
-MOJIBAKE_MIN = 3
+# از آستانه‌ی مشترک core استفاده می‌کند (برای یکدستی با check_title.validate).
+MOJIBAKE_MIN = qc.MOJIBAKE_MIN_PAGE
 
 
 def _context(s, idx, n=30):
