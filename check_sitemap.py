@@ -86,22 +86,25 @@ def _looks_like_xml(body_bytes, content_type=''):
     return False
 
 
-def _fetch(ctx, url, timeout_ms):
-    """درخواست سبک با همان context؛ خروجی: (status, body, content_type, err_kind)
+def _fetch_api(ctx, url, timeout_ms, referer=''):
+    """تلاش سبک با ctx.request.get؛ خروجی: (status, body, content_type, err_kind)
     err_kind: '' موفق، 'network' خطای شبکه/تایم‌اوت، 'bad_url' فرمت اشتباه"""
     if not url or not url.lower().startswith(('http://', 'https://')):
         return None, b'', '', 'bad_url'
     r = None
     try:
-        r = ctx.request.get(
-            url,
-            timeout=timeout_ms,
-            max_redirects=5,
-            headers={
-                'Accept': 'text/plain, application/xml, text/xml, */*;q=0.5',
-                'Accept-Language': 'fa-IR,fa;q=0.9,en-US;q=0.8,en;q=0.7',
-            },
-        )
+        headers = {
+            'Accept': 'text/plain, application/xml, text/xml, */*;q=0.5',
+            'Accept-Language': 'fa-IR,fa;q=0.9,en-US;q=0.8,en;q=0.7',
+            # بعضی CDN‌ها (کلودفلر/آروان) درخواست‌های ایزوله به /robots.txt را
+            # مثل bot می‌بینند و بلاک می‌کنند. UA مثل بقیه چک‌ها و Referer صفحه‌ی
+            # اصلی سایت باعث می‌شود درخواست «واقعی‌تر» دیده شود.
+            'User-Agent': ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+                           '(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'),
+        }
+        if referer:
+            headers['Referer'] = referer
+        r = ctx.request.get(url, timeout=timeout_ms, headers=headers)
         status = r.status
         try:
             body = r.body() or b''
@@ -122,6 +125,88 @@ def _fetch(ctx, url, timeout_ms):
                 pass
 
 
+def _fetch_page(ctx, url, timeout_ms, referer=''):
+    """fallback: باز کردن URL در یک تب واقعی مرورگر (برای وقتی که ctx.request
+    با تایم‌اوت/بلاک مواجه می‌شود — دقیقا مثل check_asset در qa_core).
+    """
+    if not url or not url.lower().startswith(('http://', 'https://')):
+        return None, b'', '', 'bad_url'
+    page = None
+    try:
+        page = ctx.new_page()
+        if referer:
+            try:
+                page.set_extra_http_headers({'Referer': referer})
+            except Exception:
+                pass
+        r = page.goto(url, timeout=timeout_ms, wait_until='domcontentloaded')
+        if r is None:
+            return None, b'', '', 'network'
+        status = r.status
+        try:
+            body = r.body() or b''
+        except Exception:
+            # اگر body در دسترس نبود، از خود صفحه بگیر
+            try:
+                body = (page.content() or '').encode('utf-8', errors='replace')
+            except Exception:
+                body = b''
+        try:
+            ctype = (r.headers.get('content-type', '') or '').split(';')[0].strip().lower()
+        except Exception:
+            ctype = ''
+        # اگر مرورگر robots.txt را داخل <pre> پیچیده (کروم این کار را می‌کند
+        # برای text/plain)، آن را unwrap کن.
+        low = body[:400].lstrip().lower()
+        if (low.startswith(b'<!doctype html') or low.startswith(b'<html')) and (
+                'xml' not in ctype and 'text/plain' not in ctype):
+            try:
+                txt = page.evaluate(
+                    "() => { const p = document.querySelector('pre'); "
+                    "return p ? p.innerText : (document.body ? document.body.innerText : ''); }"
+                )
+                if txt and isinstance(txt, str) and txt.strip():
+                    body = txt.encode('utf-8', errors='replace')
+                    # content_type را به text/plain تغییر بده تا validator بعدی گیج نشود
+                    if not ctype or 'html' in ctype:
+                        ctype = 'text/plain'
+            except Exception:
+                pass
+        return status, body, ctype, ''
+    except Exception:
+        return None, b'', '', 'network'
+    finally:
+        if page is not None:
+            try:
+                page.close()
+            except Exception:
+                pass
+
+
+def _fetch(ctx, url, timeout_ms, referer=''):
+    """ابتدا با API سبک، اگر خطای شبکه/بلاک شد با تب واقعی مرورگر (مثل check_asset).
+    خروجی مثل قبل: (status, body, content_type, err_kind).
+    """
+    status, body, ctype, err = _fetch_api(ctx, url, timeout_ms, referer=referer)
+    # شرط fallback: خطای شبکه/تایم‌اوت، یا کدهای ضدربات رایج (403/429/503)،
+    # یا 2xx ولی بدنه خالی (CDN بعضا body را روی درخواست غیر مرورگری خالی می‌کند).
+    api_body_empty = (status is not None and 200 <= status < 300 and not body)
+    needs_fallback = (
+        err == 'network'
+        or status is None
+        or status in (401, 403, 429, 451, 503)
+        or api_body_empty
+    )
+    if needs_fallback:
+        # تب واقعی را کمی سخاوتمندانه‌تر صبر کن (باز کردن یک page هزینه دارد)
+        page_timeout = max(timeout_ms, 20000)
+        st2, body2, ctype2, err2 = _fetch_page(ctx, url, page_timeout, referer=referer)
+        # اگر fallback موفق شد، همان را برگردان (status/body واقعی مرورگر)
+        if err2 == '' and st2 is not None:
+            return st2, body2, ctype2, ''
+    return status, body, ctype, err
+
+
 def analyze(ctx, snap):
     # مرحله ۱: اگر خود صفحه اصلی سالم نیست، چیزی چک نمی‌کنیم
     gate = qc.content_gate(snap)
@@ -134,9 +219,12 @@ def analyze(ctx, snap):
     if not p.scheme or not p.netloc:
         return {'Sitemap URL': '-', 'Status': 'بررسی نشد: آدرس سایت نامعتبر است'}
     robots_url = f'{p.scheme}://{p.netloc}/robots.txt'
+    # Referer = صفحه‌ی اصلی سایت (همان صفحه‌ای که با مرورگر کامل باز شد).
+    # این کار باعث می‌شود سایت‌های پشت CDN این درخواست را «ایزوله/ربات» نبینند.
+    page_referer = snap.get('final_url') or snap.get('url') or ''
 
     # مرحله ۲: robots.txt
-    status, body, ctype, err = _fetch(ctx, robots_url, ROBOTS_TIMEOUT_MS)
+    status, body, ctype, err = _fetch(ctx, robots_url, ROBOTS_TIMEOUT_MS, referer=page_referer)
     if err == 'network' or status is None:
         return {'Sitemap URL': robots_url,
                 'Status': 'نیاز به بررسی دستی: robots.txt باز نشد (خطای شبکه/تایم‌اوت)'}
@@ -177,7 +265,7 @@ def analyze(ctx, snap):
     tried = []
     for raw in sitemaps[:MAX_SITEMAPS]:
         s_url = raw if raw.lower().startswith(('http://', 'https://')) else urljoin(robots_url, raw)
-        st, sbody, sctype, serr = _fetch(ctx, s_url, SITEMAP_TIMEOUT_MS)
+        st, sbody, sctype, serr = _fetch(ctx, s_url, SITEMAP_TIMEOUT_MS, referer=page_referer)
         tried.append((s_url, st, sctype, serr, sbody))
         if serr == 'bad_url':
             continue
