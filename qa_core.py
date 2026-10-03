@@ -37,7 +37,7 @@ STOP_FILE = os.path.join(REPORTS_DIR, '_stop')
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
 # ترتیب اجرای چک‌ها. برای افزودن چک جدید: فایل check_<id>.py بسازید و id را اینجا اضافه کنید.
-ALL_TOOLS = ['health', 'title', 'description', 'og_image', 'source_encoding', 'favicon', 'canonical', 'ssl']
+ALL_TOOLS = ['health', 'title', 'description', 'og_image', 'source_encoding', 'favicon', 'canonical', 'ssl', 'sitemap']
 
 # ----------------------------------------------------------------- تنظیمات
 NAV_TIMEOUT_MS = 45000          # حداکثر زمان لود اولیه صفحه
@@ -955,8 +955,13 @@ def _is_network_suspect(snap):
     return snap.get('error_kind') in ('ssl_proto', 'network', 'timeout', 'other')
 
 # ----------------------------------------------------------------- اجرای کامل
-def run_checks(modules, urls=None):
-    """اجرای یک یا چند چک روی همه لینک‌ها؛ هر سایت فقط یک بار باز می‌شود."""
+def run_checks(modules, urls=None, append=False):
+    """اجرای یک یا چند چک روی همه لینک‌ها؛ هر سایت فقط یک بار باز می‌شود.
+
+    append=True یعنی حالت «ادامه»: CSV ها پاک نمی‌شوند و ردیف‌های جدید روی قبلی
+    نوشته می‌شوند (upsert). این مود برای وقتی است که اسکن قبلی وسط کار استپ شده
+    و کاربر دکمه «ادامه» را زده تا فقط سایت‌های باقی‌مانده بررسی شوند.
+    """
     from playwright.sync_api import sync_playwright
     setup_console()
     if os.path.exists(STOP_FILE):
@@ -964,8 +969,10 @@ def run_checks(modules, urls=None):
     urls = urls if urls is not None else load_urls()
     tools = [m.TOOL_ID for m in modules]
     prog = {'state': 'running', 'tools': tools, 'total': len(urls), 'done': 0,
-            'current_url': '', 'phase': 'شروع', 'started_at': _now(), 'finished_at': '',
-            'message': '', 'counts': {'ok': 0, 'err': 0, 'warn': 0, 'skip': 0}}
+            'current_url': '', 'phase': 'ادامه اسکن' if append else 'شروع',
+            'started_at': _now(), 'finished_at': '',
+            'message': '', 'counts': {'ok': 0, 'err': 0, 'warn': 0, 'skip': 0},
+            'resume': bool(append)}
     write_progress(prog)
 
     def finish(state, message):
@@ -985,10 +992,21 @@ def run_checks(modules, urls=None):
             if not wait_for_internet(ctx, 30):
                 finish('error', 'اتصال اینترنت/VPN برقرار نیست؛ اسکن شروع نشد و گزارش‌های قبلی دست نخوردند.')
                 return 2
-            for m in modules:
-                init_csv(m)
+            if append:
+                # حالت ادامه: فایل‌های CSV قبلی نگه داشته می‌شوند و ردیف جدید upsert می‌شود.
+                # اگر فایلی هنوز وجود نداشته (مثلا این چک قبلا اجرا نشده)، یک CSV خالی می‌سازیم
+                # تا upsert_row دچار خطا نشود و ساختار ستون‌ها درست باشد.
+                for m in modules:
+                    if not os.path.exists(csv_path(m)):
+                        init_csv(m)
+            else:
+                for m in modules:
+                    init_csv(m)
 
             suspects, filter_streak, cert_streak, cert_max = [], 0, 0, 0
+            # در حالت ادامه از upsert استفاده می‌کنیم تا اگر سایتی تکراری آمد
+            # (مثلا از دور دوم نیمه‌تمام قبلی) ردیف overwrite شود، نه duplicate.
+            write_row = upsert_row if append else append_row
             prog['phase'] = 'اسکن'
             for i, url in enumerate(urls):
                 if stop_requested():
@@ -1009,7 +1027,7 @@ def run_checks(modules, urls=None):
                 if snap.get('error_kind') == 'offline':
                     for m in modules:
                         for u in urls[i:]:
-                            append_row(m, {'URL': u, 'Status': 'بررسی نشد: اینترنت/VPN قطع بود'})
+                            write_row(m, {'URL': u, 'Status': 'بررسی نشد: اینترنت/VPN قطع بود'})
                     finish('error', f'اینترنت/VPN قطع شد و وصل نشد؛ اسکن در {i}/{len(urls)} متوقف شد. بعد از وصل شدن دوباره اجرا کنید.')
                     return 3
 
@@ -1017,14 +1035,14 @@ def run_checks(modules, urls=None):
                 if filter_streak >= 4:
                     for m in modules:
                         for u in urls[i + 1:]:
-                            append_row(m, {'URL': u, 'Status': 'بررسی نشد: VPN وصل نبود'})
+                            write_row(m, {'URL': u, 'Status': 'بررسی نشد: VPN وصل نبود'})
                     for m in modules:
-                        append_row(m, run_analyze(m, ctx, snap))
+                        write_row(m, run_analyze(m, ctx, snap))
                     finish('error', 'چند سایت پشت‌سرهم صفحه فیلترینگ دادند: VPN وصل نیست یا DNS نشت دارد. VPN را درست کنید و دوباره اجرا کنید.')
                     return 5
 
                 for m in modules:
-                    append_row(m, run_analyze(m, ctx, snap))
+                    write_row(m, run_analyze(m, ctx, snap))
                 prog['counts'][v['level']] = prog['counts'].get(v['level'], 0) + 1
                 if _is_network_suspect(snap):
                     suspects.append(url)
@@ -1059,7 +1077,8 @@ def run_checks(modules, urls=None):
             if skipped >= max(3, len(urls) // 10):
                 notes.append(f'{skipped} سایت «بررسی نشد» شدند؛ احتمالا VPN در آن بازه ناپایدار '
                              'بوده و باید دوباره بررسی شوند.')
-            finish('done', f'اسکن تمام شد: {len(urls)} سایت.' + (('  |  ' + '  |  '.join(notes)) if notes else ''))
+            finish('done', ('ادامه اسکن تمام شد: ' if append else 'اسکن تمام شد: ')
+                   + f'{len(urls)} سایت.' + (('  |  ' + '  |  '.join(notes)) if notes else ''))
             return 0
         except Exception as e:
             traceback.print_exc()

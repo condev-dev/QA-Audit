@@ -102,11 +102,12 @@ TOOLS = {
     'favicon': {'script': 'check_favicon.py', 'output': 'favicon_report.csv', 'name': 'فوآیکون'},
     'canonical': {'script': 'check_canonical.py', 'output': 'canonical_report.csv', 'name': 'تگ کانونی'},
     'ssl': {'script': 'check_ssl.py', 'output': 'ssl_report.csv', 'name': 'گواهینامه SSL'},
+    'sitemap': {'script': 'check_sitemap.py', 'output': 'sitemap_report.csv', 'name': 'سایت‌مپ'},
 }
 
 TEXT_FIELD = {'health': 'Details', 'title': 'Title Text', 'description': 'Description Text',
               'og_image': 'Image URL', 'source_encoding': 'Details', 'favicon': 'Favicon URL',
-              'canonical': 'Canonical URL', 'ssl': 'Details'}
+              'canonical': 'Canonical URL', 'ssl': 'Details', 'sitemap': 'Sitemap URL'}
 
 # ---------------------------------------------------------------- مدیریت اجرا (فقط یک اسکن همزمان)
 _job_lock = threading.Lock()
@@ -247,6 +248,67 @@ def run_all():
     return jsonify({'status': 'started'}) if ok else _busy_response()
 
 
+def _remaining_count():
+    """تعداد سایت‌هایی که در urls.txt هستند ولی در health_report.csv نیستند.
+
+    منطق stateless: هر چند بار استپ-ادامه شده باشد، هر سایتی که در CSV نیست = باقی‌مانده.
+    وقتی برمی‌گرداند:
+      total  = تعداد کل سایت‌های urls.txt
+      done   = تعدادی که در health_report.csv ثبت شده‌اند
+      remaining = total - done
+      can_resume = اگر 0 < remaining < total بود (نه خالی، نه کامل)
+    """
+    all_urls = []
+    seen = set()
+    for raw in read_raw_urls():
+        k = qc.normalize_url(raw)
+        if k and k not in seen:
+            seen.add(k)
+            all_urls.append(k)
+    total = len(all_urls)
+    done_keys = set()
+    health_path = os.path.join(REPORTS_DIR, 'health_report.csv')
+    if os.path.exists(health_path):
+        try:
+            with open(health_path, 'r', encoding='utf-8-sig') as f:
+                for row in csv.DictReader(f):
+                    k = qc.normalize_url((row or {}).get('URL', ''))
+                    if k:
+                        done_keys.add(k)
+        except Exception:
+            pass
+    done_in_urls = sum(1 for u in all_urls if u in done_keys)
+    remaining = max(0, total - done_in_urls)
+    can_resume = (total > 0) and (0 < remaining < total)
+    return {'total': total, 'done': done_in_urls,
+            'remaining': remaining, 'can_resume': can_resume}
+
+
+@app.route('/resume_status')
+def resume_status():
+    """وضعیت دکمه «ادامه» برای UI: چند سایت باقی‌مانده و قابل ادامه هست یا نه."""
+    return jsonify(_remaining_count())
+
+
+@app.route('/run_remaining', methods=['POST'])
+def run_remaining():
+    """ادامه اسکن قبلی: فقط سایت‌هایی که در CSV نیستند دوباره بررسی می‌شوند.
+
+    اگر چیزی برای ادامه نباشد (CSV خالی یا کامل)، خطای 400 برمی‌گرداند.
+    """
+    info = _remaining_count()
+    if info['total'] == 0:
+        return jsonify({'status': 'error', 'message': 'فایل urls.txt خالی است.'}), 400
+    if info['remaining'] == 0:
+        return jsonify({'status': 'error', 'message': 'چیزی برای ادامه نیست؛ همه سایت‌ها قبلا بررسی شده‌اند.'}), 400
+    if info['done'] == 0:
+        return jsonify({'status': 'error',
+                        'message': 'اسکن ناقصی ثبت نشده؛ از دکمه «اسکن همه» استفاده کنید.'}), 400
+    ok = _start([sys.executable, os.path.join(BASE_DIR, 'run_all.py'), '--resume'],
+                list(TOOLS), 'resume')
+    return jsonify({'status': 'started', 'remaining': info['remaining']}) if ok else _busy_response()
+
+
 @app.route('/stop', methods=['POST'])
 def stop():
     if not _running():
@@ -334,6 +396,13 @@ def progress():
     except Exception:
         pass
     prog['log_tail'] = tail
+    # اطلاعات دکمه «ادامه» را هم همین‌جا بفرست تا UI بدون poll جداگانه بتواند
+    # دکمه را به‌روز کند. در حال اجرا این‌ها معنی ندارند؛ UI خودش بر اساس running
+    # دکمه را خاموش می‌کند.
+    try:
+        prog['resume_info'] = _remaining_count()
+    except Exception:
+        prog['resume_info'] = {'total': 0, 'done': 0, 'remaining': 0, 'can_resume': False}
     return jsonify(prog)
 
 
