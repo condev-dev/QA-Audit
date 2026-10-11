@@ -46,7 +46,7 @@ Designed with **a real RTL layout, live scan progress, per-URL detail cards and 
 
 *URL table with status dots, live counters and the scan controls.*
 
-![Dashboard](https://raw.githubusercontent.com/condev-dev/QA-Audit/main/assets/Images/Panel-Demo.png)
+![Dashboard](assets/Images/Panel-Demo.png)
 
 ---
 
@@ -54,7 +54,7 @@ Designed with **a real RTL layout, live scan progress, per-URL detail cards and 
 
 *Per-check results table with status colors, tabs and search.*
 
-![Check Results](https://raw.githubusercontent.com/condev-dev/QA-Audit/main/assets/Images/Checks-Demo.png)
+![Check Results](assets/Images/Checks-Demo.png)
 
 ---
 
@@ -62,7 +62,7 @@ Designed with **a real RTL layout, live scan progress, per-URL detail cards and 
 
 *Every check for one URL inside a single drawer, with favicon and OG previews.*
 
-![URL Detail](https://raw.githubusercontent.com/condev-dev/QA-Audit/main/assets/Images/Drawer-Demo.png)
+![URL Detail](assets/Images/Drawer-Demo.png)
 
 ---
 
@@ -70,7 +70,7 @@ Designed with **a real RTL layout, live scan progress, per-URL detail cards and 
 
 *Add domains in bulk, reorder, filter and save the list.*
 
-![Link Management](https://raw.githubusercontent.com/condev-dev/QA-Audit/main/assets/Images/Settings-Demo.png)
+![Link Management](assets/Images/Settings-Demo.png)
 
 ---
 
@@ -78,7 +78,7 @@ Designed with **a real RTL layout, live scan progress, per-URL detail cards and 
 
 *Pull clean, de-duplicated links out of pasted text.*
 
-![Extract Links](https://raw.githubusercontent.com/condev-dev/QA-Audit/main/assets/Images/ExtractLinks-Demo.png)
+![Extract Links](assets/Images/ExtractLinks-Demo.png)
 
 ---
 
@@ -86,7 +86,7 @@ Designed with **a real RTL layout, live scan progress, per-URL detail cards and 
 
 *Collapsed sidebar, stacked cards and bottom navigation, down to a 390px viewport.*
 
-<img src="https://raw.githubusercontent.com/condev-dev/QA-Audit/main/assets/Images/Mobile-Demo.png" width="320" alt="Mobile">
+<img src="assets/Images/Mobile-Demo.png" width="320" alt="Mobile">
 
 ---
 
