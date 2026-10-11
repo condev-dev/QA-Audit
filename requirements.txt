@@ -1,4 +1,0 @@
-flask
-playwright
-arabic-reshaper
-python-bidi
